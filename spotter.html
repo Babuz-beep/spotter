@@ -146,10 +146,11 @@
     </div>
     <div id="canvasWrap" style="position:relative;display:none;">
       <canvas id="pdfCanvas" style="width:100%;display:block;"></canvas>
-      <div id="overlayTop" style="position:absolute;top:0;left:0;right:0;background:rgba(60,60,60,0.6);pointer-events:none;z-index:2;"></div>
-      <div id="overlayBot" style="position:absolute;left:0;right:0;bottom:0;background:rgba(60,60,60,0.6);pointer-events:none;z-index:2;"></div>
-      <div id="bracketBox" style="position:absolute;left:4px;right:4px;border:2.5px solid #5b9cf6;border-radius:3px;pointer-events:none;z-index:3;display:none;"></div>
     </div>
+    <!-- Overlays positioned relative to pdfViewport, on top of canvas -->
+    <div id="overlayTop" style="position:sticky;top:0;left:0;right:0;height:0;background:rgba(60,60,60,0.65);pointer-events:none;z-index:10;display:block;"></div>
+    <div id="overlayBot" style="position:sticky;bottom:0;left:0;right:0;height:0;background:rgba(60,60,60,0.65);pointer-events:none;z-index:10;display:block;"></div>
+    <div id="bracketBox" style="position:absolute;left:4px;right:4px;border:2.5px solid #5b9cf6;border-radius:3px;pointer-events:none;z-index:11;display:none;"></div>
   </div>
   <div style="background:#f0ede8;border-top:1px solid #ddd9d2;padding:7px 14px;display:flex;align-items:center;flex-shrink:0;">
     <span style="font-family:monospace;font-size:9px;color:#e06c75;" id="debugInfo"></span>
@@ -2928,47 +2929,77 @@ function applyScreens(bounds, displayHeight, pdfHeight) {
   var oTop    = document.getElementById('overlayTop');
   var oBot    = document.getElementById('overlayBot');
   var bracket = document.getElementById('bracketBox');
+  var wrap    = document.getElementById('canvasWrap');
 
-  // Full scrollable viewport always
+  // Always full scrollable viewport
   vp.style.overflow  = 'auto';
   vp.style.height    = 'calc(100vh - 92px)';
   vp.style.maxHeight = 'calc(100vh - 92px)';
+  vp.style.position  = 'relative';
 
   if (!bounds || !isCropped) {
-    // No screens — full page view
-    oTop.style.height    = '0';
-    oBot.style.height    = '0';
-    oBot.style.top       = '0';
+    oTop.style.height = '0';
+    oBot.style.height = '0';
     bracket.style.display = 'none';
     if (bounds) {
-      // Scroll to question even in full view
-      var ratio = displayHeight / pdfHeight;
-      setTimeout(function(){ vp.scrollTop = Math.max(0, bounds.topY * ratio - 30); }, 80);
+      var r = displayHeight / pdfHeight;
+      setTimeout(function(){ vp.scrollTop = Math.max(0, bounds.topY * r - 30); }, 80);
     }
     return;
   }
 
-  // Convert PDF coordinates to display pixels
-  var ratio   = displayHeight / pdfHeight;
-  var topPx   = Math.round(bounds.topY   * ratio);
-  var botPx   = Math.round(bounds.bottomY * ratio);
-  var cropPx  = botPx - topPx;
+  var ratio  = displayHeight / pdfHeight;
+  var topPx  = Math.round(bounds.topY    * ratio);
+  var botPx  = Math.round(bounds.bottomY * ratio);
+  var cropPx = botPx - topPx;
 
-  // Debug
   var dbg = document.getElementById('debugInfo');
   if (dbg) dbg.textContent = 'top=' + topPx + 'px bot=' + botPx + 'px h=' + displayHeight + 'px';
-  console.log('Screens: top=' + topPx + ' bot=' + botPx + ' display=' + displayHeight + ' pdf=' + pdfHeight);
+  console.log('Screens: top=' + topPx + ' bot=' + botPx + ' displayH=' + displayHeight);
 
-  // Grey screen above
-  oTop.style.cssText = 'display:block;position:absolute;top:0;left:0;right:0;height:' + topPx + 'px;background:rgba(60,60,60,0.65);pointer-events:none;z-index:10;';
+  // Position overlays absolutely within canvasWrap (which is position:relative)
+  wrap.style.position = 'relative';
 
-  // Grey screen below  
-  oBot.style.cssText = 'display:block;position:absolute;top:' + botPx + 'px;left:0;right:0;height:' + (displayHeight - botPx) + 'px;background:rgba(60,60,60,0.65);pointer-events:none;z-index:10;';
+  oTop.style.cssText = [
+    'display:block',
+    'position:absolute',
+    'top:0','left:0','right:0',
+    'height:' + topPx + 'px',
+    'background:rgba(50,50,50,0.7)',
+    'pointer-events:none',
+    'z-index:10'
+  ].join(';');
 
-  // Blue bracket
-  bracket.style.cssText = 'display:block;position:absolute;top:' + topPx + 'px;left:4px;right:4px;height:' + cropPx + 'px;border:2.5px solid #5b9cf6;border-radius:3px;pointer-events:none;z-index:11;box-shadow:0 0 0 1px rgba(91,156,246,0.3);';
+  oBot.style.cssText = [
+    'display:block',
+    'position:absolute',
+    'top:' + botPx + 'px',
+    'left:0','right:0',
+    'height:' + (displayHeight - botPx + 200) + 'px',
+    'background:rgba(50,50,50,0.7)',
+    'pointer-events:none',
+    'z-index:10'
+  ].join(';');
 
-  // Scroll so question is near top of viewport
+  bracket.style.cssText = [
+    'display:block',
+    'position:absolute',
+    'top:' + topPx + 'px',
+    'left:4px','right:4px',
+    'height:' + cropPx + 'px',
+    'border:3px solid #5b9cf6',
+    'border-radius:3px',
+    'pointer-events:none',
+    'z-index:11'
+  ].join(';');
+
+  // Move overlays into canvasWrap so they scroll with the PDF
+  var cw = document.getElementById('canvasWrap');
+  if (oTop.parentNode !== cw) cw.appendChild(oTop);
+  if (oBot.parentNode !== cw) cw.appendChild(oBot);
+  if (bracket.parentNode !== cw) cw.appendChild(bracket);
+
+  // Scroll to question
   setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 20); }, 80);
 }
 
