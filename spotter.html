@@ -2876,9 +2876,15 @@ function applyView(forceCropped) {
   var bracket = document.getElementById('bracketBox');
   var wrap    = document.getElementById('canvasWrap');
 
-  // offsetHeight = CSS display height (after width:100% scaling)
+  // Always show full page - never clip
+  vp.style.overflow  = 'auto';
+  vp.style.height    = 'calc(100vh - 92px)';
+  vp.style.maxHeight = 'calc(100vh - 92px)';
+  vp.style.minHeight = '0';
+  wrap.style.marginTop = '0';
+
   var h = canvas.offsetHeight;
-  if (!h || h < 10) h = canvas.height / SCALE; // fallback
+  if (!h || h < 10) h = Math.round(canvas.height / SCALE);
 
   var topPx  = Math.round(cropYstart * h);
   var cropPx = Math.round(cropYfrac  * h);
@@ -2887,28 +2893,41 @@ function applyView(forceCropped) {
   // Debug
   var dbg = document.getElementById('debugInfo');
   if (dbg) dbg.textContent = 'h=' + h + ' top=' + topPx + ' crop=' + cropPx;
-  console.log('applyView: h=' + h + ' ys=' + cropYstart + ' yh=' + cropYfrac + ' top=' + topPx + ' crop=' + cropPx + ' isCropped=' + isCropped);
+  console.log('applyView h=' + h + ' top=' + topPx + ' crop=' + cropPx + ' isCropped=' + isCropped);
 
   if (isCropped) {
-    vp.style.overflow  = 'hidden';
-    vp.style.height    = cropPx + 'px';
-    vp.style.maxHeight = cropPx + 'px';
-    vp.style.minHeight = cropPx + 'px';
-    wrap.style.marginTop = '-' + topPx + 'px';
-    oTop.style.height  = '0';
-    oBot.style.height  = '0';
-    bracket.style.display = 'none';
-  } else {
-    vp.style.overflow  = 'auto';
-    vp.style.height    = 'calc(100vh - 92px)';
-    wrap.style.marginTop = '0';
-    oTop.style.height  = topPx + 'px';
-    oBot.style.top     = botPx + 'px';
-    oBot.style.height  = (h - botPx) + 'px';
-    bracket.style.display = 'block';
-    bracket.style.top    = topPx + 'px';
-    bracket.style.height = cropPx + 'px';
+    // Grey screen above and below — question area stays clear
+    oTop.style.display  = 'block';
+    oTop.style.position = 'absolute';
+    oTop.style.top      = '0';
+    oTop.style.left     = '0';
+    oTop.style.right    = '0';
+    oTop.style.height   = topPx + 'px';
+
+    oBot.style.display  = 'block';
+    oBot.style.position = 'absolute';
+    oBot.style.top      = botPx + 'px';
+    oBot.style.left     = '0';
+    oBot.style.right    = '0';
+    oBot.style.height   = (h - botPx) + 'px';
+    oBot.style.bottom   = 'auto';
+
+    // Blue bracket around the clear area
+    bracket.style.display  = 'block';
+    bracket.style.position = 'absolute';
+    bracket.style.top      = topPx + 'px';
+    bracket.style.left     = '4px';
+    bracket.style.right    = '4px';
+    bracket.style.height   = cropPx + 'px';
+
+    // Scroll so question is visible near top
     setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 20); }, 80);
+  } else {
+    // Remove screens — show full page cleanly
+    oTop.style.height   = '0';
+    oBot.style.height   = '0';
+    bracket.style.display = 'none';
+    setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 60); }, 80);
   }
 }
 
