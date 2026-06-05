@@ -2842,7 +2842,6 @@ function renderPage(pdf, pageNum, qNum) {
     canvas.style.height = 'auto';
     canvas.style.display = 'block';
 
-    // Render visually AND extract text simultaneously
     var renderTask = page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport });
     var textTask   = page.getTextContent();
 
@@ -2851,11 +2850,20 @@ function renderPage(pdf, pageNum, qNum) {
       showLoading(false);
       document.getElementById('canvasWrap').style.display = 'block';
 
-      // Dynamic detection of question boundaries
+      // Wait for layout, then calculate displayHeight from actual rendered width
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
+          // Calculate display height from actual canvas display width
+          // canvas is width:100%, so displayWidth = canvas.offsetWidth
+          var displayWidth = canvas.offsetWidth;
+          // Maintain aspect ratio from buffer dimensions
+          var displayHeight = Math.round(displayWidth * (viewport.height / viewport.width));
+
+          console.log('Canvas buffer: ' + canvas.width + 'x' + canvas.height);
+          console.log('Canvas display: ' + displayWidth + 'x' + displayHeight);
+
           var bounds = detectQuestionBounds(textContent, qNum, viewport.height);
-          applyScreens(bounds, canvas.offsetHeight, viewport.height);
+          applyScreens(bounds, displayHeight, viewport.height);
         });
       });
     });
@@ -2864,63 +2872,87 @@ function renderPage(pdf, pageNum, qNum) {
 
 // ── Dynamically detect where question starts and ends ───────────────────
 function detectQuestionBounds(textContent, qNum, pageHeight) {
-  // Parse target e.g. "06.2" -> major="6", minor="2"
   var parts = qNum.replace(/^0+/,'').split('.');
   var major = parts[0];
   var minor = parts[1] || '';
 
   console.log('Detecting Q' + qNum + ' major=' + major + ' minor=' + minor);
 
-  // AQA renders question numbers as a SINGLE SPAN with spaces:
-  // e.g. "0 6 . 2 " or "0 6 . 3 "
-  // PDF y coords are from BOTTOM — flip to top-down
+  // Collect question markers
+  // PDF.js transform[5] = y from BOTTOM of page
+  // Higher value = higher on the page (near top)
   var qMarkers = [];
 
   textContent.items.forEach(function(item) {
     var str = item.str;
-    var yPDF = item.transform[5]; // from bottom of page
-    var yTop = pageHeight - yPDF; // flip to top-down
-
-    // Remove spaces and check if it matches "0X.Y" pattern
-    var clean = str.replace(/\s+/g, '');
-
-    // Match "062." or "063." or "062" etc — AQA format
-    var m = clean.match(/^0([1-9])(\d*)(\.?)(\d*)$/);
+    var yFromBottom = item.transform[5];
+    var clean = str.replace(/\s+/g,'');
+    var m = clean.match(/^0([1-9])(\d*)\.(\d+)$|^0([1-9])\.(\d+)$/);
     if (m) {
-      var lineMajor = (m[1] + m[2]).replace(/^0+/,'') || '0';
-      var lineMinor = m[4] || '';
-      qMarkers.push({ y: yTop, major: lineMajor, minor: lineMinor, raw: str });
-      console.log('  Marker: "' + str.trim() + '" -> ' + lineMajor + '.' + lineMinor + ' y=' + yTop.toFixed(1));
+      var lineMajor, lineMinor;
+      if (m[1]) {
+        lineMajor = (m[1] + (m[2]||'')).replace(/^0+/,'') || '0';
+        lineMinor = m[3] || '';
+      } else {
+        lineMajor = m[4].replace(/^0+/,'') || '0';
+        lineMinor = m[5] || '';
+      }
+      qMarkers.push({ yFromBottom: yFromBottom, major: lineMajor, minor: lineMinor, raw: str });
+      console.log('  Marker: "' + str.trim() + '" major=' + lineMajor + ' minor=' + lineMinor + ' yFromBottom=' + yFromBottom.toFixed(1));
     }
   });
 
-  // Sort top to bottom
-  qMarkers.sort(function(a,b){ return a.y - b.y; });
+  if (qMarkers.length === 0) {
+    console.log('No markers found — trying looser match');
+    // Fallback: look for any span with just digits and dots
+    textContent.items.forEach(function(item) {
+      var clean = item.str.replace(/\s+/g,'');
+      if (/^0[1-9]\.\d+$/.test(clean)) {
+        console.log('  Loose match: "' + item.str + '"');
+      }
+    });
+    return null;
+  }
 
-  // Find our target question
+  // Sort by yFromBottom DESCENDING (higher y = higher on page = appears first)
+  qMarkers.sort(function(a,b){ return b.yFromBottom - a.yFromBottom; });
+
+  console.log('Sorted markers (top to bottom):');
+  qMarkers.forEach(function(m){
+    console.log('  ' + m.major + '.' + m.minor + ' y=' + m.yFromBottom.toFixed(1));
+  });
+
   var targetY = -1;
-  var nextY = pageHeight * 0.92;
+  var nextY = -1;
 
   for (var i = 0; i < qMarkers.length; i++) {
     var mk = qMarkers[i];
     if (mk.major === major && mk.minor === minor) {
-      targetY = mk.y;
-      if (i + 1 < qMarkers.length) nextY = qMarkers[i+1].y;
-      console.log('FOUND Q' + qNum + ' at y=' + targetY.toFixed(1) + ' next=' + nextY.toFixed(1));
+      targetY = mk.yFromBottom;
+      nextY = (i + 1 < qMarkers.length) ? qMarkers[i+1].yFromBottom : 0;
+      console.log('FOUND Q' + qNum + ' yFromBottom=' + targetY.toFixed(1) + ' nextY=' + nextY.toFixed(1));
       break;
     }
   }
 
   if (targetY === -1) {
-    console.log('Q' + qNum + ' NOT FOUND. Markers were:', qMarkers.map(function(m){ return m.major+'.'+m.minor; }).join(', '));
+    console.log('Q' + qNum + ' NOT FOUND');
     return null;
   }
 
+  // Convert to top-down coordinates for overlay positioning
+  // topY (from top) = pageHeight - yFromBottom (with small padding)
   var pad = pageHeight * 0.008;
-  return {
-    topY:    Math.max(0, targetY - pad),
-    bottomY: Math.min(pageHeight * 0.95, nextY - pad)
-  };
+  var topY    = pageHeight - targetY - pad;
+  var bottomY = pageHeight - nextY  + pad;
+
+  // Clamp
+  topY    = Math.max(0, topY);
+  bottomY = Math.min(pageHeight, bottomY);
+
+  console.log('Bounds (from top): topY=' + topY.toFixed(1) + ' bottomY=' + bottomY.toFixed(1) + ' pageH=' + pageHeight);
+
+  return { topY: topY, bottomY: bottomY };
 }
 
 // ── Apply grey screens based on detected bounds ─────────────────────────
@@ -3025,8 +3057,10 @@ function toggleCrop() {
     pdfDoc.getPage(pageNum).then(function(page) {
       var viewport = page.getViewport({ scale: SCALE });
       page.getTextContent().then(function(textContent) {
+        var displayWidth = canvas.offsetWidth;
+        var displayHeight = Math.round(displayWidth * (viewport.height / viewport.width));
         var bounds = detectQuestionBounds(textContent, currentQNum, viewport.height);
-        applyScreens(bounds, canvas.offsetHeight, viewport.height);
+        applyScreens(bounds, displayHeight, viewport.height);
       });
     });
   }
