@@ -2747,11 +2747,12 @@
 <footer>SPOTTER &middot; AQA Combined Science Chemistry 8464 &middot; 209 questions &middot; 5 papers (2018&ndash;2022) &middot; Links open directly from AQA</footer>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────
+// ── State ───────────────────────────────────────────────────────────────
 var PROXY = 'https://spotter-proxy.topscienceguru.workers.dev/?url=';
 var currentQUrl = '', currentAUrl = '', activeRowId = null;
 var pdfDoc = null, currentLoadedProxyUrl = '', SCALE = 1.6;
-var cropYstart = 0.05, cropYfrac = 0.20;
+var currentQNum = ''; // e.g. "02.8"
+var isCropped = true;
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -2768,14 +2769,14 @@ function toggleSection(id) { document.getElementById(id).classList.toggle('colla
 
 // ── Question buttons ────────────────────────────────────────────────────
 function openQ(num, source, desc, qUrl, msUrl, rowId, ys, yh) {
-  currentQUrl = qUrl; currentAUrl = msUrl;
+  currentQUrl = qUrl; currentAUrl = msUrl; currentQNum = num;
   setActiveRow(rowId);
-  loadPanel(num, source, desc, qUrl, true, ys||0.05, yh||0.20);
+  loadPanel(num, source, desc, qUrl, true);
 }
 function openA(num, source, desc, qUrl, msUrl, rowId, ys, yh) {
-  currentQUrl = qUrl; currentAUrl = msUrl;
+  currentQUrl = qUrl; currentAUrl = msUrl; currentQNum = num;
   setActiveRow(rowId);
-  loadPanel(num, source, desc, msUrl, false, ys||0.05, yh||0.20);
+  loadPanel(num, source, desc, msUrl, false);
 }
 
 function setActiveRow(rowId) {
@@ -2784,13 +2785,8 @@ function setActiveRow(rowId) {
   var c = document.getElementById(rowId); if (c) c.classList.add('active-q');
 }
 
-// ── Main load function ──────────────────────────────────────────────────
-function loadPanel(num, source, desc, pdfUrl, isQ, ys, yh) {
-  // Set crop FIRST
-  cropYstart = ys;
-  cropYfrac  = yh;
-
-  // Extract page number
+// ── Main load ───────────────────────────────────────────────────────────
+function loadPanel(num, source, desc, pdfUrl, isQ) {
   var pageMatch = pdfUrl.match(/[#&]page=(\d+)/);
   var pageNum = pageMatch ? parseInt(pageMatch[1]) : 1;
   var baseUrl = pdfUrl.split('#')[0];
@@ -2800,8 +2796,6 @@ function loadPanel(num, source, desc, pdfUrl, isQ, ys, yh) {
   document.getElementById('panelSource').textContent = source;
   document.getElementById('panelTitle').textContent = 'Q' + num + ' \u2014 ' + desc;
   document.getElementById('panelAQALink').href = pdfUrl;
-
-  // Button states
   var qb = document.getElementById('panelQBtn');
   var ab = document.getElementById('panelABtn');
   qb.style.background = isQ ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)';
@@ -2810,26 +2804,24 @@ function loadPanel(num, source, desc, pdfUrl, isQ, ys, yh) {
   ab.style.color = !isQ ? 'var(--accent)' : 'white';
 
   // Show panel
-  var sp=document.getElementById('spotterPanel'); sp.style.display='flex'; sp.style.flexDirection='column';
+  var sp = document.getElementById('spotterPanel');
+  sp.style.display = 'flex';
+  sp.style.flexDirection = 'column';
   document.body.classList.add('panel-open');
+  isCropped = true;
   document.getElementById('toggleViewBtn').textContent = '\u29F6 Full page';
-
-  // Show loading
   showLoading(true);
   document.getElementById('canvasWrap').style.display = 'none';
 
-  // If same PDF already loaded — just render new page
   if (pdfDoc && currentLoadedProxyUrl === proxyUrl) {
-    renderPage(pdfDoc, pageNum);
+    renderPage(pdfDoc, pageNum, num);
     return;
   }
-
-  // Load new PDF
   pdfDoc = null;
   currentLoadedProxyUrl = proxyUrl;
   pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf) {
     pdfDoc = pdf;
-    renderPage(pdf, pageNum);
+    renderPage(pdf, pageNum, num);
   }).catch(function(err) {
     showLoading(false);
     document.getElementById('pdfLoading').innerHTML =
@@ -2838,106 +2830,203 @@ function loadPanel(num, source, desc, pdfUrl, isQ, ys, yh) {
   });
 }
 
-// ── Render a page ───────────────────────────────────────────────────────
-function renderPage(pdf, pageNum) {
+// ── Render page + detect question positions dynamically ─────────────────
+function renderPage(pdf, pageNum, qNum) {
   pdf.getPage(pageNum).then(function(page) {
     var viewport = page.getViewport({ scale: SCALE });
     var canvas = document.getElementById('pdfCanvas');
-    var ctx = canvas.getContext('2d');
     canvas.width  = viewport.width;
     canvas.height = viewport.height;
     canvas.style.width  = '100%';
     canvas.style.height = 'auto';
     canvas.style.display = 'block';
 
-    page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function() {
+    // Render visually AND extract text simultaneously
+    var renderTask = page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport });
+    var textTask   = page.getTextContent();
+
+    Promise.all([renderTask.promise, textTask]).then(function(results) {
+      var textContent = results[1];
       showLoading(false);
       document.getElementById('canvasWrap').style.display = 'block';
-      // Wait for layout then apply crop
+
+      // Dynamic detection of question boundaries
       requestAnimationFrame(function() {
         requestAnimationFrame(function() {
-          applyView(true); // true = cropped
+          var bounds = detectQuestionBounds(textContent, qNum, viewport.height);
+          applyScreens(bounds, canvas.offsetHeight, viewport.height);
         });
       });
     });
   });
 }
 
-// ── Apply cropped or full view ──────────────────────────────────────────
-var isCropped = true;
+// ── Dynamically detect where question starts and ends ───────────────────
+function detectQuestionBounds(textContent, qNum, pageHeight) {
+  // Parse question number e.g. "02.8" -> major=2, minor=8
+  var parts = qNum.replace(/^0+/, '').split('.');
+  var major = parseInt(parts[0]) || 0;
+  var minor = parts[1] ? parseInt(parts[1]) : -1;
 
-function applyView(forceCropped) {
-  if (forceCropped !== undefined) isCropped = forceCropped;
+  // Collect all text items with y positions (PDF y is from bottom, flip it)
+  var items = textContent.items.map(function(item) {
+    return {
+      text: item.str.replace(/\s+/g, '').toLowerCase(),
+      y: pageHeight - item.transform[5], // flip to top-down
+      height: item.height
+    };
+  }).filter(function(i){ return i.text.length > 0; });
 
+  // Sort top to bottom
+  items.sort(function(a,b){ return a.y - b.y; });
+
+  // Find all question number positions on this page
+  // AQA format: "0", "2", ".", "8" appear as separate items close together
+  // or combined as "02.8" or "028"
+  var qMarkers = [];
+
+  // Build line groups (items within 3px of each other vertically)
+  var lines = [];
+  var currentLine = [];
+  var lastY = -999;
+  items.forEach(function(item) {
+    if (Math.abs(item.y - lastY) > 4) {
+      if (currentLine.length) lines.push({ y: lastY, text: currentLine.join('') });
+      currentLine = [item.text];
+      lastY = item.y;
+    } else {
+      currentLine.push(item.text);
+    }
+  });
+  if (currentLine.length) lines.push({ y: lastY, text: currentLine.join('') });
+
+  // Find question markers in lines
+  lines.forEach(function(line) {
+    // Match patterns like "01.1", "02.8", "0102" etc
+    var m = line.text.match(/^0([1-9])\.?(\d+)?$/);
+    if (m) {
+      var lineMajor = parseInt(m[1]);
+      var lineMinor = m[2] ? parseInt(m[2]) : -1;
+      qMarkers.push({ y: line.y, major: lineMajor, minor: lineMinor });
+    }
+  });
+
+  // Find our target question
+  var targetY = -1;
+  var nextY = pageHeight;
+
+  qMarkers.forEach(function(marker, i) {
+    var isTarget = (marker.major === major && marker.minor === minor) ||
+                   (minor === -1 && marker.major === major);
+    if (isTarget && targetY === -1) {
+      targetY = marker.y;
+      // Next question boundary
+      if (i + 1 < qMarkers.length) {
+        nextY = qMarkers[i + 1].y;
+      }
+    }
+  });
+
+  // If not found, use full page
+  if (targetY === -1) {
+    console.log('Q' + qNum + ' not found on page, showing full page');
+    return null;
+  }
+
+  var padding = pageHeight * 0.01; // 1% padding
+  return {
+    topY:    Math.max(0, targetY - padding),
+    bottomY: Math.min(pageHeight, nextY - padding)
+  };
+}
+
+// ── Apply grey screens based on detected bounds ─────────────────────────
+function applyScreens(bounds, displayHeight, pdfHeight) {
   var vp      = document.getElementById('pdfViewport');
-  var canvas  = document.getElementById('pdfCanvas');
   var oTop    = document.getElementById('overlayTop');
   var oBot    = document.getElementById('overlayBot');
   var bracket = document.getElementById('bracketBox');
-  var wrap    = document.getElementById('canvasWrap');
 
-  // Always show full page - never clip
+  // Full scrollable viewport always
   vp.style.overflow  = 'auto';
   vp.style.height    = 'calc(100vh - 92px)';
   vp.style.maxHeight = 'calc(100vh - 92px)';
-  vp.style.minHeight = '0';
-  wrap.style.marginTop = '0';
 
-  var h = canvas.offsetHeight;
-  if (!h || h < 10) h = Math.round(canvas.height / SCALE);
+  if (!bounds || !isCropped) {
+    // No screens — full page view
+    oTop.style.height    = '0';
+    oBot.style.height    = '0';
+    oBot.style.top       = '0';
+    bracket.style.display = 'none';
+    if (bounds) {
+      // Scroll to question even in full view
+      var ratio = displayHeight / pdfHeight;
+      setTimeout(function(){ vp.scrollTop = Math.max(0, bounds.topY * ratio - 30); }, 80);
+    }
+    return;
+  }
 
-  var topPx  = Math.round(cropYstart * h);
-  var cropPx = Math.round(cropYfrac  * h);
-  var botPx  = topPx + cropPx;
+  // Convert PDF coordinates to display pixels
+  var ratio   = displayHeight / pdfHeight;
+  var topPx   = Math.round(bounds.topY   * ratio);
+  var botPx   = Math.round(bounds.bottomY * ratio);
+  var cropPx  = botPx - topPx;
 
   // Debug
   var dbg = document.getElementById('debugInfo');
-  if (dbg) dbg.textContent = 'h=' + h + ' top=' + topPx + ' crop=' + cropPx;
-  console.log('applyView h=' + h + ' top=' + topPx + ' crop=' + cropPx + ' isCropped=' + isCropped);
+  if (dbg) dbg.textContent = 'top=' + topPx + 'px bot=' + botPx + 'px h=' + displayHeight + 'px';
+  console.log('Screens: top=' + topPx + ' bot=' + botPx + ' display=' + displayHeight + ' pdf=' + pdfHeight);
 
-  if (isCropped) {
-    // Grey screen above and below — question area stays clear
-    oTop.style.display  = 'block';
-    oTop.style.position = 'absolute';
-    oTop.style.top      = '0';
-    oTop.style.left     = '0';
-    oTop.style.right    = '0';
-    oTop.style.height   = topPx + 'px';
+  // Grey screen above
+  oTop.style.display  = 'block';
+  oTop.style.top      = '0';
+  oTop.style.height   = topPx + 'px';
 
-    oBot.style.display  = 'block';
-    oBot.style.position = 'absolute';
-    oBot.style.top      = botPx + 'px';
-    oBot.style.left     = '0';
-    oBot.style.right    = '0';
-    oBot.style.height   = (h - botPx) + 'px';
-    oBot.style.bottom   = 'auto';
+  // Grey screen below
+  oBot.style.display  = 'block';
+  oBot.style.top      = botPx + 'px';
+  oBot.style.height   = (displayHeight - botPx) + 'px';
+  oBot.style.bottom   = 'auto';
 
-    // Blue bracket around the clear area
-    bracket.style.display  = 'block';
-    bracket.style.position = 'absolute';
-    bracket.style.top      = topPx + 'px';
-    bracket.style.left     = '4px';
-    bracket.style.right    = '4px';
-    bracket.style.height   = cropPx + 'px';
+  // Blue bracket
+  bracket.style.display = 'block';
+  bracket.style.top     = topPx + 'px';
+  bracket.style.height  = cropPx + 'px';
 
-    // Scroll so question is visible near top
-    setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 20); }, 80);
-  } else {
-    // Remove screens — show full page cleanly
-    oTop.style.height   = '0';
-    oBot.style.height   = '0';
-    bracket.style.display = 'none';
-    setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 60); }, 80);
+  // Scroll so question is near top of viewport
+  setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 20); }, 80);
+}
+
+// ── Toggle screens on/off ───────────────────────────────────────────────
+function toggleCrop() {
+  isCropped = !isCropped;
+  document.getElementById('toggleViewBtn').textContent =
+    isCropped ? '\u29F6 Full page' : '\u229F Show question';
+
+  // Re-run detection with current state
+  if (pdfDoc) {
+    var activePanel = document.querySelector('.paper-panel.active');
+    var vp = document.getElementById('pdfViewport');
+    var canvas = document.getElementById('pdfCanvas');
+    var pageNum = 1;
+    var pdfUrl = isCropped ? currentQUrl : currentAUrl;
+    if (document.getElementById('panelABtn').style.color === 'var(--accent)') {
+      pdfUrl = currentAUrl;
+    }
+    var pageMatch = (pdfUrl||currentQUrl).match(/[#&]page=(\d+)/);
+    if (pageMatch) pageNum = parseInt(pageMatch[1]);
+
+    pdfDoc.getPage(pageNum).then(function(page) {
+      var viewport = page.getViewport({ scale: SCALE });
+      page.getTextContent().then(function(textContent) {
+        var bounds = detectQuestionBounds(textContent, currentQNum, viewport.height);
+        applyScreens(bounds, canvas.offsetHeight, viewport.height);
+      });
+    });
   }
 }
 
-function toggleCrop() {
-  isCropped = !isCropped;
-  document.getElementById('toggleViewBtn').textContent = isCropped ? '\u29F6 Full page' : '\u229F Question only';
-  applyView();
-}
-
-// ── Q/A toggle in panel ─────────────────────────────────────────────────
+// ── Q/A toggle ──────────────────────────────────────────────────────────
 function panelShowQ() {
   if (!currentQUrl) return;
   var pageMatch = currentQUrl.match(/[#&]page=(\d+)/);
@@ -2950,9 +3039,9 @@ function panelShowQ() {
   document.getElementById('panelAQALink').href = currentQUrl;
   showLoading(true);
   document.getElementById('canvasWrap').style.display = 'none';
-  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) { renderPage(pdfDoc, pageNum); return; }
+  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) { renderPage(pdfDoc, pageNum, currentQNum); return; }
   pdfDoc = null; currentLoadedProxyUrl = proxyUrl;
-  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf){ pdfDoc=pdf; renderPage(pdf,pageNum); });
+  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf){ pdfDoc=pdf; renderPage(pdf,pageNum,currentQNum); });
 }
 
 function panelShowA() {
@@ -2967,12 +3056,12 @@ function panelShowA() {
   document.getElementById('panelAQALink').href = currentAUrl;
   showLoading(true);
   document.getElementById('canvasWrap').style.display = 'none';
-  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) { renderPage(pdfDoc, pageNum); return; }
+  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) { renderPage(pdfDoc, pageNum, currentQNum); return; }
   pdfDoc = null; currentLoadedProxyUrl = proxyUrl;
-  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf){ pdfDoc=pdf; renderPage(pdf,pageNum); });
+  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf){ pdfDoc=pdf; renderPage(pdf,pageNum,currentQNum); });
 }
 
-// ── Close panel ─────────────────────────────────────────────────────────
+// ── Utilities ───────────────────────────────────────────────────────────
 function closePanel() {
   document.getElementById('spotterPanel').style.display = 'none';
   document.body.classList.remove('panel-open');
@@ -2984,7 +3073,6 @@ function showLoading(show) {
   if (el) el.style.display = show ? 'flex' : 'none';
 }
 
-// ── Topic links ─────────────────────────────────────────────────────────
 document.querySelectorAll('.topic-link').forEach(function(link) {
   link.addEventListener('click', function(e) {
     e.preventDefault();
