@@ -2863,103 +2863,62 @@ function renderPage(pdf, pageNum, qNum) {
 
 // ── Dynamically detect where question starts and ends ───────────────────
 function detectQuestionBounds(textContent, qNum, pageHeight) {
-  // Parse target: "06.2" -> major="6", minor="2"
-  var clean = qNum.replace(/^0+/, '');
-  var dotIdx = clean.indexOf('.');
-  var major = dotIdx >= 0 ? clean.substring(0, dotIdx) : clean;
-  var minor = dotIdx >= 0 ? clean.substring(dotIdx + 1) : '';
+  // Parse target e.g. "06.2" -> major="6", minor="2"
+  var parts = qNum.replace(/^0+/,'').split('.');
+  var major = parts[0];
+  var minor = parts[1] || '';
 
-  console.log('Looking for Q' + qNum + ' major=' + major + ' minor=' + minor);
+  console.log('Detecting Q' + qNum + ' major=' + major + ' minor=' + minor);
 
-  // AQA renders question numbers as separate characters close together
-  // e.g. "0","6",".","2" all within a few pixels vertically
-  // Group items by y position (within 3px tolerance)
-  var items = textContent.items.map(function(item) {
-    return {
-      str: item.str.trim(),
-      // PDF y is from bottom — flip to top-down
-      y: pageHeight - item.transform[5]
-    };
-  }).filter(function(i){ return i.str.length > 0; });
-
-  // Group into lines (items within 4px vertically)
-  var lines = [];
-  var usedIndices = {};
-  items.forEach(function(item, i) {
-    if (usedIndices[i]) return;
-    var lineItems = [item];
-    usedIndices[i] = true;
-    items.forEach(function(other, j) {
-      if (usedIndices[j]) return;
-      if (Math.abs(other.y - item.y) <= 4) {
-        lineItems.push(other);
-        usedIndices[j] = true;
-      }
-    });
-    var combined = lineItems.map(function(x){ return x.str; }).join('');
-    lines.push({ y: item.y, combined: combined, items: lineItems });
-  });
-
-  lines.sort(function(a,b){ return a.y - b.y; });
-
-  // Debug: log all lines
-  lines.forEach(function(l){
-    if (/^[0-9\.]+$/.test(l.combined) && l.combined.length <= 6) {
-      console.log('  Line y=' + l.y.toFixed(1) + ' text="' + l.combined + '"');
-    }
-  });
-
-  // Find question markers — look for lines that are purely digits/dots
-  // matching AQA format: "062." or "06." or "063." etc
+  // AQA renders question numbers as a SINGLE SPAN with spaces:
+  // e.g. "0 6 . 2 " or "0 6 . 3 "
+  // PDF y coords are from BOTTOM — flip to top-down
   var qMarkers = [];
-  lines.forEach(function(line) {
-    var t = line.combined;
-    // Match: starts with 0, then 1-2 digits, optional dot, optional more digits
-    // e.g. "062.", "06.", "0622", "063."
-    var m = t.match(/^0([1-9])([0-9]?)(\.?)([0-9]*)$/);
+
+  textContent.items.forEach(function(item) {
+    var str = item.str;
+    var yPDF = item.transform[5]; // from bottom of page
+    var yTop = pageHeight - yPDF; // flip to top-down
+
+    // Remove spaces and check if it matches "0X.Y" pattern
+    var clean = str.replace(/\s+/g, '');
+
+    // Match "062." or "063." or "062" etc — AQA format
+    var m = clean.match(/^0([1-9])(\d*)(\.?)(\d*)$/);
     if (m) {
-      var lineMajor = m[1] + (m[2] || '');
+      var lineMajor = (m[1] + m[2]).replace(/^0+/,'') || '0';
       var lineMinor = m[4] || '';
-      // Remove leading zeros from major
-      lineMajor = lineMajor.replace(/^0+/, '') || '0';
-      qMarkers.push({
-        y: line.y,
-        major: lineMajor,
-        minor: lineMinor,
-        raw: t
-      });
-      console.log('  Q marker: "' + t + '" -> major=' + lineMajor + ' minor=' + lineMinor + ' y=' + line.y.toFixed(1));
+      qMarkers.push({ y: yTop, major: lineMajor, minor: lineMinor, raw: str });
+      console.log('  Marker: "' + str.trim() + '" -> ' + lineMajor + '.' + lineMinor + ' y=' + yTop.toFixed(1));
     }
   });
 
-  // Find our target
+  // Sort top to bottom
+  qMarkers.sort(function(a,b){ return a.y - b.y; });
+
+  // Find our target question
   var targetY = -1;
-  var nextY = pageHeight * 0.95;
+  var nextY = pageHeight * 0.92;
 
   for (var i = 0; i < qMarkers.length; i++) {
-    var m = qMarkers[i];
-    var majorMatch = (m.major === major);
-    var minorMatch = (minor === '' || m.minor === minor || m.minor === '');
-
-    if (majorMatch && (minor === '' ? true : m.minor === minor)) {
-      targetY = m.y;
-      if (i + 1 < qMarkers.length) {
-        nextY = qMarkers[i + 1].y;
-      }
-      console.log('Found Q' + qNum + ' at y=' + targetY.toFixed(1) + ' next at y=' + nextY.toFixed(1));
+    var mk = qMarkers[i];
+    if (mk.major === major && mk.minor === minor) {
+      targetY = mk.y;
+      if (i + 1 < qMarkers.length) nextY = qMarkers[i+1].y;
+      console.log('FOUND Q' + qNum + ' at y=' + targetY.toFixed(1) + ' next=' + nextY.toFixed(1));
       break;
     }
   }
 
   if (targetY === -1) {
-    console.log('Q' + qNum + ' NOT FOUND on this page');
+    console.log('Q' + qNum + ' NOT FOUND. Markers were:', qMarkers.map(function(m){ return m.major+'.'+m.minor; }).join(', '));
     return null;
   }
 
-  var padding = pageHeight * 0.008;
+  var pad = pageHeight * 0.008;
   return {
-    topY:    Math.max(0, targetY - padding),
-    bottomY: Math.min(pageHeight, nextY - padding)
+    topY:    Math.max(0, targetY - pad),
+    bottomY: Math.min(pageHeight * 0.95, nextY - pad)
   };
 }
 
