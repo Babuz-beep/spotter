@@ -139,7 +139,7 @@
       <button onclick="closePanel()" style="background:none;border:1px solid rgba(255,255,255,0.35);border-radius:4px;font-size:13px;cursor:pointer;color:white;padding:3px 7px;line-height:1;">&#x2715;</button>
     </div>
   </div>
-  <div id="pdfViewport" style="flex:1;overflow:hidden;position:relative;background:#525659;">
+  <div id="pdfViewport" style="flex:1;overflow:hidden;position:relative;background:#525659;min-height:0;">
     <div id="pdfLoading" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f0ede8;z-index:10;gap:12px;">
       <div style="width:28px;height:28px;border:3px solid #ddd;border-top-color:#1a4fa8;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
       <span style="font-family:monospace;font-size:11px;color:#9c9590;">Loading PDF&#x2026;</span>
@@ -2810,7 +2810,7 @@ function loadPanel(num, source, desc, pdfUrl, isQ, ys, yh) {
   ab.style.color = !isQ ? 'var(--accent)' : 'white';
 
   // Show panel
-  document.getElementById('spotterPanel').style.display = 'flex';
+  var sp=document.getElementById('spotterPanel'); sp.style.display='flex'; sp.style.flexDirection='column';
   document.body.classList.add('panel-open');
   document.getElementById('toggleViewBtn').textContent = '\u29F6 Full page';
 
@@ -2892,6 +2892,8 @@ function applyView(forceCropped) {
   if (isCropped) {
     vp.style.overflow  = 'hidden';
     vp.style.height    = cropPx + 'px';
+    vp.style.maxHeight = cropPx + 'px';
+    vp.style.minHeight = cropPx + 'px';
     wrap.style.marginTop = '-' + topPx + 'px';
     oTop.style.height  = '0';
     oBot.style.height  = '0';
