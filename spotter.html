@@ -2961,108 +2961,74 @@ function applyScreens(bounds, displayHeight, pdfHeight) {
   var oTop    = document.getElementById('overlayTop');
   var oBot    = document.getElementById('overlayBot');
   var bracket = document.getElementById('bracketBox');
-  var wrap    = document.getElementById('canvasWrap');
 
   // Always full scrollable viewport
   vp.style.overflow  = 'auto';
   vp.style.height    = 'calc(100vh - 92px)';
   vp.style.maxHeight = 'calc(100vh - 92px)';
-  vp.style.position  = 'relative';
 
-  if (!bounds || !isCropped) {
-    oTop.style.height = '0';
-    oBot.style.height = '0';
+  // Hide grey screens — not using them
+  oTop.style.height = '0';
+  oBot.style.height = '0';
+
+  if (!bounds) {
     bracket.style.display = 'none';
-    if (bounds) {
-      var r = displayHeight / pdfHeight;
-      setTimeout(function(){ vp.scrollTop = Math.max(0, bounds.topY * r - 30); }, 80);
-    }
     return;
   }
 
   var ratio  = displayHeight / pdfHeight;
-  var topPx  = Math.round(bounds.topY    * ratio);
+  var topPx  = Math.round(bounds.topY  * ratio);
   var botPx  = Math.round(bounds.bottomY * ratio);
-  var cropPx = botPx - topPx;
 
   var dbg = document.getElementById('debugInfo');
   if (dbg) dbg.textContent = 'top=' + topPx + 'px bot=' + botPx + 'px h=' + displayHeight + 'px';
-  console.log('Screens: top=' + topPx + ' bot=' + botPx + ' displayH=' + displayHeight);
 
-  // Position overlays absolutely within canvasWrap (which is position:relative)
-  wrap.style.position = 'relative';
-
-  oTop.style.cssText = [
-    'display:block',
-    'position:absolute',
-    'top:0','left:0','right:0',
-    'height:' + topPx + 'px',
-    'background:rgba(50,50,50,0.7)',
-    'pointer-events:none',
-    'z-index:10'
-  ].join(';');
-
-  oBot.style.cssText = [
-    'display:block',
-    'position:absolute',
-    'top:' + botPx + 'px',
-    'left:0','right:0',
-    'height:' + (displayHeight - botPx + 200) + 'px',
-    'background:rgba(50,50,50,0.7)',
-    'pointer-events:none',
-    'z-index:10'
-  ].join(';');
-
+  // Show red arrow pointing at the question
   bracket.style.cssText = [
     'display:block',
     'position:absolute',
+    'left:0px',
     'top:' + topPx + 'px',
-    'left:4px','right:4px',
-    'height:' + cropPx + 'px',
-    'border:3px solid #5b9cf6',
-    'border-radius:3px',
+    'width:28px',
+    'height:' + Math.max(botPx - topPx, 30) + 'px',
+    'background:#e74c3c',
+    'border-radius:0 4px 4px 0',
     'pointer-events:none',
-    'z-index:11'
-  ].join(';');
+    'z-index:11',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+    'font-size:14px',
+    'color:white',
+    'font-weight:bold',
+    'line-height:1'
+  ].join(';') + ';content:"\u25B6"';
 
-  // Move overlays into canvasWrap so they scroll with the PDF
-  var cw = document.getElementById('canvasWrap');
-  if (oTop.parentNode !== cw) cw.appendChild(oTop);
-  if (oBot.parentNode !== cw) cw.appendChild(oBot);
-  if (bracket.parentNode !== cw) cw.appendChild(bracket);
+  // Set arrow content via innerHTML of a child — bracket is a div
+  bracket.innerHTML = '<div style="position:absolute;left:0;top:50%;transform:translateY(-50%);width:28px;text-align:center;font-size:16px;color:white;">&#9658;</div>';
 
   // Scroll to question
-  setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 20); }, 80);
+  if (isCropped) {
+    setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 40); }, 80);
+  }
 }
 
-// ── Toggle screens on/off ───────────────────────────────────────────────
+// ── Toggle — scroll to question or show full page ───────────────────────
 function toggleCrop() {
   isCropped = !isCropped;
-  document.getElementById('toggleViewBtn').textContent =
-    isCropped ? '\u29F6 Full page' : '\u229F Show question';
+  var btn = document.getElementById('toggleViewBtn');
+  var vp  = document.getElementById('pdfViewport');
+  var bracket = document.getElementById('bracketBox');
 
-  // Re-run detection with current state
-  if (pdfDoc) {
-    var activePanel = document.querySelector('.paper-panel.active');
-    var vp = document.getElementById('pdfViewport');
-    var canvas = document.getElementById('pdfCanvas');
-    var pageNum = 1;
-    var pdfUrl = isCropped ? currentQUrl : currentAUrl;
-    if (document.getElementById('panelABtn').style.color === 'var(--accent)') {
-      pdfUrl = currentAUrl;
-    }
-    var pageMatch = (pdfUrl||currentQUrl).match(/[#&]page=(\d+)/);
-    if (pageMatch) pageNum = parseInt(pageMatch[1]);
-
-    pdfDoc.getPage(pageNum).then(function(page) {
-      var viewport = page.getViewport({ scale: SCALE });
-      page.getTextContent().then(function(textContent) {
-        var displayWidth = canvas.offsetWidth;
-        var displayHeight = Math.round(displayWidth * (viewport.height / viewport.width));
-        var bounds = detectQuestionBounds(textContent, currentQNum, viewport.height);
-        applyScreens(bounds, displayHeight, viewport.height);
-      });
-    });
+  if (isCropped) {
+    btn.textContent = '\u29F6 Full page';
+    // Scroll back to question
+    var topPx = parseInt(bracket.style.top) || 0;
+    vp.scrollTop = Math.max(0, topPx - 40);
+  } else {
+    btn.textContent = '\u229F Go to question';
+    // Scroll to top to show full page context
+    vp.scrollTop = 0;
   }
 }
 
