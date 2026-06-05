@@ -2715,20 +2715,230 @@
 <footer>SPOTTER &middot; AQA Combined Science Chemistry 8464 &middot; 209 questions &middot; 5 papers (2018&ndash;2022) &middot; Links open directly from AQA</footer>
 
 <script>
-var currentQUrl='',currentAUrl='',activeRowId=null,isZoomed=false;
-function switchPaper(n){document.querySelectorAll('.paper-tab').forEach(function(t){t.classList.remove('active');});document.querySelectorAll('.paper-panel').forEach(function(p){p.classList.remove('active');});document.querySelector('.paper-tab[data-paper="'+n+'"]').classList.add('active');document.getElementById('panel-'+n).classList.add('active');closeViewer();}
-function toggleSection(id){document.getElementById(id).classList.toggle('collapsed');}
-function openQ(num,source,desc,qUrl,msUrl,rowId){currentQUrl=qUrl;currentAUrl=msUrl;setActiveRow(rowId);showViewer(num,source,desc,qUrl,true);}
-function openA(num,source,desc,qUrl,msUrl,rowId){currentQUrl=qUrl;currentAUrl=msUrl;setActiveRow(rowId);showViewer(num,source,desc,msUrl,false);}
-function setActiveRow(rowId){if(activeRowId){var p=document.getElementById(activeRowId);if(p)p.classList.remove('active-q');}activeRowId=rowId;var c=document.getElementById(rowId);if(c)c.classList.add('active-q');}
-function showViewer(num,source,desc,url,isQ){document.getElementById('viewerTitle').textContent='Q'+num+' — '+desc;document.getElementById('viewerSource').textContent=source;document.getElementById('viewerLabel').textContent=isQ?'Question':'Answer';document.getElementById('viewerOpenLink').href=url;document.getElementById('btnShowQ').classList.toggle('active-btn',isQ);document.getElementById('btnShowA').classList.toggle('active-btn',!isQ);loadFrame(url);document.getElementById('viewerPanel').classList.add('open');document.body.classList.add('viewer-open');}
-function loadFrame(url){document.getElementById('viewerLoading').classList.remove('hidden');document.getElementById('viewerFrame').src=url;}
-function showQ(){if(!currentQUrl)return;document.getElementById('viewerLabel').textContent='Question';document.getElementById('btnShowQ').classList.add('active-btn');document.getElementById('btnShowA').classList.remove('active-btn');document.getElementById('viewerOpenLink').href=currentQUrl;loadFrame(currentQUrl);}
-function showA(){if(!currentAUrl)return;document.getElementById('viewerLabel').textContent='Answer';document.getElementById('btnShowA').classList.add('active-btn');document.getElementById('btnShowQ').classList.remove('active-btn');document.getElementById('viewerOpenLink').href=currentAUrl;loadFrame(currentAUrl);}
-function toggleZoom(){isZoomed=!isZoomed;var panel=document.getElementById('viewerPanel');var btn=document.getElementById('zoomBtn');if(isZoomed){panel.classList.add('zoomed');document.body.classList.add('viewer-zoomed');document.body.classList.remove('viewer-open');btn.textContent='⊟';}else{panel.classList.remove('zoomed');document.body.classList.remove('viewer-zoomed');document.body.classList.add('viewer-open');btn.textContent='⛶';}}
-function closeViewer(){isZoomed=false;document.getElementById('zoomBtn').textContent='⛶';document.getElementById('viewerPanel').classList.remove('open','zoomed');document.body.classList.remove('viewer-open','viewer-zoomed');document.getElementById('viewerFrame').src='about:blank';if(activeRowId){var el=document.getElementById(activeRowId);if(el)el.classList.remove('active-q');activeRowId=null;}}
-document.getElementById('viewerFrame').addEventListener('load',function(){document.getElementById('viewerLoading').classList.add('hidden');});
-document.querySelectorAll('.topic-link').forEach(function(link){link.addEventListener('click',function(e){e.preventDefault();var target=document.querySelector(link.getAttribute('href'));if(target)target.scrollIntoView({behavior:'smooth',block:'start'});});});
+// ── State ──────────────────────────────────────────────────────────────
+var PROXY = 'https://spotter-proxy.topscienceguru.workers.dev/?url=';
+var currentQUrl = '', currentAUrl = '', activeRowId = null;
+var pdfDoc = null, currentLoadedProxyUrl = '', SCALE = 1.6;
+var cropYstart = 0.05, cropYfrac = 0.20;
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── Paper tabs ──────────────────────────────────────────────────────────
+function switchPaper(n) {
+  document.querySelectorAll('.paper-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.paper-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelector('.paper-tab[data-paper="'+n+'"]').classList.add('active');
+  document.getElementById('panel-'+n).classList.add('active');
+  closePanel();
+}
+function toggleSection(id) { document.getElementById(id).classList.toggle('collapsed'); }
+
+// ── Question buttons ────────────────────────────────────────────────────
+function openQ(num, source, desc, qUrl, msUrl, rowId, ys, yh) {
+  currentQUrl = qUrl; currentAUrl = msUrl;
+  setActiveRow(rowId);
+  loadPanel(num, source, desc, qUrl, true, ys||0.05, yh||0.20);
+}
+function openA(num, source, desc, qUrl, msUrl, rowId, ys, yh) {
+  currentQUrl = qUrl; currentAUrl = msUrl;
+  setActiveRow(rowId);
+  loadPanel(num, source, desc, msUrl, false, ys||0.05, yh||0.20);
+}
+
+function setActiveRow(rowId) {
+  if (activeRowId) { var p = document.getElementById(activeRowId); if (p) p.classList.remove('active-q'); }
+  activeRowId = rowId;
+  var c = document.getElementById(rowId); if (c) c.classList.add('active-q');
+}
+
+// ── Main load function ──────────────────────────────────────────────────
+function loadPanel(num, source, desc, pdfUrl, isQ, ys, yh) {
+  // Set crop FIRST
+  cropYstart = ys;
+  cropYfrac  = yh;
+
+  // Extract page number
+  var pageMatch = pdfUrl.match(/[#&]page=(\d+)/);
+  var pageNum = pageMatch ? parseInt(pageMatch[1]) : 1;
+  var baseUrl = pdfUrl.split('#')[0];
+  var proxyUrl = PROXY + encodeURIComponent(baseUrl);
+
+  // Update header
+  document.getElementById('panelSource').textContent = source;
+  document.getElementById('panelTitle').textContent = 'Q' + num + ' \u2014 ' + desc;
+  document.getElementById('panelAQALink').href = pdfUrl;
+
+  // Button states
+  var qb = document.getElementById('panelQBtn');
+  var ab = document.getElementById('panelABtn');
+  qb.style.background = isQ ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)';
+  qb.style.color = isQ ? 'var(--accent)' : 'white';
+  ab.style.background = !isQ ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.15)';
+  ab.style.color = !isQ ? 'var(--accent)' : 'white';
+
+  // Show panel
+  document.getElementById('spotterPanel').style.display = 'flex';
+  document.body.classList.add('panel-open');
+  document.getElementById('toggleViewBtn').textContent = '\u29F6 Full page';
+
+  // Show loading
+  showLoading(true);
+  document.getElementById('canvasWrap').style.display = 'none';
+
+  // If same PDF already loaded — just render new page
+  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) {
+    renderPage(pdfDoc, pageNum);
+    return;
+  }
+
+  // Load new PDF
+  pdfDoc = null;
+  currentLoadedProxyUrl = proxyUrl;
+  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf) {
+    pdfDoc = pdf;
+    renderPage(pdf, pageNum);
+  }).catch(function(err) {
+    showLoading(false);
+    document.getElementById('pdfLoading').innerHTML =
+      '<div style="padding:30px;text-align:center;font-family:monospace;font-size:11px;color:#c0392b;">Could not load PDF<br><small>' + err.message + '</small></div>';
+    document.getElementById('pdfLoading').style.display = 'flex';
+  });
+}
+
+// ── Render a page ───────────────────────────────────────────────────────
+function renderPage(pdf, pageNum) {
+  pdf.getPage(pageNum).then(function(page) {
+    var viewport = page.getViewport({ scale: SCALE });
+    var canvas = document.getElementById('pdfCanvas');
+    var ctx = canvas.getContext('2d');
+    canvas.width  = viewport.width;
+    canvas.height = viewport.height;
+    canvas.style.width  = '100%';
+    canvas.style.height = 'auto';
+    canvas.style.display = 'block';
+
+    page.render({ canvasContext: ctx, viewport: viewport }).promise.then(function() {
+      showLoading(false);
+      document.getElementById('canvasWrap').style.display = 'block';
+      // Wait for layout then apply crop
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          applyView(true); // true = cropped
+        });
+      });
+    });
+  });
+}
+
+// ── Apply cropped or full view ──────────────────────────────────────────
+var isCropped = true;
+
+function applyView(forceCropped) {
+  if (forceCropped !== undefined) isCropped = forceCropped;
+
+  var vp      = document.getElementById('pdfViewport');
+  var canvas  = document.getElementById('pdfCanvas');
+  var oTop    = document.getElementById('overlayTop');
+  var oBot    = document.getElementById('overlayBot');
+  var bracket = document.getElementById('bracketBox');
+  var wrap    = document.getElementById('canvasWrap');
+
+  // offsetHeight = CSS display height (after width:100% scaling)
+  var h = canvas.offsetHeight;
+  if (!h || h < 10) h = canvas.height / SCALE; // fallback
+
+  var topPx  = Math.round(cropYstart * h);
+  var cropPx = Math.round(cropYfrac  * h);
+  var botPx  = topPx + cropPx;
+
+  // Debug
+  var dbg = document.getElementById('debugInfo');
+  if (dbg) dbg.textContent = 'h=' + h + ' top=' + topPx + ' crop=' + cropPx;
+  console.log('applyView: h=' + h + ' ys=' + cropYstart + ' yh=' + cropYfrac + ' top=' + topPx + ' crop=' + cropPx + ' isCropped=' + isCropped);
+
+  if (isCropped) {
+    vp.style.overflow  = 'hidden';
+    vp.style.height    = cropPx + 'px';
+    wrap.style.marginTop = '-' + topPx + 'px';
+    oTop.style.height  = '0';
+    oBot.style.height  = '0';
+    bracket.style.display = 'none';
+  } else {
+    vp.style.overflow  = 'auto';
+    vp.style.height    = 'calc(100vh - 92px)';
+    wrap.style.marginTop = '0';
+    oTop.style.height  = topPx + 'px';
+    oBot.style.top     = botPx + 'px';
+    oBot.style.height  = (h - botPx) + 'px';
+    bracket.style.display = 'block';
+    bracket.style.top    = topPx + 'px';
+    bracket.style.height = cropPx + 'px';
+    setTimeout(function(){ vp.scrollTop = Math.max(0, topPx - 20); }, 80);
+  }
+}
+
+function toggleCrop() {
+  isCropped = !isCropped;
+  document.getElementById('toggleViewBtn').textContent = isCropped ? '\u29F6 Full page' : '\u229F Question only';
+  applyView();
+}
+
+// ── Q/A toggle in panel ─────────────────────────────────────────────────
+function panelShowQ() {
+  if (!currentQUrl) return;
+  var pageMatch = currentQUrl.match(/[#&]page=(\d+)/);
+  var pageNum = pageMatch ? parseInt(pageMatch[1]) : 1;
+  var proxyUrl = PROXY + encodeURIComponent(currentQUrl.split('#')[0]);
+  document.getElementById('panelQBtn').style.background = 'rgba(255,255,255,0.9)';
+  document.getElementById('panelQBtn').style.color = 'var(--accent)';
+  document.getElementById('panelABtn').style.background = 'rgba(255,255,255,0.15)';
+  document.getElementById('panelABtn').style.color = 'white';
+  document.getElementById('panelAQALink').href = currentQUrl;
+  showLoading(true);
+  document.getElementById('canvasWrap').style.display = 'none';
+  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) { renderPage(pdfDoc, pageNum); return; }
+  pdfDoc = null; currentLoadedProxyUrl = proxyUrl;
+  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf){ pdfDoc=pdf; renderPage(pdf,pageNum); });
+}
+
+function panelShowA() {
+  if (!currentAUrl) return;
+  var pageMatch = currentAUrl.match(/[#&]page=(\d+)/);
+  var pageNum = pageMatch ? parseInt(pageMatch[1]) : 1;
+  var proxyUrl = PROXY + encodeURIComponent(currentAUrl.split('#')[0]);
+  document.getElementById('panelABtn').style.background = 'rgba(255,255,255,0.9)';
+  document.getElementById('panelABtn').style.color = 'var(--accent)';
+  document.getElementById('panelQBtn').style.background = 'rgba(255,255,255,0.15)';
+  document.getElementById('panelQBtn').style.color = 'white';
+  document.getElementById('panelAQALink').href = currentAUrl;
+  showLoading(true);
+  document.getElementById('canvasWrap').style.display = 'none';
+  if (pdfDoc && currentLoadedProxyUrl === proxyUrl) { renderPage(pdfDoc, pageNum); return; }
+  pdfDoc = null; currentLoadedProxyUrl = proxyUrl;
+  pdfjsLib.getDocument(proxyUrl).promise.then(function(pdf){ pdfDoc=pdf; renderPage(pdf,pageNum); });
+}
+
+// ── Close panel ─────────────────────────────────────────────────────────
+function closePanel() {
+  document.getElementById('spotterPanel').style.display = 'none';
+  document.body.classList.remove('panel-open');
+  if (activeRowId) { var el = document.getElementById(activeRowId); if (el) el.classList.remove('active-q'); activeRowId = null; }
+}
+
+function showLoading(show) {
+  var el = document.getElementById('pdfLoading');
+  if (el) el.style.display = show ? 'flex' : 'none';
+}
+
+// ── Topic links ─────────────────────────────────────────────────────────
+document.querySelectorAll('.topic-link').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(link.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
 </script>
 </body>
 </html>
