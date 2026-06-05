@@ -2863,77 +2863,100 @@ function renderPage(pdf, pageNum, qNum) {
 
 // ── Dynamically detect where question starts and ends ───────────────────
 function detectQuestionBounds(textContent, qNum, pageHeight) {
-  // Parse question number e.g. "02.8" -> major=2, minor=8
-  var parts = qNum.replace(/^0+/, '').split('.');
-  var major = parseInt(parts[0]) || 0;
-  var minor = parts[1] ? parseInt(parts[1]) : -1;
+  // Parse target: "06.2" -> major="6", minor="2"
+  var clean = qNum.replace(/^0+/, '');
+  var dotIdx = clean.indexOf('.');
+  var major = dotIdx >= 0 ? clean.substring(0, dotIdx) : clean;
+  var minor = dotIdx >= 0 ? clean.substring(dotIdx + 1) : '';
 
-  // Collect all text items with y positions (PDF y is from bottom, flip it)
+  console.log('Looking for Q' + qNum + ' major=' + major + ' minor=' + minor);
+
+  // AQA renders question numbers as separate characters close together
+  // e.g. "0","6",".","2" all within a few pixels vertically
+  // Group items by y position (within 3px tolerance)
   var items = textContent.items.map(function(item) {
     return {
-      text: item.str.replace(/\s+/g, '').toLowerCase(),
-      y: pageHeight - item.transform[5], // flip to top-down
-      height: item.height
+      str: item.str.trim(),
+      // PDF y is from bottom — flip to top-down
+      y: pageHeight - item.transform[5]
     };
-  }).filter(function(i){ return i.text.length > 0; });
+  }).filter(function(i){ return i.str.length > 0; });
 
-  // Sort top to bottom
-  items.sort(function(a,b){ return a.y - b.y; });
-
-  // Find all question number positions on this page
-  // AQA format: "0", "2", ".", "8" appear as separate items close together
-  // or combined as "02.8" or "028"
-  var qMarkers = [];
-
-  // Build line groups (items within 3px of each other vertically)
+  // Group into lines (items within 4px vertically)
   var lines = [];
-  var currentLine = [];
-  var lastY = -999;
-  items.forEach(function(item) {
-    if (Math.abs(item.y - lastY) > 4) {
-      if (currentLine.length) lines.push({ y: lastY, text: currentLine.join('') });
-      currentLine = [item.text];
-      lastY = item.y;
-    } else {
-      currentLine.push(item.text);
+  var usedIndices = {};
+  items.forEach(function(item, i) {
+    if (usedIndices[i]) return;
+    var lineItems = [item];
+    usedIndices[i] = true;
+    items.forEach(function(other, j) {
+      if (usedIndices[j]) return;
+      if (Math.abs(other.y - item.y) <= 4) {
+        lineItems.push(other);
+        usedIndices[j] = true;
+      }
+    });
+    var combined = lineItems.map(function(x){ return x.str; }).join('');
+    lines.push({ y: item.y, combined: combined, items: lineItems });
+  });
+
+  lines.sort(function(a,b){ return a.y - b.y; });
+
+  // Debug: log all lines
+  lines.forEach(function(l){
+    if (/^[0-9\.]+$/.test(l.combined) && l.combined.length <= 6) {
+      console.log('  Line y=' + l.y.toFixed(1) + ' text="' + l.combined + '"');
     }
   });
-  if (currentLine.length) lines.push({ y: lastY, text: currentLine.join('') });
 
-  // Find question markers in lines
+  // Find question markers — look for lines that are purely digits/dots
+  // matching AQA format: "062." or "06." or "063." etc
+  var qMarkers = [];
   lines.forEach(function(line) {
-    // Match patterns like "01.1", "02.8", "0102" etc
-    var m = line.text.match(/^0([1-9])\.?(\d+)?$/);
+    var t = line.combined;
+    // Match: starts with 0, then 1-2 digits, optional dot, optional more digits
+    // e.g. "062.", "06.", "0622", "063."
+    var m = t.match(/^0([1-9])([0-9]?)(\.?)([0-9]*)$/);
     if (m) {
-      var lineMajor = parseInt(m[1]);
-      var lineMinor = m[2] ? parseInt(m[2]) : -1;
-      qMarkers.push({ y: line.y, major: lineMajor, minor: lineMinor });
+      var lineMajor = m[1] + (m[2] || '');
+      var lineMinor = m[4] || '';
+      // Remove leading zeros from major
+      lineMajor = lineMajor.replace(/^0+/, '') || '0';
+      qMarkers.push({
+        y: line.y,
+        major: lineMajor,
+        minor: lineMinor,
+        raw: t
+      });
+      console.log('  Q marker: "' + t + '" -> major=' + lineMajor + ' minor=' + lineMinor + ' y=' + line.y.toFixed(1));
     }
   });
 
-  // Find our target question
+  // Find our target
   var targetY = -1;
-  var nextY = pageHeight;
+  var nextY = pageHeight * 0.95;
 
-  qMarkers.forEach(function(marker, i) {
-    var isTarget = (marker.major === major && marker.minor === minor) ||
-                   (minor === -1 && marker.major === major);
-    if (isTarget && targetY === -1) {
-      targetY = marker.y;
-      // Next question boundary
+  for (var i = 0; i < qMarkers.length; i++) {
+    var m = qMarkers[i];
+    var majorMatch = (m.major === major);
+    var minorMatch = (minor === '' || m.minor === minor || m.minor === '');
+
+    if (majorMatch && (minor === '' ? true : m.minor === minor)) {
+      targetY = m.y;
       if (i + 1 < qMarkers.length) {
         nextY = qMarkers[i + 1].y;
       }
+      console.log('Found Q' + qNum + ' at y=' + targetY.toFixed(1) + ' next at y=' + nextY.toFixed(1));
+      break;
     }
-  });
+  }
 
-  // If not found, use full page
   if (targetY === -1) {
-    console.log('Q' + qNum + ' not found on page, showing full page');
+    console.log('Q' + qNum + ' NOT FOUND on this page');
     return null;
   }
 
-  var padding = pageHeight * 0.01; // 1% padding
+  var padding = pageHeight * 0.008;
   return {
     topY:    Math.max(0, targetY - padding),
     bottomY: Math.min(pageHeight, nextY - padding)
