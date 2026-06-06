@@ -10,19 +10,19 @@
 /* ── Reset & base ─────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:      #f4f6fb;
-  --bg2:     #ffffff;
-  --bg3:     #edf0f7;
-  --border:  #d8dde8;
-  --border2: #c4cad8;
-  --accent:  #2d6ef5;
-  --accent2: #d97706;
-  --green:   #16a34a;
-  --red:     #e03150;
-  --text:    #1e2540;
-  --text2:   #4a5272;
-  --text3:   #8a93b0;
-  --panel:   480px;
+  --bg:      #0b0e14;
+  --bg2:     #111520;
+  --bg3:     #171c2a;
+  --border:  #232840;
+  --border2: #2e3555;
+  --accent:  #4f8ef7;
+  --accent2: #f7c948;
+  --green:   #3dd68c;
+  --red:     #f74f6e;
+  --text:    #c8d0e8;
+  --text2:   #7b85a8;
+  --text3:   #444d6e;
+  --panel:   360px;
   --hdr:     52px;
   --mono: 'JetBrains Mono', monospace;
   --sans: 'Sora', sans-serif;
@@ -254,17 +254,6 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   flex-shrink: 0;
   transition: width .3s;
 }
-#drag-handle {
-  width: 6px;
-  min-width: 6px;
-  background: var(--border);
-  cursor: col-resize;
-  flex-shrink: 0;
-  align-self: stretch;
-  transition: background .15s;
-  z-index: 10;
-}
-#drag-handle:hover, #drag-handle.active { background: var(--accent); }
 #pdf-panel.hidden { width: 0; border: none; overflow: hidden; }
 
 #panel-hdr {
@@ -304,7 +293,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   flex: 1;
   overflow-y: auto;
   position: relative;
-  background: #d0d4de;
+  background: #222;
 }
 #pdf-viewport::-webkit-scrollbar { width: 4px; }
 #pdf-viewport::-webkit-scrollbar-thumb { background: var(--border2); }
@@ -320,15 +309,15 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: ${ isAnswer ? '#16a34a' : '#e03150' };
+  background: var(--red);
   border-radius: 0 4px 4px 0;
   z-index: 10;
   pointer-events: none;
 }
 #arrow-indicator::after {
-  content: '👉';
-  font-size: 14px;
-  line-height: 1;
+  content: '▶';
+  color: #fff;
+  font-size: 12px;
 }
 
 /* fullscreen mode */
@@ -468,7 +457,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-MS-JUN24_PDF/8348ec288a8ec81a10938dcfdf1327571bd784e5.pdf"
             data-qp-page="19"
             data-ms-page="15"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.6 — Match descriptions to process names — evaporating and condensing</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.6 — Match two descriptions to the correct process names</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="04.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -489,7 +478,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="10"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.1 — Complete the sentence — some alpha particles are deflected because the nucleus is positively charged</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.1 — Complete the sentence — explain why some alpha particles are deflected in the scattering experiment [Figure 4 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="03.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -510,14 +499,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="21"
             data-ms-page="15"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.2 — Identify which model represents the plum pudding model from four diagrams</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.2 — Identify which model represents the plum pudding model from four diagrams [Figure 12 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="06.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="21"
             data-ms-page="15"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.3 — Identify which atomic model resulted from Chadwick's experimental work</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.3 — Identify which atomic model resulted from Chadwick's experimental work [Figure 12 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="06.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
@@ -559,14 +548,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="9"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">6m</span></div><div class="qcell qdesc">03.2 — Describe the atomic structure of a carbon atom — include number of electrons, neutrons and protons — 6-mark extended response</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">6m</span></div><div class="qcell qdesc">03.2 — Describe the atomic structure of a carbon atom — include electrons, neutrons and protons [Figure 3 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="2"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.2 — State the number of electrons and neutrons in a lithium atom from a diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.2 — State the number of electrons and neutrons in a lithium atom from a diagram [Figure 1 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="01.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -580,14 +569,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-MS-JUN24_PDF/8348ec288a8ec81a10938dcfdf1327571bd784e5.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.4 — Complete a table of subatomic particles — proton has charge 0 [error in paper: proton = +1; neutron = 0]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.1.1.5</span>Size and mass of atoms</div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.4 — Complete a table of subatomic particles — include relative charge and mass</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.1.1.5</span>Size and mass of atoms</div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="03.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="9"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.1 — State the approximate radius of a carbon atom (0.1 nm)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.1 — State the approximate radius of a carbon atom</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="01.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -650,7 +639,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="9"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.2 — Complete the sentence — Mendeleev left gaps for elements not yet discovered</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.2 — Complete the sentence — explain why Mendeleev left gaps in his periodic table</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="05.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -678,7 +667,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="13"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.1 — Determine the percentage of elements in the periodic table that are metals from a diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.1 — Determine the percentage of elements in the periodic table that are metals [Figure 5 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="04.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -727,7 +716,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="13"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.5 — Complete the sentence — potassium loses an electron more easily than sodium explaining greater reactivity</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.5 — Complete the sentence — explain why potassium is more reactive than sodium in terms of electron loss</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="04.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
@@ -741,14 +730,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="16"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.4 — Complete a bar graph of melting points of Group 1 metals using data from a table</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.4 — Complete a bar graph of melting points of Group 1 metals using data from a table [Figure 8 on next page — print if needed; Table 3 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="05.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="19"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.6 — Give two reasons why potassium is more reactive than lithium</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.6 — Give two reasons why potassium is more reactive than lithium [Figure 10 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="04.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
@@ -762,14 +751,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="13"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.2 — Read the melting point of sodium from a graph of Group 1 melting points</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.2 — Read the melting point of sodium from a graph of Group 1 melting points [Figure 5 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="04.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="14"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">4m</span></div><div class="qcell qdesc">04.5 — Compare what is seen when sodium reacts with water versus when potassium reacts with water</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">4m</span></div><div class="qcell qdesc">04.5 — Compare what is seen when sodium reacts with water versus when potassium reacts with water [Figure 6 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -783,28 +772,28 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="5"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.5 — Read the melting point of caesium from a bar chart of Group 1 melting points</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.5 — Read the melting point of caesium from a bar chart of Group 1 melting points [Figure 2 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="5"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.6 — Draw a bar for the melting point of potassium (63°C) on the Group 1 bar chart</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.6 — Draw a bar for the melting point of potassium on the Group 1 bar chart [Figure 2 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="5"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">01.7 — Describe the trend in melting points of the Group 1 elements from the bar chart</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">01.7 — Describe the trend in melting points of the Group 1 elements from the bar chart [Figure 2 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.9"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="6"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.9 — Complete the sentence — potassium is more reactive than sodium because potassium loses an electron more easily</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.9 — Complete the sentence — explain why potassium is more reactive than sodium [Figure 3 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="01.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -853,7 +842,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="9"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.6 — Compare the size of a chlorine atom with a bromine atom — chlorine is smaller</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.6 — Compare the size of a chlorine atom with a bromine atom</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="02.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
@@ -881,7 +870,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="2"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.1 — Identify the type of bonding in calcium oxide from a diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.1 — Identify the type of bonding in calcium oxide [Figure 1 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="06.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
@@ -902,14 +891,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="18"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">05.5 — Describe what happens to a lithium atom and chlorine atom when they react — answer in terms of electrons</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">05.5 — Describe what happens to a lithium atom and a chlorine atom when they react — in terms of electrons [Figure 9 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="2"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.3 — State the relative charge on a lithium ion (+1)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.3 — State the relative charge on a lithium ion</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="01.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -986,21 +975,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="8"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.2 — Complete the dot and cross diagram for a fluorine molecule (F2) showing outer shell electrons only</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.2 — Complete the dot and cross diagram for a fluorine molecule (F2) — outer shell electrons only [Figure 8 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="05.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="16"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.4 — Complete the dot and cross diagram for a water molecule showing outer shell electrons</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.4 — Complete the dot and cross diagram for a water molecule — outer shell electrons only [Figure 5 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="05.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="16"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.5 — Complete the sentence — there are covalent bonds between atoms of oxygen</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.5 — Complete the sentence — describe the type of bonding between atoms of oxygen</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="07.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -1014,7 +1003,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="7"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.1 — Complete the dot and cross diagram for a molecule of hydrogen chloride showing outer shell electrons</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.1 — Complete the dot and cross diagram for hydrogen chloride — outer shell electrons only [Figure 4 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="03.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -1035,21 +1024,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="16"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.3 — State what state lithium is at 100°C using a table of melting points</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.3 — State the physical state of lithium at 100°C using data from a table of melting points</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="3"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.4 — Match two stages of heating then cooling lithium to the correct physical changes</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.4 — Match two stages of heating then cooling lithium to the correct physical changes [no diagram needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="01.8"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="5"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.8 — State the state of sodium at 150°C given its melting and boiling points</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.8 — State the state of sodium at 150°C given its melting and boiling points [Figure 2 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="01.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -1119,21 +1108,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="6"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.8 — Complete the sentence — sodium chloride conducts electricity when dissolved</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.8 — Complete the sentence — describe when sodium chloride can conduct electricity [Figure 6 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="01.9"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="7"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.9 — Match statements to reasons — why solid NaCl does not conduct vs why molten NaCl does</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.9 — Match statements to reasons — why solid NaCl does not conduct vs why molten NaCl does [Figure 7 + Table 1 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="04.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="14"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.4 — Identify what holds particles together in sodium chloride</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.4 — Identify what holds particles together in sodium chloride [Figure 6 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="04.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -1147,56 +1136,56 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="18"
             data-ms-page="17"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">04.6 — Explain why sodium chloride conducts electricity when molten but not when solid</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.2.2.4</span>Properties of small molecules</div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">04.6 — Explain why sodium chloride conducts electricity when molten but not when solid [Figure 11 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.2.2.4</span>Properties of small molecules</div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="01.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.2 — Identify the type of particle shown in a diagram of methane (molecule, ion, lattice or polymer)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.2 — Identify the type of particle shown in a diagram of methane [Figure 2 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="02.9"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="10"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">02.9 — Explain why fluorine is a gas at room temperature using: energy, forces, molecules, weak</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">02.9 — Explain why fluorine is a gas at room temperature — use the words: energy, forces, molecules, weak</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="05.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="17"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.6 — Compare the boiling point of sulfur with oxygen and explain using intermolecular forces and molecule size</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.6 — Compare the boiling point of sulfur with oxygen — explain using intermolecular forces and molecule size [Figure 6 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="07.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="22"
             data-ms-page="16"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">07.2 — Complete the sentence — ice has a low melting point because the intermolecular forces are weak</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">07.2 — Complete the sentence — explain why ice has a low melting point in terms of forces</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="07.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="23"
             data-ms-page="16"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">07.3 — State the molecular formula of a molecule shown in a structural diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.2.2.5</span>Polymers</div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">07.3 — State the molecular formula of a molecule shown in a structural diagram [Figure 13 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.2.2.5</span>Polymers</div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="03.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="12"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.6 — Identify what holds the atoms together in a polymer chain</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.6 — Identify what holds the atoms together in a polymer chain [Figure 8 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="03.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="12"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.7 — Complete the sentence — polymer chains are held together by intermolecular forces</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.7 — Complete the sentence — describe what holds polymer chains together [Figure 8 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="03.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -1231,7 +1220,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="9"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.2 — State the number of bonds formed by each silicon atom in silicon dioxide using a structural diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.2 — State the number of bonds formed by each silicon atom in silicon dioxide [Figure 6 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="03.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -1245,14 +1234,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="13"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">03.8 — Calculate the percentage of copper atoms in a magnesium alloy from a structural diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">03.8 — Calculate the percentage of copper atoms in a magnesium alloy from a structural diagram [Figure 9 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="03.9"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="13"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">03.9 — Explain why a magnesium alloy is harder than magnesium metal using a structural diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">03.9 — Explain why the magnesium alloy is harder than magnesium metal [Figure 9 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="06.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -1273,21 +1262,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="5"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.6 — Complete the sentence — copper conducts electricity as a solid</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.6 — Complete the sentence — describe the electrical conductivity of copper as a solid [Figure 5 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="01.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="5"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.7 — Complete the sentence — copper conducts electricity because of movement of delocalised electrons</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.7 — Complete the sentence — explain what allows copper to conduct electricity [Figure 5 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="04.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="19"
             data-ms-page="17"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.7 — Explain why sodium metal conducts electricity when solid (delocalised electrons free to move)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.7 — Explain why sodium metal conducts electricity when solid [Figure 12 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="04.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -1322,21 +1311,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="4"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.4 — Identify the type of bond labelled A in a diagram of graphite</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.4 — Identify the type of bond labelled A in a diagram of graphite [Figure 4 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="01.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="4"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.5 — State how many electrons one carbon atom uses to form one bond in graphite</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.5 — State how many electrons one carbon atom uses to form one bond in graphite [Figure 4 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="03.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="10"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.3 — State how many bonds each carbon atom has in graphite using a diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.3 — State how many bonds each carbon atom has in graphite [Figure 4 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="03.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
@@ -1350,7 +1339,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="11"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.5 — Suggest why graphite can be used as a lubricant using a structural diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.5 — Suggest why graphite can be used as a lubricant [Figure 4 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="02.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -1371,35 +1360,35 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.3 — Complete the sentence — the structure of C60 is a fullerene</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.3 — Complete the sentence — describe the structure of C60 [Figure 3 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="03.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="11"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">03.6 — Match two structural diagrams to the correct forms of carbon (buckminsterfullerene, diamond, graphene, nanotube)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">03.6 — Match two structural diagrams to the correct forms of carbon [diagrams on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="03.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="10"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.3 — Complete the sentence — the structure of fullerenes is based on hexagons</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.3 — Complete the sentence — describe the shape that the structure of fullerenes is based on [Figure 7 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="03.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="10"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.4 — Complete the sentence — the fullerene shown is made from carbon atoms</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.4 — Complete the sentence — describe what atoms make up the fullerene shown [Figure 7 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="03.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="11"
             data-ms-page="12"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.5 — State what the fullerene molecule shown in Figure 7 is used for</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.5 — State what the fullerene molecule shown in Figure 7 is used for [Figure 7 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="02.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -1462,14 +1451,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.4 — State what mass of magnesium chloride was produced (more than 1.0 g — conservation of mass)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.4 — State what mass of magnesium chloride was produced when 1.0 g magnesium reacts with chlorine</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="04.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="13"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.3 — Balance the equation for sodium reacting with water to produce sodium hydroxide and hydrogen</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.3 — Balance the equation for sodium reacting with water</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="02.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -1511,14 +1500,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="15"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.5 — Read the mass of Group 2 carbonate heated from a graph of volume vs mass</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.5 — Read the mass of Group 2 carbonate heated from a graph of volume vs mass [Figure 10 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="04.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="15"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.6 — Calculate the mass of Group 2 carbonate needed to produce 24 dm³ of gas</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.6 — Calculate the mass of Group 2 carbonate needed to produce 24 dm³ of gas [use answer from 04.5, Figure 10 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="04.8"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
@@ -1532,7 +1521,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="14"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.2 — Read the percentage by mass of calcium in calcium carbonate from a pie chart</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.2 — Read the percentage by mass of calcium in calcium carbonate from a pie chart [Figure 4 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="03.7"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -1623,7 +1612,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="16"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">4m</span></div><div class="qcell qdesc">04.7 — Identify two mistakes in a student's gradient calculation and calculate the correct gradient</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">4m</span></div><div class="qcell qdesc">04.7 — Identify two mistakes in a student's gradient calculation and calculate the correct gradient [Figure 11 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="01.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
@@ -1644,7 +1633,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="19"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">4m</span></div><div class="qcell qdesc">05.4 — Determine the gradient of a line of temperature change vs mass of zinc added</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">4m</span></div><div class="qcell qdesc">05.4 — Determine the gradient of the line of temperature change vs mass of zinc [Figure 10 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="04.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -1707,7 +1696,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="14"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.2 — Name the two products when calcium carbonate is heated (calcium oxide and carbon dioxide)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.2 — Name the two products when calcium carbonate is heated</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="04.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
@@ -1728,7 +1717,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="18"
             data-ms-page="15"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.1 — Identify the correct order of decreasing reactivity of calcium, copper, magnesium and zinc from a results diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.1 — Identify the correct order of decreasing reactivity of four metals from a results diagram [Figure 7 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="06.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
@@ -1756,7 +1745,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="7"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.1 — Determine the temperature change when metal X is added to copper sulfate — read start temperature from thermometer</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.1 — Determine the temperature change when metal X is added to copper sulfate — read start temperature from thermometer [Figure 2 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="02.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -1777,14 +1766,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="8"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.4 — Determine the position of unknown metal A in the reactivity series from temperature change data</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.4 — Determine the position of unknown metal A in the reactivity series from temperature change data [Figure 3 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="02.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="9"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.5 — State what happens to the temperature when silver is added to copper sulfate solution using the reactivity series</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.5 — State what happens to the temperature when silver is added to copper sulfate solution [Figure 3 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="02.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -1805,14 +1794,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="17"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.2 — Read the volume of copper sulfate solution from a measuring cylinder diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.2 — Read the volume of copper sulfate solution from a measuring cylinder diagram [Figure 8 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="05.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="19"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.5 — Suggest why the student should not use more than 10 g of zinc — use an extended graph line</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.5 — Suggest why the student should not use more than 10 g of zinc — extend the graph line [Figure 10 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="07"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -1826,7 +1815,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-MS-JUN23_PDF/ba4c248b3c51639967664e956d36e2ebdaefde89.pdf"
             data-qp-page="8"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.1 — Identify the piece of equipment labelled X (thermometer) in the apparatus diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.1 — Identify the piece of equipment labelled X in the apparatus diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="02.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -1861,14 +1850,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-MS-JUN24_PDF/8348ec288a8ec81a10938dcfdf1327571bd784e5.pdf"
             data-qp-page="11"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.1 — Identify the type of variable — mass of zinc is the independent variable</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.1 — Identify the type of variable represented by mass of zinc in the investigation</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="03.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-MS-JUN24_PDF/8348ec288a8ec81a10938dcfdf1327571bd784e5.pdf"
             data-qp-page="12"
             data-ms-page="11"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.2 — Name salt A produced when zinc reacts with copper sulfate solution</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">03.2 — Name the salt produced when zinc reacts with copper sulfate solution</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="03.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -1910,7 +1899,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-MS-JUN24_PDF/8348ec288a8ec81a10938dcfdf1327571bd784e5.pdf"
             data-qp-page="23"
             data-ms-page="17"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">05.4 — State the order of reactivity for Cu, Mg and Fe and give two reasons using displacement data</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.4.1.3</span>Extraction of metals and reduction</div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun24·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">05.4 — State the order of reactivity of Cu, Mg and Fe and give two reasons using the displacement experiment data</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.4.1.3</span>Extraction of metals and reduction</div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="06.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -1924,7 +1913,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="16"
             data-ms-page="16"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.5 — Match metal D and metal E to their extraction methods using a given reactivity series</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.5 — Match metal D and metal E to their extraction methods using a given reactivity series [Figure 10 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="05.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -2001,7 +1990,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="7"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.2 — Complete the word equation for hydrochloric acid reacting with sodium hydroxide (→ sodium chloride + water)</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.2 — Complete the word equation for hydrochloric acid reacting with sodium hydroxide</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="05.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -2057,7 +2046,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="4"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.7 — Complete the sentence — the student adds copper oxide until it is in excess to ensure all acid reacts</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.7 — Complete the sentence — explain why excess copper oxide is added during the preparation of a salt</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="01.8"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -2092,7 +2081,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="22"
             data-ms-page="19"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">05.5 — Determine the mass of ammonium nitrate that crystallises when cooling 100 cm³ from 80°C to 20°C using a solubility graph</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">05.5 — Determine the mass of ammonium nitrate that crystallises when cooling 100 cm³ from 80°C to 20°C [Figure 13 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="07.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -2225,14 +2214,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-W-MS-NOV20_PDF/9e987f5326c26cc7a492c5ccb60d634574cbaddc.pdf"
             data-qp-page="21"
             data-ms-page="15"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">06.4 — State the free moving charged particles in: a carbon electrode, molten aluminium oxide/cryolite, and a metal wire</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov20·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">06.4 — State the free moving charged particles in a carbon electrode, molten aluminium oxide/cryolite, and a metal wire [Figure 11 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="02.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="6"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.1 — Complete the sentence — copper chloride can conduct electricity when molten</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.1 — Complete the sentence — describe when copper chloride can conduct electricity [Figure 1 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="02.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
@@ -2267,7 +2256,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="8"
             data-ms-page="9"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.6 — Complete the sentence — aluminium is extracted from a molten mixture of aluminium oxide and cryolite</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.6 — Complete the sentence — describe the source material used to extract aluminium by electrolysis</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov20·C1F"
             data-qnum="06.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2020.november.AQA-8464C1F-QP-NOV20_PDF/d04d15f8698babd21b5ff1d8060ec45f94d5143e.pdf"
@@ -2281,14 +2270,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-MS-JUN23_PDF/ba4c248b3c51639967664e956d36e2ebdaefde89.pdf"
             data-qp-page="22"
             data-ms-page="16"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.1 — Complete the sentence — aluminium extraction is expensive because it uses large amounts of energy/electricity</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.1 — Complete the sentence — explain why aluminium extraction is expensive</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="05.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-MS-JUN23_PDF/ba4c248b3c51639967664e956d36e2ebdaefde89.pdf"
             data-qp-page="22"
             data-ms-page="16"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.2 — State which gas is produced when oxygen reacts with the carbon electrodes</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.4.3.4</span>Electrolysis of aqueous solutions</div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.2 — State which gas is produced when oxygen reacts with the carbon electrodes in aluminium extraction</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.4.3.4</span>Electrolysis of aqueous solutions</div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="05.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
@@ -2316,7 +2305,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="7"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">02.5 — Calculate the gradient of a line showing mass of copper deposited vs time during electrolysis</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">3m</span></div><div class="qcell qdesc">02.5 — Calculate the gradient of a line showing mass of copper deposited vs time during electrolysis [Figure 3 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="02.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
@@ -2337,21 +2326,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="8"
             data-ms-page="8"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.5 — Describe what is seen at each electrode during electrolysis of copper chloride solution</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.5 — Describe what is seen at each electrode during electrolysis of copper chloride solution [Figure 2 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="06.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="25"
             data-ms-page="20"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.2 — Read the volumes of hydrogen and oxygen collected in the electrolysis experiment from a diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">06.2 — Read the volumes of hydrogen and oxygen collected in the electrolysis experiment [Figure 14 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="06.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-MS-JUN22_PDF/0e2df582db91517509438dd1a9c7a3ec23a881cf.pdf"
             data-qp-page="25"
             data-ms-page="20"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">06.3 — Explain how the volumes of gases collected support the hypothesis about H:O ratio in water</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun22·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">06.3 — Explain how the volumes of gases collected support the hypothesis about H:O ratio in water [Figure 14 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="06.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -2365,14 +2354,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-MS-JUN23_PDF/ba4c248b3c51639967664e956d36e2ebdaefde89.pdf"
             data-qp-page="18"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.2 — Complete the word equation for the breakdown of a water molecule</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">04.2 — Complete the word equation for the breakdown of a water molecule by electrolysis</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="04.5"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-MS-JUN23_PDF/ba4c248b3c51639967664e956d36e2ebdaefde89.pdf"
             data-qp-page="19"
             data-ms-page="14"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.5 — Complete the sentence — copper ions are discharged at the negative electrode</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">04.5 — Complete the sentence — describe what happens to copper ions at the negative electrode</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun23·C1F"
             data-qnum="04.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-QP-JUN23_PDF/afe4c169d2ce96e8b9322b0a58f93fb4cd3fb076.pdf"
@@ -2407,14 +2396,14 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.4 — Complete the sentence — energy needed to break bonds in reactants is lower/same/higher than energy released forming products</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.4 — Complete the sentence — compare energy needed to break bonds with energy released forming bonds [Figure 1 on prev page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="01.6"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="4"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.6 — Complete a table — read temperature at end of reaction from a thermometer diagram and calculate temperature change</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">01.6 — Read the temperature at the end of a reaction from a thermometer diagram and calculate the temperature change [Figure 2 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun22·C1F"
             data-qnum="02.4"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2022.june.AQA-8464C1F-QP-JUN22_PDF/c846a2b1bc2cc90d820a67f46fc9093a588607b1.pdf"
@@ -2435,39 +2424,39 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2023.june.AQA-8464C1F-MS-JUN23_PDF/ba4c248b3c51639967664e956d36e2ebdaefde89.pdf"
             data-qp-page="10"
             data-ms-page="10"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.5 — Name the type of reaction that causes temperature to increase</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.5.1.2</span>Reaction profiles</div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun23·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">02.5 — Name the type of reaction that causes the temperature of a mixture to increase</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.5.1.2</span>Reaction profiles</div><div class="qrow" 
             data-paper="Jun18·C1F"
             data-qnum="06.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
             data-qp-page="22"
             data-ms-page="15"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">06.3 — Complete the reaction profile for the exothermic reaction between sodium and chlorine</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">06.3 — Complete the reaction profile diagram for the reaction between sodium and chlorine [Figure 14 on same page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="01.2"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.2 — Identify which letter on a reaction profile diagram represents activation energy</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.2 — Identify which letter on a reaction profile diagram represents activation energy [Figure 1 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun19·C1F"
             data-qnum="01.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-QP-JUN19_PDF/5e274eb423681359abc606df3c4f05e3b302dad7.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2019.june.AQA-8464C1F-W-MS-JUN19_PDF/7f22f5afb2ad19c159c50162ac3abb79232615ca.pdf"
             data-qp-page="3"
             data-ms-page="7"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.3 — Identify which letter on a reaction profile diagram represents the overall energy change</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun19·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">01.3 — Identify which letter on a reaction profile diagram represents the overall energy change [Figure 1 on prev page — print if needed]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Nov21·C1F"
             data-qnum="05.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-QP-NOV21_PDF/412d899006b62c9668ec41818f0ccbf892ed7d0f.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2021.november.AQA-8464C1F-MS-NOV21_PDF/aba87d20de08cac78a814aaf769678aa33d2ddb2.pdf"
             data-qp-page="17"
             data-ms-page="13"
-            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.3 — Identify the type of reaction shown by a reaction profile diagram</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div></div></div>
+            data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Nov21·C1F</span> <span class="mbadge">1m</span></div><div class="qcell qdesc">05.3 — Identify the type of reaction shown by a reaction profile diagram [Figure 9 on same page]</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div></div></div></div>
     <div id="no-results">No questions match your search.</div>
   </div>
 
-  <div id="drag-handle"></div><div id="pdf-panel">
+  <div id="pdf-panel">
     <div id="panel-hdr">
       <div id="panel-title">Select a question</div>
       <div id="panel-controls">
@@ -2531,7 +2520,7 @@ const searchEl   = document.getElementById('search');
 function setLoading(v) { loadingBar.style.display = v ? 'block' : 'none'; }
 
 // ── Render a single page ───────────────────────────────
-async function renderPage(doc, pageNum, qNum, isAnswer) {
+async function renderPage(doc, pageNum, qNum) {
   if (rendering) return;
   rendering = true;
   arrow.style.display = 'none';
@@ -2553,64 +2542,95 @@ async function renderPage(doc, pageNum, qNum, isAnswer) {
 
   // Detect question position and show arrow
   if (qNum) {
-    await detectAndArrow(page, vp, qNum, displayWidth, isAnswer);
+    await detectAndArrow(page, vp, qNum, displayWidth);
   }
 
   rendering = false;
 }
 
 // ── Detect question Y position and draw arrow ──────────
-async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
+async function detectAndArrow(page, vp, qNum, displayWidth) {
   try {
     const tc = await page.getTextContent();
+    // Build normalised qNum patterns: "01.1" → "0 1 . 1" style in PDFs
+    const num = qNum.trim(); // e.g. "01.1" or "07"
+    const parts = num.match(/^(\d+)\.?(\d*)$/);
+    if (!parts) return;
+    const major = parts[1].padStart(2,'0');
+    const minor = parts[2] || '';
+
+    // PDFs write question numbers spread across items — collect all text items with positions
     const items = tc.items;
-    const vp1 = page.getViewport({ scale: 1 });
-    const scaleY = vp.height / vp1.height;
     const displayH = Math.round(vp.height / SCALE);
 
-    const parts = qNum.trim().match(/^(\d+)(?:\.(\d+))?$/);
-    if (!parts) return;
-    const major = parts[1].padStart(2, '0');
-    const minor = parts[2] || '';
-    const majorNoLead = String(parseInt(major));
-
-    const targets = [
-      major + (minor ? '.' + minor : ''),
-      major + minor,
-      majorNoLead + (minor ? '.' + minor : ''),
-      majorNoLead + minor,
-    ].filter(t => t.length >= 2);
-
+    // Try to find the question number in the text content
+    // AQA format: "0 1 . 1" or "0 1" depending on font rendering
     let foundY = null;
-    for (let i = 0; i < items.length - 1; i++) {
-      const winText = items.slice(i, i + 6).map(x => x.str).join('').replace(/\s/g, '');
-      for (const t of targets) {
-        if (winText.startsWith(t)) {
-          const yPdf = items[i].transform[5];
-          const yCanvas = (vp1.height - yPdf) * scaleY;
-          const yDisplay = Math.round(yCanvas / SCALE);
-          if (yDisplay > 5 && yDisplay < displayH - 5) {
-            foundY = yDisplay;
-          }
+    const fullStr = items.map(i=>i.str).join(' ').replace(/\s+/g,' ');
+    
+    // Build searchable string per item with cumulative text
+    // Strategy: look for the pattern near start of text chunks
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      // Collect surrounding text window
+      const window5 = items.slice(Math.max(0,i-2), i+5).map(x=>x.str).join('').replace(/\s/g,'');
+      // Match patterns like "01.1" "0101" "011"
+      const majorStr = major.replace(/^0/,'0').replace(/^0(\d)/,'$1');
+      const testA = major + (minor ? '.' + minor : '');
+      const testB = major.replace(/^0/,'') + (minor ? '.' + minor : '');
+      const clean = window5.replace(/[\s·.]/g,'');
+
+      if (
+        window5.replace(/\s/g,'') === major + (minor ? '.' + minor : '') ||
+        clean.startsWith(major + minor) ||
+        clean.startsWith(testB + minor) ||
+        (item.str.replace(/\s/g,'') === major && minor && items[i+2]?.str?.trim() === minor)
+      ) {
+        // Get Y position
+        const tx = item.transform;
+        const yPdf = tx[5]; // bottom of glyph in PDF coords
+        // Convert: PDF y goes bottom-up, canvas goes top-down
+        const yDisplay = Math.round((vp.height - yPdf * (vp.height / page.getViewport({scale:1}).height)) / SCALE);
+        if (yDisplay > 5 && yDisplay < displayH - 10) {
+          foundY = yDisplay;
           break;
         }
       }
-      if (foundY !== null) break;
+    }
+
+    // Also try simple string search across combined text
+    if (!foundY) {
+      // Fallback: search for major.minor pattern
+      const pat = minor ? major + '.' + minor : major;
+      const patNoZero = minor ? major.replace(/^0/,'') + '.' + minor : major.replace(/^0/,'');
+      for (let i = 0; i < items.length - 1; i++) {
+        const combined = (items[i].str + items[i+1].str).replace(/\s/g,'');
+        if (combined === pat || combined === patNoZero) {
+          const tx = items[i].transform;
+          const yPdf = tx[5];
+          const vp1 = page.getViewport({scale:1});
+          const yDisplay = Math.round((vp.height - yPdf * (vp.height / vp1.height)) / SCALE);
+          if (yDisplay > 5 && yDisplay < displayH - 10) {
+            foundY = yDisplay;
+            break;
+          }
+        }
+      }
     }
 
     if (foundY !== null) {
-      showArrow(foundY, displayH, isAnswer);
-      setTimeout(() => { viewport.scrollTop = Math.max(0, foundY - 80); }, 80);
+      showArrow(foundY, displayH);
+      setTimeout(()=>{ viewport.scrollTop = Math.max(0, foundY - 60); }, 80);
     } else {
-      setTimeout(() => { viewport.scrollTop = 0; }, 80);
+      // No match — scroll to top of page
+      setTimeout(()=>{ viewport.scrollTop = 0; }, 80);
     }
   } catch(e) {
     console.warn('Arrow detection failed:', e);
   }
 }
 
-
-function showArrow(topY, pageH, isAnswer) {
+function showArrow(topY, pageH) {
   const height = Math.max(30, Math.min(60, pageH * 0.04));
   arrow.style.cssText = `
     display: flex;
@@ -2622,7 +2642,7 @@ function showArrow(topY, pageH, isAnswer) {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: ${ isAnswer ? '#16a34a' : '#e03150' };
+    background: var(--red);
     border-radius: 0 4px 4px 0;
     z-index: 10;
     pointer-events: none;
@@ -2630,7 +2650,7 @@ function showArrow(topY, pageH, isAnswer) {
 }
 
 // ── Load PDF ───────────────────────────────────────────
-async function loadPdf(url, pageNum, qNum, isAnswer) {
+async function loadPdf(url, pageNum, qNum) {
   setLoading(true);
   arrow.style.display = 'none';
   try {
@@ -2643,7 +2663,7 @@ async function loadPdf(url, pageNum, qNum, isAnswer) {
       // Same PDF already loaded — just re-render the new page
       currentPage = pageNum;
       currentQNum = qNum;
-      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
+      await renderPage(currentPdfDoc, pageNum, qNum);
     } else {
       currentPdfUrl = fetchUrl;
       currentPdfDoc = null;
@@ -2653,7 +2673,7 @@ async function loadPdf(url, pageNum, qNum, isAnswer) {
       currentPdfDoc = await task.promise;
       currentPage = pageNum;
       currentQNum = qNum;
-      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
+      await renderPage(currentPdfDoc, pageNum, qNum);
     }
   } catch(e) {
     console.error('PDF load error:', e);
@@ -2695,7 +2715,7 @@ function openQuestion(row, mode) {
     return;
   }
 
-  loadPdf(url, page, qNum, mode === 'a');
+  loadPdf(url, page, mode === 'q' ? qNum : null);
   btnOpen.onclick = () => window.open(url + '#page=' + page, '_blank');
 }
 
@@ -2714,7 +2734,7 @@ function toggleFullscreen() {
   if (fullscreen && !panelVisible) togglePanel();
   // Re-render at new size after transition
   if (currentPdfDoc) {
-    setTimeout(()=>{ renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a'); }, 320);
+    setTimeout(()=>{ renderPage(currentPdfDoc, currentPage, currentQNum); }, 320);
   }
 }
 
@@ -2808,38 +2828,9 @@ document.querySelectorAll('.nav-pill').forEach(pill => {
 // Re-render on panel resize
 new ResizeObserver(() => {
   if (currentPdfDoc && !rendering) {
-    renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
+    renderPage(currentPdfDoc, currentPage, currentQNum);
   }
 }).observe(viewport);
-
-// ── Resizable panel ───────────────────────────────────
-const dragHandle = document.getElementById('drag-handle');
-const mainEl     = document.getElementById('main');
-let isDragging = false;
-dragHandle.addEventListener('mousedown', e => {
-  isDragging = true;
-  dragHandle.classList.add('active');
-  document.body.style.cursor = 'col-resize';
-  document.body.style.userSelect = 'none';
-  e.preventDefault();
-});
-document.addEventListener('mousemove', e => {
-  if (!isDragging) return;
-  const newWidth = Math.max(280, Math.min(900, mainEl.getBoundingClientRect().right - e.clientX));
-  pdfPanel.style.width = newWidth + 'px';
-  clearTimeout(window._resizeTimer);
-  window._resizeTimer = setTimeout(() => {
-    if (currentPdfDoc && !rendering)
-      renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
-  }, 150);
-});
-document.addEventListener('mouseup', () => {
-  if (!isDragging) return;
-  isDragging = false;
-  dragHandle.classList.remove('active');
-  document.body.style.cursor = '';
-  document.body.style.userSelect = '';
-});
 </script>
 </body>
 </html>
