@@ -10,18 +10,18 @@
 /* ── Reset & base ─────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:      #0b0e14;
-  --bg2:     #111520;
-  --bg3:     #171c2a;
-  --border:  #232840;
-  --border2: #2e3555;
-  --accent:  #4f8ef7;
-  --accent2: #f7c948;
-  --green:   #3dd68c;
-  --red:     #f74f6e;
-  --text:    #c8d0e8;
-  --text2:   #7b85a8;
-  --text3:   #444d6e;
+  --bg:      #f4f6fb;
+  --bg2:     #ffffff;
+  --bg3:     #edf0f7;
+  --border:  #d8dde8;
+  --border2: #c4cad8;
+  --accent:  #2d6ef5;
+  --accent2: #d97706;
+  --green:   #16a34a;
+  --red:     #e03150;
+  --text:    #1e2540;
+  --text2:   #4a5272;
+  --text3:   #8a93b0;
   --panel:   360px;
   --hdr:     52px;
   --mono: 'JetBrains Mono', monospace;
@@ -245,6 +245,19 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 .btn-a:hover { background: var(--green); color: #111; }
 
 /* ── PDF Panel ────────────────────────────────────────── */
+#drag-handle {
+  width: 6px;
+  min-width: 6px;
+  background: var(--border);
+  cursor: col-resize;
+  flex-shrink: 0;
+  align-self: stretch;
+  transition: background .15s;
+  z-index: 10;
+}
+#drag-handle:hover,
+#drag-handle.active { background: var(--accent); }
+
 #pdf-panel {
   width: var(--panel);
   border-left: 1px solid var(--border);
@@ -293,7 +306,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   flex: 1;
   overflow-y: auto;
   position: relative;
-  background: #222;
+  background: #d0d4de;
 }
 #pdf-viewport::-webkit-scrollbar { width: 4px; }
 #pdf-viewport::-webkit-scrollbar-thumb { background: var(--border2); }
@@ -309,15 +322,15 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--red);
+  background: isAnswer ? '#16a34a' : '#e03150';
   border-radius: 0 4px 4px 0;
   z-index: 10;
   pointer-events: none;
 }
 #arrow-indicator::after {
-  content: '▶';
-  color: #fff;
-  font-size: 12px;
+  content: '👉';
+  font-size: 14px;
+  line-height: 1;
 }
 
 /* fullscreen mode */
@@ -2456,12 +2469,15 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
     <div id="no-results">No questions match your search.</div>
   </div>
 
+  <div id="drag-handle"></div>
   <div id="pdf-panel">
     <div id="panel-hdr">
       <div id="panel-title">Select a question</div>
       <div id="panel-controls">
         <button class="pctrl" id="btn-q-mode">Q</button>
         <button class="pctrl" id="btn-a-mode">A</button>
+        <button class="pctrl" id="btn-prev" title="Previous page">◀</button>
+        <button class="pctrl" id="btn-next" title="Next page">▶</button>
         <button class="pctrl" id="btn-goto">↓ Jump</button>
         <button class="pctrl" id="btn-full">⛶ Full</button>
         <button class="pctrl" id="btn-open">↗</button>
@@ -2520,7 +2536,7 @@ const searchEl   = document.getElementById('search');
 function setLoading(v) { loadingBar.style.display = v ? 'block' : 'none'; }
 
 // ── Render a single page ───────────────────────────────
-async function renderPage(doc, pageNum, qNum) {
+async function renderPage(doc, pageNum, qNum, isAnswer) {
   if (rendering) return;
   rendering = true;
   arrow.style.display = 'none';
@@ -2542,95 +2558,55 @@ async function renderPage(doc, pageNum, qNum) {
 
   // Detect question position and show arrow
   if (qNum) {
-    await detectAndArrow(page, vp, qNum, displayWidth);
+    await detectAndArrow(page, vp, qNum, displayWidth, isAnswer);
   }
 
   rendering = false;
 }
 
 // ── Detect question Y position and draw arrow ──────────
-async function detectAndArrow(page, vp, qNum, displayWidth) {
+async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
   try {
     const tc = await page.getTextContent();
-    // Build normalised qNum patterns: "01.1" → "0 1 . 1" style in PDFs
-    const num = qNum.trim(); // e.g. "01.1" or "07"
-    const parts = num.match(/^(\d+)\.?(\d*)$/);
-    if (!parts) return;
-    const major = parts[1].padStart(2,'0');
-    const minor = parts[2] || '';
-
-    // PDFs write question numbers spread across items — collect all text items with positions
     const items = tc.items;
+    const vp1 = page.getViewport({ scale: 1 });
+    const scaleY = vp.height / vp1.height;
     const displayH = Math.round(vp.height / SCALE);
-
-    // Try to find the question number in the text content
-    // AQA format: "0 1 . 1" or "0 1" depending on font rendering
+    const parts = qNum.trim().match(/^(\d+)(?:\.(\d+))?$/);
+    if (!parts) return;
+    const major = parts[1].padStart(2, '0');
+    const minor = parts[2] || '';
+    const majorNoLead = String(parseInt(major));
+    const targets = [
+      major + (minor ? '.' + minor : ''),
+      major + minor,
+      majorNoLead + (minor ? '.' + minor : ''),
+      majorNoLead + minor,
+    ].filter(t => t.length >= 2);
     let foundY = null;
-    const fullStr = items.map(i=>i.str).join(' ').replace(/\s+/g,' ');
-    
-    // Build searchable string per item with cumulative text
-    // Strategy: look for the pattern near start of text chunks
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      // Collect surrounding text window
-      const window5 = items.slice(Math.max(0,i-2), i+5).map(x=>x.str).join('').replace(/\s/g,'');
-      // Match patterns like "01.1" "0101" "011"
-      const majorStr = major.replace(/^0/,'0').replace(/^0(\d)/,'$1');
-      const testA = major + (minor ? '.' + minor : '');
-      const testB = major.replace(/^0/,'') + (minor ? '.' + minor : '');
-      const clean = window5.replace(/[\s·.]/g,'');
-
-      if (
-        window5.replace(/\s/g,'') === major + (minor ? '.' + minor : '') ||
-        clean.startsWith(major + minor) ||
-        clean.startsWith(testB + minor) ||
-        (item.str.replace(/\s/g,'') === major && minor && items[i+2]?.str?.trim() === minor)
-      ) {
-        // Get Y position
-        const tx = item.transform;
-        const yPdf = tx[5]; // bottom of glyph in PDF coords
-        // Convert: PDF y goes bottom-up, canvas goes top-down
-        const yDisplay = Math.round((vp.height - yPdf * (vp.height / page.getViewport({scale:1}).height)) / SCALE);
-        if (yDisplay > 5 && yDisplay < displayH - 10) {
-          foundY = yDisplay;
+    for (let i = 0; i < items.length - 1; i++) {
+      const winText = items.slice(i, i + 6).map(x => x.str).join('').replace(/\s/g, '');
+      for (const t of targets) {
+        if (winText.startsWith(t)) {
+          const yPdf = items[i].transform[5];
+          const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
+          if (yDisplay > 5 && yDisplay < displayH - 5) foundY = yDisplay;
           break;
         }
       }
+      if (foundY !== null) break;
     }
-
-    // Also try simple string search across combined text
-    if (!foundY) {
-      // Fallback: search for major.minor pattern
-      const pat = minor ? major + '.' + minor : major;
-      const patNoZero = minor ? major.replace(/^0/,'') + '.' + minor : major.replace(/^0/,'');
-      for (let i = 0; i < items.length - 1; i++) {
-        const combined = (items[i].str + items[i+1].str).replace(/\s/g,'');
-        if (combined === pat || combined === patNoZero) {
-          const tx = items[i].transform;
-          const yPdf = tx[5];
-          const vp1 = page.getViewport({scale:1});
-          const yDisplay = Math.round((vp.height - yPdf * (vp.height / vp1.height)) / SCALE);
-          if (yDisplay > 5 && yDisplay < displayH - 10) {
-            foundY = yDisplay;
-            break;
-          }
-        }
-      }
-    }
-
     if (foundY !== null) {
-      showArrow(foundY, displayH);
-      setTimeout(()=>{ viewport.scrollTop = Math.max(0, foundY - 60); }, 80);
+      showArrow(foundY, displayH, isAnswer);
+      setTimeout(() => { viewport.scrollTop = Math.max(0, foundY - 80); }, 80);
     } else {
-      // No match — scroll to top of page
-      setTimeout(()=>{ viewport.scrollTop = 0; }, 80);
+      setTimeout(() => { viewport.scrollTop = 0; }, 80);
     }
-  } catch(e) {
-    console.warn('Arrow detection failed:', e);
-  }
+  } catch(e) { console.warn('Arrow detection failed:', e); }
 }
 
-function showArrow(topY, pageH) {
+
+function showArrow(topY, pageH, isAnswer) {
   const height = Math.max(30, Math.min(60, pageH * 0.04));
   arrow.style.cssText = `
     display: flex;
@@ -2642,7 +2618,7 @@ function showArrow(topY, pageH) {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: var(--red);
+    background: isAnswer ? '#16a34a' : '#e03150';
     border-radius: 0 4px 4px 0;
     z-index: 10;
     pointer-events: none;
@@ -2650,7 +2626,7 @@ function showArrow(topY, pageH) {
 }
 
 // ── Load PDF ───────────────────────────────────────────
-async function loadPdf(url, pageNum, qNum) {
+async function loadPdf(url, pageNum, qNum, isAnswer) {
   setLoading(true);
   arrow.style.display = 'none';
   try {
@@ -2663,7 +2639,7 @@ async function loadPdf(url, pageNum, qNum) {
       // Same PDF already loaded — just re-render the new page
       currentPage = pageNum;
       currentQNum = qNum;
-      await renderPage(currentPdfDoc, pageNum, qNum);
+      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
     } else {
       currentPdfUrl = fetchUrl;
       currentPdfDoc = null;
@@ -2673,7 +2649,7 @@ async function loadPdf(url, pageNum, qNum) {
       currentPdfDoc = await task.promise;
       currentPage = pageNum;
       currentQNum = qNum;
-      await renderPage(currentPdfDoc, pageNum, qNum);
+      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
     }
   } catch(e) {
     console.error('PDF load error:', e);
@@ -2715,7 +2691,7 @@ function openQuestion(row, mode) {
     return;
   }
 
-  loadPdf(url, page, mode === 'q' ? qNum : null);
+  loadPdf(url, page, qNum, mode === 'a');
   btnOpen.onclick = () => window.open(url + '#page=' + page, '_blank');
 }
 
@@ -2734,7 +2710,7 @@ function toggleFullscreen() {
   if (fullscreen && !panelVisible) togglePanel();
   // Re-render at new size after transition
   if (currentPdfDoc) {
-    setTimeout(()=>{ renderPage(currentPdfDoc, currentPage, currentQNum); }, 320);
+    setTimeout(()=>{ renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a'); }, 320);
   }
 }
 
@@ -2828,9 +2804,52 @@ document.querySelectorAll('.nav-pill').forEach(pill => {
 // Re-render on panel resize
 new ResizeObserver(() => {
   if (currentPdfDoc && !rendering) {
-    renderPage(currentPdfDoc, currentPage, currentQNum);
+    renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
   }
 }).observe(viewport);
+
+// ── Prev / Next page buttons ─────────────────────────
+document.getElementById('btn-prev').addEventListener('click', async () => {
+  if (!currentPdfDoc || currentPage <= 1) return;
+  currentPage--;
+  panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
+  await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+});
+document.getElementById('btn-next').addEventListener('click', async () => {
+  if (!currentPdfDoc || currentPage >= currentPdfDoc.numPages) return;
+  currentPage++;
+  panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
+  await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+});
+
+// ── Resizable panel drag ──────────────────────────────
+const dragHandle = document.getElementById('drag-handle');
+const mainEl = document.getElementById('main');
+let isDragging = false;
+dragHandle.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragHandle.classList.add('active');
+  document.body.style.cursor = 'col-resize';
+  document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const newWidth = Math.max(280, Math.min(900, mainEl.getBoundingClientRect().right - e.clientX));
+  pdfPanel.style.width = newWidth + 'px';
+  clearTimeout(window._resizeTimer);
+  window._resizeTimer = setTimeout(() => {
+    if (currentPdfDoc && !rendering)
+      renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
+  }, 150);
+});
+document.addEventListener('mouseup', () => {
+  if (!isDragging) return;
+  isDragging = false;
+  dragHandle.classList.remove('active');
+  document.body.style.cursor = '';
+  document.body.style.userSelect = '';
+});
 </script>
 </body>
 </html>
