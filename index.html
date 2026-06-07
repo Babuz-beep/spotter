@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPOTTER — AQA Science Question Bank</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f4f6fb;
+    color: #1e2540;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .logo {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #2d6ef5;
+    margin-bottom: 6px;
+  }
+  .tagline {
+    font-size: 14px;
+    color: #4a5272;
+    margin-bottom: 48px;
+    letter-spacing: 0.5px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    width: 100%;
+    max-width: 800px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #d8dde8;
+    border-radius: 12px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: box-shadow .2s, border-color .2s, transform .15s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(45,110,245,.12);
+    border-color: #2d6ef5;
+    transform: translateY(-2px);
+  }
+  .card-subject {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #2d6ef5;
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e2540;
+  }
+  .card-meta {
+    font-size: 13px;
+    color: #4a5272;
+  }
+  .card-stats {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #8a93b0;
+    display: flex;
+    gap: 16px;
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .stat-num {
+    font-weight: 700;
+    color: #1e2540;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .badge-f { background: #edf0f7; color: #4a5272; }
+  .badge-h { background: #e8f0fe; color: #2d6ef5; }
+  .soon {
+    opacity: 0.45;
+    pointer-events: none;
+    cursor: default;
+  }
+  .soon .card-subject { color: #8a93b0; }
+  .soon-label {
+    font-size: 11px;
+    color: #8a93b0;
+    font-style: italic;
+  }
+  h2 {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8a93b0;
+    margin: 32px 0 12px;
+    width: 100%;
+    max-width: 800px;
+  }
+  footer {
+    margin-top: 48px;
+    font-size: 12px;
+    color: #8a93b0;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo">SPOTTER</div>
+<div class="tagline">AQA Science — Spec-mapped past paper questions</div>
+
+<h2>Combined Science: Trilogy — Chemistry</h2>
+<div class="grid">
+
+  <a class="card" href="c1f.html">
+    <div class="card-subject">Chemistry · Paper 1</div>
+    <div class="card-title">Atomic Structure to Energy Changes</div>
+    <div class="card-meta">Topics 5.1 – 5.5</div>
+    <div>
+      <span class="badge badge-f">Foundation</span>
+    </div>
+    <div class="card-stats">
+      <div class="stat"><span class="stat-num">291</span> questions</div>
+      <div class="stat"><span class="stat-num">7</span> papers</div>
+      <div class="stat">Jun18 – Jun24</div>
+    </div>
+  </a>
+
+  <a class="card" href="c2h.html">
+    <div class="card-subject">Chemistry · Paper 2</div>
+    <div class="card-title">Rate of Reaction to Using Resources</div>
+    <div class="card-meta">Topics 5.6 – 5.10</div>
+    <div>
+      <span class="badge badge-h">Higher</span>
+    </div>
+    <div class="card-stats">
+      <div class="stat"><span class="stat-num">290</span> questions</div>
+      <div class="stat"><span class="stat-num">6</span> papers</div>
+      <div class="stat">Jun18 – Jun24</div>
+    </div>
+  </a>
+
+  <div class="card soon">
+    <div class="card-subject">Chemistry · Paper 1</div>
+    <div class="card-title">Atomic Structure to Energy Changes</div>
+    <div class="card-meta">Topics 5.1 – 5.5</div>
+    <div>
+      <span class="badge badge-h">Higher</span>
+    </div>
+    <div class="soon-label">Coming soon</div>
+  </div>
+
+  <div class="card soon">
+    <div class="card-subject">Chemistry · Paper 2</div>
+    <div class="card-title">Rate of Reaction to Using Resources</div>
+    <div class="card-meta">Topics 5.6 – 5.10</div>
+    <div>
+      <span class="badge badge-f">Foundation</span>
+    </div>
+    <div class="soon-label">Coming soon</div>
+  </div>
+
+</div>
+
+<h2>Coming next</h2>
+<div class="grid" style="max-width:800px;">
+  <div class="card soon">
+    <div class="card-subject">Biology · Papers 1 & 2</div>
+    <div class="card-title">Cell Biology to Ecology</div>
+    <div class="soon-label">Coming soon</div>
+  </div>
+  <div class="card soon">
+    <div class="card-subject">Physics · Papers 1 & 2</div>
+    <div class="card-title">Energy to Space Physics</div>
+    <div class="soon-label">Coming soon</div>
+  </div>
+</div>
+
+<footer>
+  SPOTTER · Questions served from AQA's servers · Powered by Cloudflare
+</footer>
+
+</body>
+</html>
