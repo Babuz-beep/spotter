@@ -2611,23 +2611,31 @@ async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
       for (const t of exactTargets) {
         if (!win.startsWith(t)) continue;
         const after = win.slice(t.length);
-        // EXACT MATCH: what follows the target must be a dot, digit (sub-question)
-        // or non-alphanumeric content (question text starts)
-        // This prevents "03" matching the section header "0 3 This question..."
-        // because after "03" comes "This" — but we need: after must start with
-        // "." (sub-question follows) or be empty, or start with a letter (question text)
-        // BUT: for sub-questions (minor exists), after must NOT start with another digit
-        // For major-only targets, the window must be followed by "." indicating sub-question follows
         const afterStartsWithDot = after.startsWith('.');
         const afterStartsWithDigit = after.length > 0 && /\d/.test(after[0]);
         
         if (minor) {
-          // Looking for e.g. "03.2" — match if after target is not a digit
-          if (!afterStartsWithDigit) { matched = true; break; }
+          // Looking for e.g. "03.2"
+          // The NEXT character after our match must NOT be a digit
+          // e.g. "03.2" followed by "6protons" is fine (answer text)
+          // "03.2" followed by "3" would be wrong (would be "03.23")
+          // But "03.1" followed by "0.1nm" — after="0.1nm", starts with digit BUT
+          // this is the ANSWER text, not another sub-question number
+          // Key insight: if the full window starts with our exact target AND
+          // the item itself (before window) IS our target, it's a match
+          const itemStripped = item.str.replace(/\s/g, '');
+          if (itemStripped === t || itemStripped.startsWith(t)) {
+            // The item itself is our question number
+            matched = true; break;
+          }
+          // Also match if window starts with target and next char is not "."
+          // (which would indicate a longer question number like "03.25")
+          if (!afterStartsWithDot && !(after.length > 0 && /^\d\./.test(after))) {
+            matched = true; break;
+          }
         } else {
-          // Looking for major only e.g. "03" (6-mark extended question)
-          // Only match if followed by non-digit non-dot (question text, not a sub-question)
-          // This prevents matching "03" in "03.1"
+          // Looking for major only (6-mark question, no sub-number)
+          // Must not be followed by dot+digit (would be a sub-question)
           if (!afterStartsWithDot && !afterStartsWithDigit) { matched = true; break; }
         }
       }
