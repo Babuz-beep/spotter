@@ -2567,94 +2567,79 @@ async function renderPage(doc, pageNum, qNum, isAnswer) {
 async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
   try {
     const tc = await page.getTextContent();
-    const items = tc.items;
     const vp1 = page.getViewport({ scale: 1 });
     const scaleY = vp.height / vp1.height;
     const displayH = Math.round(vp.height / SCALE);
 
     const parts = qNum.trim().match(/^(\d+)(?:\.(\d+))?$/);
     if (!parts) return;
-    const major = parts[1].padStart(2, '0');  // "05"
-    const minor = parts[2] || '';              // "4"
-    const majorInt = String(parseInt(major));  // "5"
+    const major = parts[1].padStart(2, '0');
+    const minor = parts[2] || '';
+    const majorInt = String(parseInt(major));
 
-    // Build exact target patterns for the question number box
-    // AQA renders e.g. "0 5 . 4" as separate items: ["0 5", ". 4"] or ["0 5 . 4"]
-    // We need to match EXACTLY our question, not just any question starting with same major
+    // All possible representations of this question number
     const exactTargets = minor ? [
-      major + '.' + minor,       // "05.4"
-      major + minor,             // "054"  
-      majorInt + '.' + minor,    // "5.4"
-      majorInt + minor,          // "54"
-    ] : [
-      major,     // "05"
-      majorInt,  // "5"
-    ];
+      major + '.' + minor,    // "03.5"
+      major + minor,          // "035"
+      majorInt + '.' + minor, // "3.5"
+      majorInt + minor,       // "35"
+    ] : [major, majorInt];
 
-    // Strategy: scan items looking for isolated question number text
-    // An item is a "question number item" if, when stripped of spaces, 
-    // it consists ONLY of digits and at most one dot
+    // Sort items by Y position (top to bottom) so we scan visually
+    // PDF.js returns items in document order which isn't always Y-sorted
+    const items = [...tc.items].sort((a, b) => a.transform[5] - b.transform[5]).reverse();
+    // Note: transform[5] is Y in PDF coords (bottom-up), so reverse = top-down
+
     let foundY = null;
 
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const stripped = item.str.replace(/\s/g, '');
 
-      // Only consider items that are purely digits/dots (question number boxes)
-      if (!/^[\d.]+$/.test(stripped) || stripped.length === 0) continue;
-      if (stripped.length > 6) continue;
+      // Only consider items that look like question number fragments
+      // (purely digits and dots, short length)
+      if (!/^[\d.]+$/.test(stripped) || stripped.length === 0 || stripped.length > 6) continue;
 
-      // Build window of next few items
-      const win = items.slice(i, i + 4).map(x => x.str).join('').replace(/\s/g, '');
+      // Check if this item's text IS exactly our target (most reliable match)
+      // e.g. item.str = "03.5 " → stripped = "03.5" → matches target "03.5"
+      for (const t of exactTargets) {
+        if (stripped === t) {
+          // Direct exact match on the item itself
+          const yPdf = item.transform[5];
+          const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
+          if (yDisplay > 5 && yDisplay < displayH - 5) {
+            foundY = yDisplay;
+          }
+          break;
+        }
+      }
+      if (foundY !== null) break;
 
-      let matched = false;
+      // Fallback: check sliding window (for spaced formats like "0 3 . 5")
+      const winItems = tc.items.slice(
+        tc.items.indexOf(item),
+        tc.items.indexOf(item) + 5
+      );
+      const win = winItems.map(x => x.str).join('').replace(/\s/g, '');
       for (const t of exactTargets) {
         if (!win.startsWith(t)) continue;
         const after = win.slice(t.length);
-        const afterStartsWithDot = after.startsWith('.');
-        const afterStartsWithDigit = after.length > 0 && /\d/.test(after[0]);
-        
-        if (minor) {
-          // Looking for e.g. "03.2"
-          // The NEXT character after our match must NOT be a digit
-          // e.g. "03.2" followed by "6protons" is fine (answer text)
-          // "03.2" followed by "3" would be wrong (would be "03.23")
-          // But "03.1" followed by "0.1nm" — after="0.1nm", starts with digit BUT
-          // this is the ANSWER text, not another sub-question number
-          // Key insight: if the full window starts with our exact target AND
-          // the item itself (before window) IS our target, it's a match
-          const itemStripped = item.str.replace(/\s/g, '');
-          if (itemStripped === t || itemStripped.startsWith(t)) {
-            // The item itself is our question number
-            matched = true; break;
-          }
-          // Also match if window starts with target and next char is not "."
-          // (which would indicate a longer question number like "03.25")
-          if (!afterStartsWithDot && !(after.length > 0 && /^\d\./.test(after))) {
-            matched = true; break;
-          }
-        } else {
-          // Looking for major only (6-mark question, no sub-number)
-          // Must not be followed by dot+digit (would be a sub-question)
-          if (!afterStartsWithDot && !afterStartsWithDigit) { matched = true; break; }
-        }
-      }
-
-      if (matched) {
+        // Must not be followed by another digit+dot (would be a longer number)
+        if (after.length > 0 && /^\d\./.test(after)) continue;
         const yPdf = item.transform[5];
         const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
         if (yDisplay > 5 && yDisplay < displayH - 5) {
           foundY = yDisplay;
-          break;
         }
+        break;
       }
+      if (foundY !== null) break;
     }
 
     if (foundY !== null) {
       showArrow(foundY, displayH, isAnswer);
       setTimeout(() => { viewport.scrollTop = Math.max(0, foundY - 80); }, 80);
     } else {
-      // Fallback: show arrow at top of page
       showArrow(40, displayH, isAnswer);
       setTimeout(() => { viewport.scrollTop = 0; }, 80);
     }
