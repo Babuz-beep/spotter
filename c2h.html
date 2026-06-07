@@ -5984,7 +5984,7 @@ let currentPage = 1;
 let currentQNum = '';
 let currentMode = 'q'; // 'q' or 'a'
 let currentRow = null;
-let panelVisible = true;
+let panelVisible = false;
 let fullscreen = false;
 let rendering = false;
 
@@ -6180,7 +6180,10 @@ function openQuestion(row, mode) {
   panelTitle.textContent = `${paper} · Q${qNum} · ${label} p${page}`;
 
   // Show panel if hidden
-  pdfPanel.classList.remove('hidden');
+  if (!panelVisible) {
+    panelVisible = true;
+    pdfPanel.classList.remove('hidden');
+  }
 
   // Drive PDFs can't be proxied — open in new tab
   if (url.includes('drive.google.com')) {
