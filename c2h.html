@@ -5020,7 +5020,7 @@ function openQuestion(row, mode) {
   panelTitle.textContent = `${paper} · Q${qNum} · ${label} p${page}`;
 
   // Show panel if hidden
-  if (!panelVisible) togglePanel();
+  pdfPanel.classList.remove('hidden');
 
   // Drive PDFs can't be proxied — open in new tab
   if (url.includes('drive.google.com')) {
@@ -5028,20 +5028,12 @@ function openQuestion(row, mode) {
     return;
   }
 
-  // Set stored Y for precise arrow positioning (C2H)
-    const qdata = QUESTIONS.find(x => x.paper === row.dataset.paper && x.qNum === row.dataset.qnum) ||
-                  C2H_QUESTIONS.find(x => x.paper === row.dataset.paper && x.qNum === row.dataset.qnum);
-    if (qdata) {
-      currentStoredY = mode === 'a' ? qdata.msY : qdata.qpY;
-      currentPageH = mode === 'a' ? (qdata.msPageH || 841.9) : (qdata.qpPageH || 841.9);
-    } else {
-      currentStoredY = null;
-    }
-    // Use stored Y coordinate from data attributes (accurate arrow positioning)
-    const _qpY  = parseFloat(row.dataset.qpY);
-    const _msY  = parseFloat(row.dataset.msY);
-    currentStoredY = mode === 'q' ? (isNaN(_qpY) ? null : _qpY) : (isNaN(_msY) ? null : _msY);
-    loadPdf(url, page, qNum, mode === 'a');
+  // Use stored Y from data attributes for precise arrow positioning
+  const _qpY = parseFloat(row.dataset.qpY);
+  const _msY = parseFloat(row.dataset.msY);
+  currentStoredY = mode === 'q' ? (isNaN(_qpY) ? null : _qpY) : (isNaN(_msY) ? null : _msY);
+
+  loadPdf(url, page, qNum, mode === 'a');
   btnOpen.onclick = () => window.open(url + '#page=' + page, '_blank');
 }
 
