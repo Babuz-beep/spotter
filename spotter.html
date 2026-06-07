@@ -2571,34 +2571,67 @@ async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
     const vp1 = page.getViewport({ scale: 1 });
     const scaleY = vp.height / vp1.height;
     const displayH = Math.round(vp.height / SCALE);
+
     const parts = qNum.trim().match(/^(\d+)(?:\.(\d+))?$/);
     if (!parts) return;
-    const major = parts[1].padStart(2, '0');
-    const minor = parts[2] || '';
-    const majorNoLead = String(parseInt(major));
-    let targets;
-    if (minor) {
-      targets = [major+'.'+minor, major+minor, majorNoLead+'.'+minor, majorNoLead+minor];
-    } else {
-      targets = [major, majorNoLead].filter(t => t.length >= 1);
-    }
+    const major = parts[1].padStart(2, '0');  // "05"
+    const minor = parts[2] || '';              // "4"
+    const majorInt = String(parseInt(major));  // "5"
+
+    // Build exact target patterns for the question number box
+    // AQA renders e.g. "0 5 . 4" as separate items: ["0 5", ". 4"] or ["0 5 . 4"]
+    // We need to match EXACTLY our question, not just any question starting with same major
+    const exactTargets = minor ? [
+      major + '.' + minor,       // "05.4"
+      major + minor,             // "054"  
+      majorInt + '.' + minor,    // "5.4"
+      majorInt + minor,          // "54"
+    ] : [
+      major,     // "05"
+      majorInt,  // "5"
+    ];
+
+    // Strategy: scan items looking for isolated question number text
+    // An item is a "question number item" if, when stripped of spaces, 
+    // it consists ONLY of digits and at most one dot
     let foundY = null;
-    for (let i = 0; i < items.length - 1; i++) {
-      const winText = items.slice(i, i + 6).map(x => x.str).join('').replace(/\s/g, '');
-      for (const t of targets) {
-        if (winText.startsWith(t)) {
-          const yPdf = items[i].transform[5];
-          const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
-          if (yDisplay > 5 && yDisplay < displayH - 5) foundY = yDisplay;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const stripped = item.str.replace(/\s/g, '');
+
+      // Check if this item is a question number fragment
+      if (!/^[\d.]+$/.test(stripped) || stripped.length === 0) continue;
+      if (stripped.length > 6) continue; // too long to be just a question number
+
+      // Build window of next few items to assemble the full question number
+      const win = items.slice(i, i + 4).map(x => x.str).join('').replace(/\s/g, '');
+
+      // Check for EXACT match — must match the full target, not just a prefix
+      // e.g. "05.4" must match "05.4" exactly at start, followed by non-digit
+      let matched = false;
+      for (const t of exactTargets) {
+        if (win === t || win.startsWith(t) && (win.length === t.length || !/\d/.test(win[t.length]))) {
+          matched = true;
           break;
         }
       }
-      if (foundY !== null) break;
+
+      if (matched) {
+        const yPdf = item.transform[5];
+        const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
+        if (yDisplay > 5 && yDisplay < displayH - 5) {
+          foundY = yDisplay;
+          break;
+        }
+      }
     }
+
     if (foundY !== null) {
       showArrow(foundY, displayH, isAnswer);
       setTimeout(() => { viewport.scrollTop = Math.max(0, foundY - 80); }, 80);
     } else {
+      // Fallback: show arrow at top of page
       showArrow(40, displayH, isAnswer);
       setTimeout(() => { viewport.scrollTop = 0; }, 80);
     }
