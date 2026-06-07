@@ -831,7 +831,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
             data-qnum="02.3"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-QP-JUN18_PDF/4cd959a9001fdc1920b5539abe77c019f4f8c5d2.pdf"
             data-ms-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2018.june.AQA-8464C1F-W-MS-JUN18_PDF/3e162af89b21f261094f0eda4d8001ab57b64a0f.pdf"
-            data-qp-page="4"
+            data-qp-page="8"
             data-ms-page="8"
             data-has-proxy="true"><div class="qcell qmeta"><span class="pbadge">Jun18·C1F</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.3 — Complete the word equation for chlorine reacting with potassium bromide solution</div><div class="qcell qbtns"><button class="btn-q" title="Open question paper">Q</button><button class="btn-a" title="Open mark scheme">A</button></div></div><div class="qrow" 
             data-paper="Jun18·C1F"
@@ -2570,28 +2570,19 @@ async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
     const vp1 = page.getViewport({ scale: 1 });
     const scaleY = vp.height / vp1.height;
     const displayH = Math.round(vp.height / SCALE);
-
     const parts = qNum.trim().match(/^(\d+)(?:\.(\d+))?$/);
     if (!parts) return;
     const major = parts[1].padStart(2, '0');
     const minor = parts[2] || '';
     const majorInt = String(parseInt(major));
-
     const exactTargets = minor ? [
-      major + '.' + minor, major + minor,
-      majorInt + '.' + minor, majorInt + minor,
+      major+'.'+minor, major+minor, majorInt+'.'+minor, majorInt+minor,
     ] : [major, majorInt];
-
-    // Sort items by PDF Y descending (= top of page first)
     const sorted = [...tc.items].sort((a, b) => b.transform[5] - a.transform[5]);
-
     let foundY = null;
-
     for (const item of sorted) {
       const stripped = item.str.replace(/\s/g, '');
       if (!/^[\d.]+$/.test(stripped) || !stripped || stripped.length > 6) continue;
-
-      // Exact item match — most reliable
       for (const t of exactTargets) {
         if (stripped === t) {
           const yPdf = item.transform[5];
@@ -2601,14 +2592,12 @@ async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
         }
       }
       if (foundY !== null) break;
-
-      // Window fallback for spaced formats like "0 3 . 5"
       const idx = tc.items.indexOf(item);
-      const win = tc.items.slice(idx, idx + 5).map(x => x.str).join('').replace(/\s/g, '');
+      const win = tc.items.slice(idx, idx+5).map(x => x.str).join('').replace(/\s/g,'');
       for (const t of exactTargets) {
         if (!win.startsWith(t)) continue;
         const after = win.slice(t.length);
-        if (after.length > 0 && /^\d\./.test(after)) continue; // another sub-question follows
+        if (after.length > 0 && /^\d\./.test(after)) continue;
         const yPdf = item.transform[5];
         const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
         if (yDisplay > 5 && yDisplay < displayH - 5) foundY = yDisplay;
@@ -2616,7 +2605,6 @@ async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
       }
       if (foundY !== null) break;
     }
-
     if (foundY !== null) {
       showArrow(foundY, displayH, isAnswer);
       setTimeout(() => { viewport.scrollTop = Math.max(0, foundY - 80); }, 80);
@@ -2843,7 +2831,6 @@ document.getElementById('btn-next').addEventListener('click', async () => {
   panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
   await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
 });
-// ── Resizable panel ───────────────────────────────────
 const dragHandle = document.getElementById('drag-handle');
 const mainEl = document.getElementById('main');
 let isDragging = false;
