@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPOTTER — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:#f4f6fb;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.card{background:#fff;border-radius:16px;border:1px solid #d8dde8;padding:40px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(45,110,245,.08);}
+.logo{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:28px;letter-spacing:4px;color:#2d6ef5;margin-bottom:6px;}
+.logo span{color:#d97706;}
+.tagline{font-size:13px;color:#8a93b0;margin-bottom:32px;}
+.step{display:none;}
+.step.active{display:block;}
+label{display:block;font-size:11px;font-weight:600;color:#8a93b0;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+input{width:100%;padding:12px 16px;border:1px solid #d8dde8;border-radius:8px;font-family:'Sora',sans-serif;font-size:14px;color:#1e2540;outline:none;transition:border-color .2s;margin-bottom:16px;}
+input:focus{border-color:#2d6ef5;}
+input.code-input{font-family:'JetBrains Mono',monospace;font-size:28px;letter-spacing:12px;text-align:center;padding:16px;}
+.btn{width:100%;padding:13px;background:#2d6ef5;color:#fff;border:none;border-radius:8px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn:hover{background:#1a5fd4;}
+.btn:disabled{background:#8a93b0;cursor:not-allowed;}
+.error{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;color:#dc2626;font-size:13px;margin-bottom:16px;display:none;}
+.success-msg{font-size:13px;color:#4a5272;margin-bottom:20px;line-height:1.6;}
+.school-badge{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:4px 12px;font-size:12px;color:#2d6ef5;font-weight:600;margin-bottom:20px;}
+.back-link{font-size:12px;color:#8a93b0;cursor:pointer;margin-top:12px;display:inline-block;}
+.back-link:hover{color:#2d6ef5;}
+.spinner{display:none;width:20px;height:20px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">SPOT<span>TER</span></div>
+  <div class="tagline">AQA Science — Spec-mapped past paper questions</div>
+
+  <!-- Step 1: Enter email -->
+  <div class="step active" id="step1">
+    <div class="error" id="err1"></div>
+    <label for="email">School or College Email</label>
+    <input type="email" id="email" placeholder="name@school.sch.uk" autocomplete="email">
+    <button class="btn" onclick="requestCode()">Send Verification Code</button>
+  </div>
+
+  <!-- Step 2: Enter code -->
+  <div class="step" id="step2">
+    <div class="error" id="err2"></div>
+    <div class="school-badge" id="school-name"></div>
+    <p class="success-msg">We've sent a 6-digit code to<br><strong id="email-display"></strong></p>
+    <label for="code">Verification Code</label>
+    <input type="text" id="code" class="code-input" placeholder="000000" maxlength="6" autocomplete="one-time-code">
+    <button class="btn" onclick="verifyCode()">Verify & Access SPOTTER</button>
+    <div class="back-link" onclick="goBack()">← Use a different email</div>
+    <div style="margin-top:12px;">
+      <span class="back-link" onclick="requestCode(true)">Resend code</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '/auth.php';
+let currentEmail = '';
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideError(id) {
+  document.getElementById(id).style.display = 'none';
+}
+
+async function requestCode(resend = false) {
+  hideError('err1');
+  const email = resend ? currentEmail : document.getElementById('email').value.trim();
+  if (!email) { showError('err1', 'Please enter your email address.'); return; }
+
+  const btn = document.querySelector('#step1 .btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action: 'request_code', email})
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError('err1', data.error || 'Something went wrong.');
+      btn.disabled = false;
+      btn.textContent = 'Send Verification Code';
+      return;
+    }
+
+    currentEmail = email;
+    document.getElementById('email-display').textContent = email;
+    document.getElementById('school-name').textContent = data.school || email.split('@')[1];
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+    setTimeout(() => document.getElementById('code').focus(), 100);
+
+  } catch(e) {
+    showError('err1', 'Network error. Please try again.');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Send Verification Code';
+}
+
+async function verifyCode() {
+  hideError('err2');
+  const code = document.getElementById('code').value.trim();
+  if (code.length !== 6) { showError('err2', 'Please enter the 6-digit code.'); return; }
+
+  const btn = document.querySelector('#step2 .btn');
+  btn.disabled = true;
+  btn.textContent = 'Verifying…';
+
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action: 'verify_code', email: currentEmail, code})
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showError('err2', data.error || 'Invalid code.');
+      btn.disabled = false;
+      btn.textContent = 'Verify & Access SPOTTER';
+      return;
+    }
+
+    // Store session token
+    localStorage.setItem('spotter_token', data.token);
+    localStorage.setItem('spotter_email', data.email);
+    localStorage.setItem('spotter_domain', data.domain);
+
+    // Redirect to main page
+    window.location.href = 'index.html';
+
+  } catch(e) {
+    showError('err2', 'Network error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Verify & Access SPOTTER';
+  }
+}
+
+function goBack() {
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+  hideError('err2');
+  document.getElementById('code').value = '';
+}
+
+// Allow Enter key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('step1').classList.contains('active')) requestCode();
+    else verifyCode();
+  }
+});
+
+// Auto-format code input
+document.addEventListener('DOMContentLoaded', () => {
+  const codeInput = document.getElementById('code');
+  codeInput.addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
+  });
+});
+
+// Check if already logged in
+const token = localStorage.getItem('spotter_token');
+if (token) {
+  fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({action: 'verify_session', token})
+  }).then(r => r.json()).then(data => {
+    if (data.valid) window.location.href = 'index.html';
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
