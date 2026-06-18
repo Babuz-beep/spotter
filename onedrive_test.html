@@ -2,98 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SPOTTER — OneDrive PDF Test</title>
+<title>SPOTTER — OneDrive Test v3</title>
 <style>
-body { margin: 0; font-family: sans-serif; background: #f4f6fb; display: flex; flex-direction: column; height: 100vh; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #f4f6fb; display: flex; flex-direction: column; height: 100vh; }
 #hdr { background: #1e2540; color: #fff; padding: 12px 20px; display: flex; align-items: center; gap: 16px; }
-#hdr strong { color: #f59e0b; letter-spacing: 2px; }
+#hdr strong { color: #f59e0b; letter-spacing: 2px; font-size: 16px; }
 #status { font-size: 12px; color: #94a3b8; font-family: monospace; }
-#main { flex: 1; display: flex; }
+#main { flex: 1; display: flex; overflow: hidden; }
+#controls { width: 280px; background: #fff; border-right: 1px solid #d8dde8; padding: 20px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; flex-shrink: 0; }
 #canvas-wrap { flex: 1; background: #d0d4de; overflow-y: auto; display: flex; justify-content: center; padding: 20px; position: relative; }
-canvas { box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-#arrow { position: absolute; left: 20px; width: 28px; display: none; font-size: 20px; }
-#controls { width: 220px; background: #fff; border-right: 1px solid #d8dde8; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-button { padding: 10px; border-radius: 6px; border: 1px solid #d8dde8; background: #2d6ef5; color: #fff; font-size: 13px; cursor: pointer; font-weight: 600; }
+canvas { box-shadow: 0 4px 20px rgba(0,0,0,.3); display: block; }
+button { padding: 10px 14px; border-radius: 6px; border: none; background: #2d6ef5; color: #fff; font-size: 12px; cursor: pointer; font-weight: 600; width: 100%; }
 button:hover { background: #1a5fd4; }
-.info { font-size: 11px; color: #4a5272; line-height: 1.6; }
+button.green { background: #16a34a; }
+button.green:hover { background: #15803d; }
+button.orange { background: #d97706; }
+button.orange:hover { background: #b45309; }
+.info { font-size: 11px; color: #4a5272; line-height: 1.7; background: #f4f6fb; padding: 10px; border-radius: 6px; word-break: break-all; }
+h4 { font-size: 11px; color: #1e2540; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+hr { border: none; border-top: 1px solid #d8dde8; }
 </style>
 </head>
 <body>
 <div id="hdr">
   <strong>SPOTTER</strong>
-  <span>OneDrive PDF Test</span>
-  <span id="status">Loading…</span>
+  <span>OneDrive Proxy Test — New Worker</span>
+  <span id="status">Ready</span>
 </div>
 <div id="main">
   <div id="controls">
-    <div class="info">
-      <strong>Test:</strong> AQA C1F Nov21 QP<br>
-      <strong>Source:</strong> Your OneDrive<br>
-      <strong>Via:</strong> Cloudflare proxy
-    </div>
+    <h4>New Worker URL</h4>
+    <div class="info">spotter-onedrive-proxy.topscienceguru.workers.dev</div>
+
+    <h4>Your OneDrive file</h4>
+    <div class="info" id="urlinfo">AQA-8464C1F-QP-NOV21.PDF</div>
+
+    <button onclick="testLoad()">▶ Load PDF via new Worker</button>
+    <hr>
+    <h4>Once loaded — test pages</h4>
     <button onclick="loadPage(1)">Page 1</button>
     <button onclick="loadPage(3)">Page 3</button>
     <button onclick="loadPage(5)">Page 5</button>
-    <button onclick="showArrowTest()">Test Arrow (Y=300)</button>
-    <div id="info" class="info">No page loaded yet</div>
+    <hr>
+    <h4>Test arrow positioning</h4>
+    <button class="green" onclick="showArrow(200, false)">🔴 QP Arrow Y=200</button>
+    <button class="green" onclick="showArrow(400, false)">🔴 QP Arrow Y=400</button>
+    <button class="orange" onclick="showArrow(300, true)">🟢 MS Arrow Y=300</button>
+    <hr>
+    <div class="info" id="log">Click "Load PDF" to begin test.</div>
   </div>
   <div id="canvas-wrap">
     <canvas id="pdf-canvas"></canvas>
-    <div id="arrow">👉</div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
 <script type="module">
 import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
 
-const PROXY = 'https://spotter-proxy.topscienceguru.workers.dev/?url=';
-// OneDrive direct download URL
-const ONEDRIVE_URL = 'https://ldeutc-my.sharepoint.com/:b:/g/personal/babu_zainulabdeen_ldeutc_co_uk/IQC-yB72-nAhTJI2OxcCSiFSAVYcuZHZPEmTrMEUL1T4Lwg?e=IkRk8w&download=1';
+const NEW_PROXY = 'https://spotter-onedrive-proxy.topscienceguru.workers.dev/?url=';
+const ONEDRIVE_URL = 'https://ldeutc-my.sharepoint.com/:b:/g/personal/babu_zainulabdeen_ldeutc_co_uk/IQC-yB72-nAhTJI2OxcCSiFSAVYcuZHZPEmTrMEUL1T4Lwg?e=IkRk8w';
 
 const status = document.getElementById('status');
-const info = document.getElementById('info');
+const log = document.getElementById('log');
 const canvas = document.getElementById('pdf-canvas');
 const ctx = canvas.getContext('2d');
-const arrow = document.getElementById('arrow');
+const wrap = document.getElementById('canvas-wrap');
 
 let pdfDoc = null;
 
-// Load PDF through Cloudflare proxy
-const fetchUrl = PROXY + encodeURIComponent(ONEDRIVE_URL);
-status.textContent = 'Fetching via proxy…';
+window.testLoad = async function() {
+  status.textContent = 'Fetching via new Worker…';
+  log.textContent = 'Sending request to new OneDrive proxy Worker…\n\nURL: ' + ONEDRIVE_URL.substring(0,60) + '…';
 
-pdfjsLib.getDocument(fetchUrl).promise.then(doc => {
-  pdfDoc = doc;
-  status.textContent = `✓ Loaded — ${doc.numPages} pages`;
-  info.textContent = `PDF loaded successfully from OneDrive via Cloudflare proxy. ${doc.numPages} pages found.`;
-  loadPage(1);
-}).catch(err => {
-  status.textContent = '✗ Error: ' + err.message;
-  info.textContent = 'Failed: ' + err.message;
-  console.error(err);
-});
+  try {
+    const fetchUrl = NEW_PROXY + encodeURIComponent(ONEDRIVE_URL);
+    log.textContent += '\n\nProxy URL constructed. Fetching…';
+
+    const doc = await pdfjsLib.getDocument({
+      url: fetchUrl,
+      withCredentials: false,
+    }).promise;
+
+    pdfDoc = doc;
+    status.textContent = `✅ SUCCESS — ${doc.numPages} pages loaded!`;
+    log.textContent = `✅ PDF loaded successfully!\n\nPages: ${doc.numPages}\nSource: OneDrive\nProxy: new Worker\n\nOneDrive → Cloudflare Worker → pdf.js pipeline CONFIRMED WORKING!\n\nNow test page navigation and arrow positioning below.`;
+    loadPage(1);
+
+  } catch(err) {
+    status.textContent = '✗ Failed: ' + err.message;
+    log.textContent = `✗ Failed:\n${err.message}\n\nThis may mean:\n1. SharePoint still blocking despite download=1\n2. Worker needs Graph API token\n3. Share link settings need adjustment\n\nCheck Worker dashboard for error details.`;
+    console.error(err);
+  }
+};
 
 window.loadPage = async function(pageNum) {
-  if (!pdfDoc) return;
-  arrow.style.display = 'none';
+  if (!pdfDoc) { log.textContent = 'Load PDF first.'; return; }
+  // Remove any existing arrow
+  const old = document.getElementById('arrow');
+  if (old) old.remove();
+
   const page = await pdfDoc.getPage(pageNum);
-  const wrap = document.getElementById('canvas-wrap');
-  const scale = ((wrap.clientWidth - 60) / page.getViewport({scale:1}).width) * 2;
+  const dw = wrap.clientWidth - 60;
+  const scale = (dw / page.getViewport({scale:1}).width) * 2;
   const vp = page.getViewport({scale});
   canvas.width = vp.width;
   canvas.height = vp.height;
-  canvas.style.width = (wrap.clientWidth - 60) + 'px';
-  canvas.style.height = Math.round(vp.height/2) + 'px';
+  canvas.style.width = dw + 'px';
+  canvas.style.height = Math.round(vp.height / 2) + 'px';
   await page.render({canvasContext: ctx, viewport: vp}).promise;
-  info.textContent = `Page ${pageNum} rendered. Canvas: ${canvas.width}×${canvas.height}`;
+  log.textContent = `Page ${pageNum} rendered.\nCanvas: ${canvas.width}×${canvas.height}px\n\nNow try the arrow positioning buttons.`;
 };
 
-window.showArrowTest = function() {
-  const y = 300;
-  arrow.style.cssText = `display:block;position:absolute;left:20px;top:${y}px;font-size:24px;color:red;`;
-  info.textContent = `Arrow shown at Y=300px`;
+window.showArrow = function(y, isAnswer) {
+  const old = document.getElementById('arrow');
+  if (old) old.remove();
+  const arrow = document.createElement('div');
+  arrow.id = 'arrow';
+  arrow.style.cssText = `
+    position: absolute;
+    left: 20px;
+    top: ${y}px;
+    font-size: 22px;
+    z-index: 10;
+    color: ${isAnswer ? '#16a34a' : '#e03150'};
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,.4));
+  `;
+  arrow.textContent = '👉';
+  wrap.appendChild(arrow);
+  wrap.scrollTop = Math.max(0, y - 80);
+  log.textContent = `Arrow shown at Y=${y}px\nColour: ${isAnswer ? 'green (MS)' : 'red (QP)'}\n\nArrow positioning works independently of PDF loading.`;
 };
 </script>
 </body>
