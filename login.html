@@ -11,50 +11,54 @@ body{font-family:'Sora',sans-serif;background:#f4f6fb;min-height:100vh;display:f
 .card{background:#fff;border-radius:16px;border:1px solid #d8dde8;padding:40px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(45,110,245,.08);}
 .logo{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:28px;letter-spacing:4px;color:#2d6ef5;margin-bottom:6px;}
 .logo span{color:#d97706;}
-.tagline{font-size:13px;color:#8a93b0;margin-bottom:32px;}
+.tagline{font-size:13px;color:#8a93b0;margin-bottom:32px;line-height:1.5;}
 .step{display:none;}
 .step.active{display:block;}
 label{display:block;font-size:11px;font-weight:600;color:#8a93b0;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
 input{width:100%;padding:12px 16px;border:1px solid #d8dde8;border-radius:8px;font-family:'Sora',sans-serif;font-size:14px;color:#1e2540;outline:none;transition:border-color .2s;margin-bottom:16px;}
 input:focus{border-color:#2d6ef5;}
-input.code-input{font-family:'JetBrains Mono',monospace;font-size:28px;letter-spacing:12px;text-align:center;padding:16px;}
 .btn{width:100%;padding:13px;background:#2d6ef5;color:#fff;border:none;border-radius:8px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;}
 .btn:hover{background:#1a5fd4;}
 .btn:disabled{background:#8a93b0;cursor:not-allowed;}
 .error{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;color:#dc2626;font-size:13px;margin-bottom:16px;display:none;}
-.success-msg{font-size:13px;color:#4a5272;margin-bottom:20px;line-height:1.6;}
-.school-badge{display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:4px 12px;font-size:12px;color:#2d6ef5;font-weight:600;margin-bottom:20px;}
-.back-link{font-size:12px;color:#8a93b0;cursor:pointer;margin-top:12px;display:inline-block;}
+.success-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:24px;text-align:center;}
+.success-icon{font-size:40px;margin-bottom:12px;}
+.success-title{font-size:17px;font-weight:600;color:#15803d;margin-bottom:8px;}
+.success-msg{font-size:13px;color:#4a5272;line-height:1.6;}
+.success-email{font-family:'JetBrains Mono',monospace;font-size:13px;color:#2d6ef5;font-weight:600;margin:8px 0;}
+.resend-link{font-size:12px;color:#8a93b0;cursor:pointer;margin-top:16px;display:inline-block;text-decoration:underline;}
+.resend-link:hover{color:#2d6ef5;}
+.back-link{font-size:12px;color:#8a93b0;cursor:pointer;margin-top:8px;display:inline-block;}
 .back-link:hover{color:#2d6ef5;}
-.spinner{display:none;width:20px;height:20px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
-@keyframes spin{to{transform:rotate(360deg);}}
+.divider{text-align:center;color:#8a93b0;font-size:12px;margin:8px 0;}
 </style>
 </head>
 <body>
-
 <div class="card">
   <div class="logo">SPOT<span>TER</span></div>
-  <div class="tagline">AQA Science — Spec-mapped past paper questions</div>
+  <div class="tagline">Spec-mapped past paper questions<br>for AQA Science</div>
 
   <!-- Step 1: Enter email -->
   <div class="step active" id="step1">
     <div class="error" id="err1"></div>
     <label for="email">School or College Email</label>
     <input type="email" id="email" placeholder="name@school.sch.uk" autocomplete="email">
-    <button class="btn" onclick="requestCode()">Send Verification Code</button>
+    <button class="btn" id="btn1" onclick="requestLink()">Send Me a Login Link</button>
   </div>
 
-  <!-- Step 2: Enter code -->
+  <!-- Step 2: Check email -->
   <div class="step" id="step2">
-    <div class="error" id="err2"></div>
-    <div class="school-badge" id="school-name"></div>
-    <p class="success-msg">We've sent a 6-digit code to<br><strong id="email-display"></strong></p>
-    <label for="code">Verification Code</label>
-    <input type="text" id="code" class="code-input" placeholder="000000" maxlength="6" autocomplete="one-time-code">
-    <button class="btn" onclick="verifyCode()">Verify & Access SPOTTER</button>
-    <div class="back-link" onclick="goBack()">← Use a different email</div>
-    <div style="margin-top:12px;">
-      <span class="back-link" onclick="requestCode(true)">Resend code</span>
+    <div class="success-card">
+      <div class="success-icon">📬</div>
+      <div class="success-title">Check your email!</div>
+      <p class="success-msg">We've sent a login link to</p>
+      <div class="success-email" id="email-display"></div>
+      <p class="success-msg">Click the link in the email to access SPOTTER.<br>It expires in 15 minutes.</p>
+    </div>
+    <div style="text-align:center;margin-top:16px;">
+      <span class="resend-link" onclick="requestLink(true)">Resend link</span>
+      <div class="divider">·</div>
+      <span class="back-link" onclick="goBack()">Use a different email</span>
     </div>
   </div>
 </div>
@@ -63,21 +67,21 @@ input.code-input{font-family:'JetBrains Mono',monospace;font-size:28px;letter-sp
 const API = '/auth.php';
 let currentEmail = '';
 
-function showError(id, msg) {
-  const el = document.getElementById(id);
+function showError(msg) {
+  const el = document.getElementById('err1');
   el.textContent = msg;
   el.style.display = 'block';
 }
-function hideError(id) {
-  document.getElementById(id).style.display = 'none';
+function hideError() {
+  document.getElementById('err1').style.display = 'none';
 }
 
-async function requestCode(resend = false) {
-  hideError('err1');
-  const email = resend ? currentEmail : document.getElementById('email').value.trim();
-  if (!email) { showError('err1', 'Please enter your email address.'); return; }
+async function requestLink(resend = false) {
+  hideError();
+  const email = resend ? currentEmail : document.getElementById('email').value.trim().toLowerCase();
+  if (!email) { showError('Please enter your email address.'); return; }
 
-  const btn = document.querySelector('#step1 .btn');
+  const btn = document.getElementById('btn1');
   btn.disabled = true;
   btn.textContent = 'Sending…';
 
@@ -85,93 +89,55 @@ async function requestCode(resend = false) {
     const res = await fetch(API, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({action: 'request_code', email})
+      body: JSON.stringify({action: 'request_link', email})
     });
     const data = await res.json();
 
     if (!res.ok) {
-      showError('err1', data.error || 'Something went wrong.');
+      showError(data.error || 'Something went wrong. Please try again.');
       btn.disabled = false;
-      btn.textContent = 'Send Verification Code';
+      btn.textContent = 'Send Me a Login Link';
       return;
     }
 
     currentEmail = email;
     document.getElementById('email-display').textContent = email;
-    document.getElementById('school-name').textContent = data.school || email.split('@')[1];
     document.getElementById('step1').classList.remove('active');
     document.getElementById('step2').classList.add('active');
-    setTimeout(() => document.getElementById('code').focus(), 100);
 
   } catch(e) {
-    showError('err1', 'Network error. Please try again.');
+    showError('Network error. Please try again.');
   }
 
   btn.disabled = false;
-  btn.textContent = 'Send Verification Code';
-}
-
-async function verifyCode() {
-  hideError('err2');
-  const code = document.getElementById('code').value.trim();
-  if (code.length !== 6) { showError('err2', 'Please enter the 6-digit code.'); return; }
-
-  const btn = document.querySelector('#step2 .btn');
-  btn.disabled = true;
-  btn.textContent = 'Verifying…';
-
-  try {
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({action: 'verify_code', email: currentEmail, code})
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      showError('err2', data.error || 'Invalid code.');
-      btn.disabled = false;
-      btn.textContent = 'Verify & Access SPOTTER';
-      return;
-    }
-
-    // Store session token
-    localStorage.setItem('spotter_token', data.token);
-    localStorage.setItem('spotter_email', data.email);
-    localStorage.setItem('spotter_domain', data.domain);
-
-    // Redirect to main page
-    window.location.href = 'index.html';
-
-  } catch(e) {
-    showError('err2', 'Network error. Please try again.');
-    btn.disabled = false;
-    btn.textContent = 'Verify & Access SPOTTER';
-  }
+  btn.textContent = 'Send Me a Login Link';
 }
 
 function goBack() {
   document.getElementById('step2').classList.remove('active');
   document.getElementById('step1').classList.add('active');
-  hideError('err2');
-  document.getElementById('code').value = '';
+  hideError();
 }
 
-// Allow Enter key
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (document.getElementById('step1').classList.contains('active')) requestCode();
-    else verifyCode();
-  }
-});
+// Handle magic link return (session token in URL)
+const params = new URLSearchParams(window.location.search);
+const session = params.get('session');
+const email   = params.get('email');
+const error   = params.get('error');
 
-// Auto-format code input
-document.addEventListener('DOMContentLoaded', () => {
-  const codeInput = document.getElementById('code');
-  codeInput.addEventListener('input', e => {
-    e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
-  });
-});
+if (session && email) {
+  // Store session and redirect
+  localStorage.setItem('spotter_token', session);
+  localStorage.setItem('spotter_email', email);
+  window.location.href = '/index.html';
+}
+
+if (error === 'expired') {
+  showError('Your login link has expired. Please request a new one.');
+}
+if (error === 'invalid') {
+  showError('Invalid login link. Please request a new one.');
+}
 
 // Check if already logged in
 const token = localStorage.getItem('spotter_token');
@@ -181,9 +147,14 @@ if (token) {
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({action: 'verify_session', token})
   }).then(r => r.json()).then(data => {
-    if (data.valid) window.location.href = 'index.html';
+    if (data.valid) window.location.href = '/index.html';
   }).catch(() => {});
 }
+
+// Enter key support
+document.getElementById('email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') requestLink();
+});
 </script>
 </body>
 </html>
