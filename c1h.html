@@ -108,7 +108,7 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
 <body>
 <script src="session_check.js"></script>
 <div id="hdr">
-  <div id="logo">SPOT<span>TER</span></div>
+  <a id="logo" href="index.html" style="text-decoration:none">SPOT<span>TER</span></a>
   <a id="back-link" href="index.html">← All subjects</a>
   <div id="stats">213 questions · 7 papers · Chemistry 1H</div>
   <div id="search-wrap">
@@ -2747,7 +2747,8 @@ async function loadPdf(url, pageNum, qNum, isAnswer) {
   setLoading(true);
   arrow.style.display = 'none';
   try {
-    const fetchUrl = PROXY + encodeURIComponent(url);
+    // Drive worker URLs used directly — no proxy wrapping needed
+    const fetchUrl = url;
     if (fetchUrl === currentPdfUrl && currentPdfDoc) {
       currentPage = pageNum;
       currentQNum = qNum;
