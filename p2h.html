@@ -840,7 +840,7 @@ openQuestion = function(row, mode) {
 };
 
 // Override panel toggle for mobile
-panelToggle.addEventListener('click', () => {
+if (panelToggle) panelToggle.addEventListener('click', () => {
   if (isMobile()) {
     if (pdfPanel.classList.contains('drawer-open')) {
       closeDrawer();

@@ -2862,7 +2862,7 @@ function openQuestion(row, mode) {
 function togglePanel() {
   panelVisible = !panelVisible;
   pdfPanel.classList.toggle('hidden', !panelVisible);
-  panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
+  if (panelToggle) panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
 }
 
 // ── Fullscreen ─────────────────────────────────────────
@@ -3112,7 +3112,7 @@ openQuestion = function(row, mode) {
 };
 
 // Override panel toggle for mobile
-panelToggle.addEventListener('click', () => {
+if (panelToggle) panelToggle.addEventListener('click', () => {
   if (isMobile()) {
     if (pdfPanel.classList.contains('drawer-open')) {
       closeDrawer();
