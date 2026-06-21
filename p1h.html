@@ -115,16 +115,16 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
   #stats { font-size: 10px; order: 3; width: 100%; }
   #search-wrap { order: 4; width: 100%; }
   #search { width: 100%; }
-  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 2px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; }
+  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 4px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; scrollbar-width: none; }
   #filter-wrap::-webkit-scrollbar { display: none; }
-  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; }
+  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; font-size: 11px !important; padding: 5px 10px !important; }
   #btn-top { order: 1; }
   #panel-toggle { order: 2; }
 
   #main { flex-direction: column; position: relative; }
 
   /* Index takes full width */
-  #index { width: 100%; height: calc(100vh - var(--hdr)); overflow-y: auto; }
+  #index { width: 100%; height: calc(100dvh - var(--hdr)); overflow-y: auto; padding-top: 4px; }
 
   /* Hide desktop drag handle */
   #drag-handle { display: none; }
@@ -213,27 +213,7 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
 
   /* Nav pills scrollable */
 
-  /* Mobile dropdown instead of filter buttons */
-  #mobile-section-select {
-    display: block !important;
-    width: 100%;
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text1);
-    cursor: pointer;
-    order: 5;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8fa8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-  #filter-wrap { display: none !important; }
-  #nav-pills { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
+  
   #nav-pills::-webkit-scrollbar { display: none; }
   .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
 }
@@ -268,25 +248,17 @@ if (mobileSelect) {
 <div id="stats">240 questions · 8 papers · Physics 1H</div>
 <div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
 <div id="filter-wrap">
-    <button class="filter-btn  active" data-filter="all">All</button>
+<button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="6.1">6.1 Energy</button>
     <button class="filter-btn" data-filter="6.2">6.2 Electricity</button>
     <button class="filter-btn" data-filter="6.3">6.3 Particles</button>
     <button class="filter-btn" data-filter="6.4">6.4 Atomic</button>
 </div>
-<select id="mobile-section-select" style="display:none">
-<option value="">Choose topic…</option>
-<option value="6.1">6.1 Energy</option>
-<option value="6.2">6.2 Electricity</option>
-<option value="6.3">6.3 Particle Model</option>
-<option value="6.4">6.4 Atomic Structure</option>
-</select>
-<button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page">↑ Top of page</button>
+<button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Top of page">↑ Top of page</button>
 <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
-</div>
 <div id="main"><div id="index">
-<div id="nav-pills"><a class="nav-pill" href="#sec-6-1">→ 6.1 Energy</a><a class="nav-pill" href="#sec-6-2">→ 6.2 Electricity</a><a class="nav-pill" href="#sec-6-3">→ 6.3 Particles</a><a class="nav-pill" href="#sec-6-4">→ 6.4 Atomic</a></div>
+<div id="nav-pills"><a class="nav-pill" href="#sec-6-1">→ 6.1 Energy</a><a class="nav-pill" href="#sec-6-2">→ 6.2 Electricity</a><a class="nav-pill" href="#sec-6-3">→ 6.3 Particle Model of Matter</a><a class="nav-pill" href="#sec-6-4">→ 6.4 Atomic Structure</a></div>
 <div class="spec-section" id="sec-6-1"><h2 class="spec-h2"><span class="spec-tag">6.1</span>Energy</h2>
 <div class="ref-group"><div class="ref-label"><span class="spec-tag sm">6.1.1.1</span> Energy stores and systems</div>
 <div class="qrow" data-paper="Spec·P1H" data-qnum="02.1" data-qp-url="https://spotter-onedrive-proxy.topscienceguru.workers.dev?action=file&file=1y1B2CfYdVD8mormWAuSPcK5h0z0JHo5x" data-ms-url="https://spotter-onedrive-proxy.topscienceguru.workers.dev?action=file&file=1IcAWonhM_IhEUU4ncrzLnLcj9eSudM6D" data-qp-page="6" data-ms-page="7" data-qp-y="291.0" data-ms-y="181.0" data-qp-page-h="842.0" data-ms-page-h="842.0"><div class="qcell qmeta"><span class="pbadge">Spec·P1H</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.1 — Describe how different energy stores change as the remote control car moves</div><div class="qcell qbtns"><button class="btn-q">Q</button> <button class="btn-a">A</button></div></div>
@@ -978,7 +950,7 @@ document.querySelectorAll('.nav-pill').forEach(pill => {
   });
 });
 
-// Fix filter buttons on mobile — scroll to section instead of filtering
+// Fix filter buttons on mobile — scroll to section
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function(e) {
     if (!isMobile()) return;
@@ -988,11 +960,10 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     if (filter === 'all') {
       indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const prefix = filter.replace(/\./g, '-');
-      const sec = document.querySelector('[id*="' + prefix + '"]');
+      const prefix = 'sec-' + filter.replace(/\./g, '-');
+      const sec = document.getElementById(prefix);
       if (sec) {
-        const secTop = sec.offsetTop;
-        indexDiv.scrollTo({ top: secTop - 10, behavior: 'smooth' });
+        indexDiv.scrollTo({ top: sec.offsetTop - 8, behavior: 'smooth' });
       }
     }
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));

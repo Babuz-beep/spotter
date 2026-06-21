@@ -118,16 +118,16 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
   #stats { font-size: 10px; order: 3; width: 100%; }
   #search-wrap { order: 4; width: 100%; }
   #search { width: 100%; }
-  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 2px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; }
+  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 4px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; scrollbar-width: none; }
   #filter-wrap::-webkit-scrollbar { display: none; }
-  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; }
+  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; font-size: 11px !important; padding: 5px 10px !important; }
   #btn-top { order: 1; }
   #panel-toggle { order: 2; }
 
   #main { flex-direction: column; position: relative; }
 
   /* Index takes full width */
-  #index { width: 100%; height: calc(100vh - var(--hdr)); overflow-y: auto; }
+  #index { width: 100%; height: calc(100dvh - var(--hdr)); overflow-y: auto; padding-top: 4px; }
 
   /* Hide desktop drag handle */
   #drag-handle { display: none; }
@@ -216,27 +216,7 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
 
   /* Nav pills scrollable */
 
-  /* Mobile dropdown instead of filter buttons */
-  #mobile-section-select {
-    display: block !important;
-    width: 100%;
-    background: var(--bg2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text1);
-    cursor: pointer;
-    order: 5;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8fa8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-  }
-  #filter-wrap { display: none !important; }
-  #nav-pills { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
+  
   #nav-pills::-webkit-scrollbar { display: none; }
   .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
 }
@@ -245,33 +225,27 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
 </head>
 <body>
 <div id="hdr">
-<a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
-<a id="back-link" href="index.html">← All subjects</a>
-<div id="stats">280 questions · 6 papers · Chemistry 2H</div>
-<div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
-<div id="filter-wrap">
-    <button class="filter-btn  active" data-filter="all">All</button>
+  <a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
+  <a id="back-link" href="index.html">← All subjects</a>
+  <div id="stats">290 questions · 6 papers · Chemistry 2H</div>
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search questions…" autocomplete="off">
+  </div>
+  <div id="filter-wrap">
+    <button class="filter-btn active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="5.6">5.6 Rate</button>
     <button class="filter-btn" data-filter="5.7">5.7 Organic</button>
     <button class="filter-btn" data-filter="5.8">5.8 Analysis</button>
     <button class="filter-btn" data-filter="5.9">5.9 Atmosphere</button>
     <button class="filter-btn" data-filter="5.10">5.10 Resources</button>
-</div>
-<select id="mobile-section-select" style="display:none">
-<option value="">Choose topic…</option>
-<option value="5.6">5.6 Rate of Reaction</option>
-<option value="5.7">5.7 Organic Chemistry</option>
-<option value="5.8">5.8 Chemical Analysis</option>
-<option value="5.9">5.9 Atmosphere</option>
-<option value="5.10">5.10 Using Resources</option>
-</select>
-<button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page">↑ Top of page</button>
-<button id="panel-toggle" style="display:none">⊞ Panel</button>
-</div>
+  </div>
+  <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 <div id="main">
   <div id="index">
-    <div id="nav-pills"><a class="nav-pill" href="#sec-5-6">→ 5.6 Rate</a><a class="nav-pill" href="#sec-5-7">→ 5.7 Organic</a><a class="nav-pill" href="#sec-5-8">→ 5.8 Analysis</a><a class="nav-pill" href="#sec-5-9">→ 5.9 Atmosphere</a><a class="nav-pill" href="#sec-5-10">→ 5.10 Resources</a></div>
+    <div id="nav-pills">
+      <a class="nav-pill" href="#sec-5-6">→ 5.6 Rate & Extent of Chemical Change</a><a class="nav-pill" href="#sec-5-7">→ 5.7 Organic Chemistry</a><a class="nav-pill" href="#sec-5-8">→ 5.8 Chemical Analysis</a><a class="nav-pill" href="#sec-5-9">→ 5.9 Chemistry of the Atmosphere</a><a class="nav-pill" href="#sec-5-10">→ 5.10 Using Resources</a>
+    </div>
     <div class="spec-section" id="sec-5-6"><h2 class="spec-h2"><span class="spec-tag">5.6</span>Rate & Extent of Chemical Change</h2><div class="sub-section"><h3 class="spec-h3"><span class="spec-tag">5.6.1</span>Rate of reaction</h3><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.1.1</span>Calculating rates</div><div class="qrow"
             data-paper="Jun18·C2H"
             data-qnum="08.1"
@@ -3461,7 +3435,7 @@ document.querySelectorAll('.nav-pill').forEach(pill => {
   });
 });
 
-// Fix filter buttons on mobile — scroll to section instead of filtering
+// Fix filter buttons on mobile — scroll to section
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function(e) {
     if (!isMobile()) return;
@@ -3471,11 +3445,10 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     if (filter === 'all') {
       indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const prefix = filter.replace(/\./g, '-');
-      const sec = document.querySelector('[id*="' + prefix + '"]');
+      const prefix = 'sec-' + filter.replace(/\./g, '-');
+      const sec = document.getElementById(prefix);
       if (sec) {
-        const secTop = sec.offsetTop;
-        indexDiv.scrollTo({ top: secTop - 10, behavior: 'smooth' });
+        indexDiv.scrollTo({ top: sec.offsetTop - 8, behavior: 'smooth' });
       }
     }
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
