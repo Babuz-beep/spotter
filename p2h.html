@@ -192,7 +192,7 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
 
   /* Mobile dropdown instead of filter buttons */
   #mobile-section-select {
-    display: block;
+    display: block !important;
     width: 100%;
     background: var(--bg2);
     border: 1px solid var(--border2);
@@ -219,22 +219,31 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
 </head>
 <body>
 <div id="hdr">
-  <a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
-  <a id="back-link" href="index.html">← All subjects</a>
-  <div id="stats">196 questions · 7 papers · Physics 2H</div>
-  <div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
-  <div id="filter-wrap">
-    <button class="filter-btn active" data-filter="all">All</button>
+<a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
+<a id="back-link" href="index.html">← All subjects</a>
+<div id="stats">196 questions · 7 papers · Physics 2H</div>
+<div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
+<div id="filter-wrap">
+    <button class="filter-btn  active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="6.5">6.5 Forces</button>
     <button class="filter-btn" data-filter="6.6">6.6 Waves</button>
     <button class="filter-btn" data-filter="6.7">6.7 Magnetism</button>
     <button class="filter-btn" data-filter="6.8">6.8 Space</button>
-  </div>
-  <button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Top of page" style="font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;display:inline-block !important">↑ Top of page</button>
-  <button id="panel-toggle" style="display:none">⊞ Panel</button>
+</div>
+<select id="mobile-section-select" style="display:none">
+<option value="">Choose topic…</option>
+<option value="6.5">6.5 Forces</option>
+<option value="6.6">6.6 Waves</option>
+<option value="6.7">6.7 Magnetism & EM</option>
+<option value="6.8">6.8 Space Physics</option>
+</select>
+<button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page">↑ Top of page</button>
+<button id="panel-toggle" style="display:none">⊞ Panel</button>
+</div>
 </div>
 <div id="main">
   <div id="index">
+<div id="nav-pills"><a class="nav-pill" href="#sec-6-5">→ 6.5 Forces</a><a class="nav-pill" href="#sec-6-6">→ 6.6 Waves</a><a class="nav-pill" href="#sec-6-7">→ 6.7 Magnetism</a><a class="nav-pill" href="#sec-6-8">→ 6.8 Space</a></div>
     <div class="spec-section" id="sec-6-5"><h2 class="spec-h2"><span class="spec-tag">6.5</span>Forces</h2>
 <div class="sub-section" id="sub-6-5-1"><h3 class="spec-h3"><span class="spec-tag">6.5.1</span>Forces and their interactions</h3>
 <div class="ref-group"><div class="ref-label"><span class="spec-tag sm">6.5.1.1</span>Scalar and vector quantities</div>
@@ -840,7 +849,7 @@ openQuestion = function(row, mode) {
 };
 
 // Override panel toggle for mobile
-if (panelToggle) panelToggle.addEventListener('click', () => {
+panelToggle.addEventListener('click', () => {
   if (isMobile()) {
     if (pdfPanel.classList.contains('drawer-open')) {
       closeDrawer();

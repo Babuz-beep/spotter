@@ -215,7 +215,7 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
 
   /* Mobile dropdown instead of filter buttons */
   #mobile-section-select {
-    display: block;
+    display: block !important;
     width: 100%;
     background: var(--bg2);
     border: 1px solid var(--border2);
@@ -268,17 +268,25 @@ if (mobileSelect) {
 <div id="stats">240 questions · 8 papers · Physics 1H</div>
 <div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
 <div id="filter-wrap">
-<button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn  active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="6.1">6.1 Energy</button>
     <button class="filter-btn" data-filter="6.2">6.2 Electricity</button>
     <button class="filter-btn" data-filter="6.3">6.3 Particles</button>
     <button class="filter-btn" data-filter="6.4">6.4 Atomic</button>
 </div>
-<button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Top of page">↑ Top of page</button>
+<select id="mobile-section-select" style="display:none">
+<option value="">Choose topic…</option>
+<option value="6.1">6.1 Energy</option>
+<option value="6.2">6.2 Electricity</option>
+<option value="6.3">6.3 Particle Model</option>
+<option value="6.4">6.4 Atomic Structure</option>
+</select>
+<button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page">↑ Top of page</button>
 <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
+</div>
 <div id="main"><div id="index">
-<div id="nav-pills"><a class="nav-pill" href="#sec-6-1">→ 6.1 Energy</a><a class="nav-pill" href="#sec-6-2">→ 6.2 Electricity</a><a class="nav-pill" href="#sec-6-3">→ 6.3 Particle Model of Matter</a><a class="nav-pill" href="#sec-6-4">→ 6.4 Atomic Structure</a></div>
+<div id="nav-pills"><a class="nav-pill" href="#sec-6-1">→ 6.1 Energy</a><a class="nav-pill" href="#sec-6-2">→ 6.2 Electricity</a><a class="nav-pill" href="#sec-6-3">→ 6.3 Particles</a><a class="nav-pill" href="#sec-6-4">→ 6.4 Atomic</a></div>
 <div class="spec-section" id="sec-6-1"><h2 class="spec-h2"><span class="spec-tag">6.1</span>Energy</h2>
 <div class="ref-group"><div class="ref-label"><span class="spec-tag sm">6.1.1.1</span> Energy stores and systems</div>
 <div class="qrow" data-paper="Spec·P1H" data-qnum="02.1" data-qp-url="https://spotter-onedrive-proxy.topscienceguru.workers.dev?action=file&file=1y1B2CfYdVD8mormWAuSPcK5h0z0JHo5x" data-ms-url="https://spotter-onedrive-proxy.topscienceguru.workers.dev?action=file&file=1IcAWonhM_IhEUU4ncrzLnLcj9eSudM6D" data-qp-page="6" data-ms-page="7" data-qp-y="291.0" data-ms-y="181.0" data-qp-page-h="842.0" data-ms-page-h="842.0"><div class="qcell qmeta"><span class="pbadge">Spec·P1H</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">02.1 — Describe how different energy stores change as the remote control car moves</div><div class="qcell qbtns"><button class="btn-q">Q</button> <button class="btn-a">A</button></div></div>
@@ -790,7 +798,7 @@ function openQuestion(row, mode) {
 function togglePanel() {
   panelVisible = !panelVisible;
   pdfPanel.classList.toggle('hidden', !panelVisible);
-  if (panelToggle) panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
+  panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
 }
 
 function toggleFullscreen() {
@@ -1007,7 +1015,7 @@ openQuestion = function(row, mode) {
 };
 
 // Override panel toggle for mobile
-if (panelToggle) panelToggle.addEventListener('click', () => {
+panelToggle.addEventListener('click', () => {
   if (isMobile()) {
     if (pdfPanel.classList.contains('drawer-open')) {
       closeDrawer();

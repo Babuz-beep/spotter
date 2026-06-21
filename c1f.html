@@ -543,28 +543,34 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
 
 <!-- Header -->
 <div id="hdr">
-  <a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
-  <div id="stats">291 questions · 7 papers</div>
-  <div id="search-wrap">
-    <input id="search" type="text" placeholder="Search questions…" autocomplete="off">
-  </div>
-  <div id="filter-wrap">
-    <button class="filter-btn active" data-filter="all">All</button>
+<a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
+<a id="back-link" href="index.html">← All subjects</a>
+<div id="stats">291 questions · 7 papers · Chemistry 1F</div>
+<div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
+<div id="filter-wrap">
+    <button class="filter-btn  active" data-filter="all">All</button>
     <button class="filter-btn" data-filter="5.1">5.1 Atomic</button>
     <button class="filter-btn" data-filter="5.2">5.2 Bonding</button>
     <button class="filter-btn" data-filter="5.3">5.3 Quant</button>
     <button class="filter-btn" data-filter="5.4">5.4 Chem Δ</button>
     <button class="filter-btn" data-filter="5.5">5.5 Energy</button>
-  </div>
-  <button id="panel-toggle" style="display:none">⊞ Panel</button>
+</div>
+<select id="mobile-section-select" style="display:none">
+<option value="">Choose topic…</option>
+<option value="5.1">5.1 Atomic Structure</option>
+<option value="5.2">5.2 Bonding</option>
+<option value="5.3">5.3 Quantitative</option>
+<option value="5.4">5.4 Chemical Changes</option>
+<option value="5.5">5.5 Energy Changes</option>
+</select>
+<button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page">↑ Top of page</button>
+<button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 
 <!-- Main layout -->
 <div id="main">
   <div id="index">
-    <div id="nav-pills">
-      <a class="nav-pill" href="#sec-5-1">→ 5.1 Atomic Structure & Periodic Table</a><a class="nav-pill" href="#sec-5-2">→ 5.2 Bonding, Structure & Properties</a><a class="nav-pill" href="#sec-5-3">→ 5.3 Quantitative Chemistry</a><a class="nav-pill" href="#sec-5-4">→ 5.4 Chemical Changes</a><a class="nav-pill" href="#sec-5-5">→ 5.5 Energy Changes</a>
-    </div>
+    <div id="nav-pills"><a class="nav-pill" href="#sec-5-1">→ 5.1 Atomic</a><a class="nav-pill" href="#sec-5-2">→ 5.2 Bonding</a><a class="nav-pill" href="#sec-5-3">→ 5.3 Quant</a><a class="nav-pill" href="#sec-5-4">→ 5.4 Chem Δ</a><a class="nav-pill" href="#sec-5-5">→ 5.5 Energy</a></div>
     <div class="spec-section" id="sec-5-1"><h2 class="spec-h2"><span class="spec-tag">5.1</span>Atomic Structure & Periodic Table</h2><div class="sub-section"><h3 class="spec-h3"><span class="spec-tag">5.1.1</span>A Simple Model of the Atom</h3><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.1.1.2</span>Mixtures & separation techniques</div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="04.1"
@@ -2862,7 +2868,7 @@ function openQuestion(row, mode) {
 function togglePanel() {
   panelVisible = !panelVisible;
   pdfPanel.classList.toggle('hidden', !panelVisible);
-  if (panelToggle) panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
+  panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
 }
 
 // ── Fullscreen ─────────────────────────────────────────
@@ -3112,7 +3118,7 @@ openQuestion = function(row, mode) {
 };
 
 // Override panel toggle for mobile
-if (panelToggle) panelToggle.addEventListener('click', () => {
+panelToggle.addEventListener('click', () => {
   if (isMobile()) {
     if (pdfPanel.classList.contains('drawer-open')) {
       closeDrawer();
