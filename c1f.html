@@ -399,6 +399,109 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   font-size: 12px;
   display: none;
 }
+/* ── MOBILE DRAWER (≤768px) ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --hdr: 104px; }
+
+  #hdr {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  #logo { font-size: 13px; }
+  #back-link { display: none; }
+  #stats { font-size: 10px; order: 3; width: 100%; }
+  #search-wrap { order: 4; width: 100%; }
+  #search { width: 100%; }
+  #filter-wrap { order: 5; width: 100%; overflow-x: auto; padding-bottom: 2px; }
+  #btn-top { order: 1; }
+  #panel-toggle { order: 2; }
+
+  #main { flex-direction: column; position: relative; }
+
+  /* Index takes full width */
+  #index { width: 100%; height: calc(100vh - var(--hdr)); overflow-y: auto; }
+
+  /* Hide desktop drag handle */
+  #drag-handle { display: none; }
+
+  /* PDF panel becomes bottom drawer */
+  #pdf-panel {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto !important;
+    width: 100% !important;
+    height: 85vh;
+    border-left: none !important;
+    border-top: 2px solid var(--accent);
+    border-radius: 16px 16px 0 0;
+    z-index: 300;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+    display: flex !important;
+  }
+  #pdf-panel.hidden { transform: translateY(100%); }
+  #pdf-panel.drawer-open { transform: translateY(0); }
+
+  /* Drawer handle bar at top */
+  #panel-hdr {
+    padding: 10px 12px 8px;
+    flex-shrink: 0;
+  }
+  #panel-hdr::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin: 0 auto 10px;
+  }
+
+  /* Close button visible on mobile */
+  #btn-close-drawer {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    font-size: 16px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* Overlay behind drawer */
+  #drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 299;
+  }
+  #drawer-overlay.active { display: block; }
+
+  /* Fullscreen still works */
+  body.fullscreen #pdf-panel {
+    height: 100vh !important;
+    border-radius: 0;
+  }
+
+  /* qrow marks badge smaller */
+  .mbadge { display: none; }
+
+  /* Nav pills scrollable */
+  #nav-pills { overflow-x: auto; flex-wrap: nowrap; }
+  .nav-pill { white-space: nowrap; }
+}
+
 </style>
 </head>
 <body>
@@ -2472,7 +2575,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   <div id="pdf-panel">
     <div id="panel-hdr">
       <div id="panel-title">Select a question</div>
-      <div id="panel-controls">
+      <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="display:none" title="Close">×</button>
         <button class="pctrl" id="btn-q-mode">Q</button>
         <button class="pctrl" id="btn-a-mode">A</button>
         <button class="pctrl" id="btn-prev" title="Previous page">◀</button>
@@ -2853,6 +2956,49 @@ document.addEventListener('mouseup', () => {
   isDragging = false; dragHandle.classList.remove('active');
   document.body.style.cursor = ''; document.body.style.userSelect = '';
 });
+
+// ── MOBILE DRAWER ─────────────────────────────────────────────────────────
+const isMobile = () => window.innerWidth <= 768;
+const overlay = document.createElement('div');
+overlay.id = 'drawer-overlay';
+overlay.onclick = closeDrawer;
+document.body.appendChild(overlay);
+
+function openDrawer() {
+  if (!isMobile()) return;
+  pdfPanel.classList.remove('hidden');
+  pdfPanel.classList.add('drawer-open');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  pdfPanel.classList.remove('drawer-open');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    if (!pdfPanel.classList.contains('drawer-open')) {
+      pdfPanel.classList.add('hidden');
+      panelVisible = false;
+    }
+  }, 300);
+}
+
+// Override panel toggle for mobile
+panelToggle.addEventListener('click', () => {
+  if (isMobile()) {
+    if (pdfPanel.classList.contains('drawer-open')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  } else {
+    panelVisible = !panelVisible;
+    pdfPanel.classList.toggle('hidden', !panelVisible);
+    panelToggle.textContent = panelVisible ? '\u229e Panel' : '\u229f Panel';
+  }
+});
+
 </script>
 </body>
 </html>
