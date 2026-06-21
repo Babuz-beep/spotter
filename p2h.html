@@ -196,28 +196,18 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
 </head>
 <body>
 <div id="hdr">
-  <a id="logo" href="index.html">SPOT<span>TER</span></a>
+  <a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
   <a id="back-link" href="index.html">← All subjects</a>
   <div id="stats">196 questions · 7 papers · Physics 2H</div>
   <div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
-  <select id="topic-select">
-    <option value="">Jump to topic…</option>
-<optgroup label="Forces">
-<option value="sub-6-5-1">6.5.1 Forces and their interactions</option>
-<option value="sub-6-5-2">6.5.2 Work done and energy transfer</option>
-<option value="sub-6-5-3">6.5.3 Forces and elasticity</option>
-<option value="sub-6-5-4">6.5.4 Motion</option>
-<option value="sub-6-5-5">6.5.5 Momentum</option>
-</optgroup>
-<optgroup label="Waves">
-<option value="sub-6-6-1">6.6.1 Waves in air, fluids and solids</option>
-<option value="sub-6-6-2">6.6.2 Electromagnetic waves</option>
-</optgroup>
-<optgroup label="Magnetism & Electromagnetism">
-<option value="sub-6-7-1">6.7.1 Permanent and induced magnetism</option>
-<option value="sub-6-7-2">6.7.2 Uses of electromagnetism</option>
-</optgroup>
-  </select>
+  <div id="filter-wrap">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="6.5">6.5 Forces</button>
+    <button class="filter-btn" data-filter="6.6">6.6 Waves</button>
+    <button class="filter-btn" data-filter="6.7">6.7 Magnetism</button>
+    <button class="filter-btn" data-filter="6.8">6.8 Space</button>
+  </div>
+  <button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Top of page" style="font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;display:inline-block !important">↑ Top of page</button>
   <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 <div id="main">
@@ -516,7 +506,6 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
         <button class="pctrl" id="btn-full">⛶ Full</button>
       </div>
       <div id="panel-title">Select a question</div>
-      <a id="btn-aqa-link" href="#" target="_blank" rel="noopener">↗ AQA Paper Link</a>
     </div>
     <div id="pdf-viewport">
       <div id="loading-bar"></div>
