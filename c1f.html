@@ -2984,6 +2984,20 @@ function closeDrawer() {
   }, 300);
 }
 
+// Auto-open drawer on mobile when Q or A tapped
+const _origOpenQuestion = openQuestion;
+openQuestion = function(row, mode) {
+  if (isMobile()) {
+    // Show drawer immediately with loading message
+    placeholder.innerHTML = '<div class="big">⏳</div><div>Loading — please wait…</div>';
+    placeholder.style.display = 'flex';
+    canvas.style.display = 'none';
+    arrow.style.display = 'none';
+    openDrawer();
+  }
+  _origOpenQuestion(row, mode);
+};
+
 // Override panel toggle for mobile
 panelToggle.addEventListener('click', () => {
   if (isMobile()) {
