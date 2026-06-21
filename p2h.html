@@ -757,14 +757,38 @@ if (btnCloseX) {
 // Fix nav pill scrolling on mobile — scroll #index div not window
 document.querySelectorAll('.nav-pill').forEach(pill => {
   pill.addEventListener('click', function(e) {
-    if (isMobile()) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      const indexDiv = document.getElementById('index');
-      if (target && indexDiv) {
-        indexDiv.scrollTo({ top: target.offsetTop - 10, behavior: 'smooth' });
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    const indexDiv = document.getElementById('index');
+    if (target && indexDiv) {
+      indexDiv.scrollTo({ top: target.offsetTop - 10, behavior: 'smooth' });
+    }
+  });
+});
+
+// Fix filter buttons on mobile — scroll to section instead of filtering
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    if (!isMobile()) return; // desktop keeps normal filter behaviour
+    e.stopPropagation();
+    const filter = this.getAttribute('data-filter');
+    if (filter === 'all') {
+      document.getElementById('index').scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Find the section by looking for spec-section containing this filter prefix
+      const sections = document.querySelectorAll('.spec-section');
+      for (const sec of sections) {
+        if (sec.id && sec.id.includes(filter.replace('.', '-'))) {
+          document.getElementById('index').scrollTo({ 
+            top: sec.offsetTop - 10, behavior: 'smooth' 
+          });
+          break;
+        }
       }
     }
+    // Update active state
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
   });
 });
 
