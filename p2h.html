@@ -159,6 +159,10 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
     touch-action: manipulation;
   }
   #btn-close-drawer:active { background: #b91c1c; }
+}
+/* Close button red on all devices */
+#btn-close-drawer{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;display:flex!important}
+@media(max-width:768px){
 
   /* Overlay behind drawer */
   #drawer-overlay {
@@ -180,8 +184,9 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
   .mbadge { display: none; }
 
   /* Nav pills scrollable */
-  #nav-pills { overflow-x: auto; flex-wrap: nowrap; }
-  .nav-pill { white-space: nowrap; }
+  #nav-pills { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  #nav-pills::-webkit-scrollbar { display: none; }
+  .nav-pill { white-space: nowrap; font-size: 11px; padding: 4px 10px; }
 }
 
 </style>
@@ -210,7 +215,7 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
 <option value="sub-6-7-2">6.7.2 Uses of electromagnetism</option>
 </optgroup>
   </select>
-  <button id="panel-toggle">⊞ Panel</button>
+  <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 <div id="main">
   <div id="index">

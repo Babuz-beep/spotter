@@ -481,6 +481,10 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
     touch-action: manipulation;
   }
   #btn-close-drawer:active { background: #b91c1c; }
+}
+/* Close button red on all devices */
+#btn-close-drawer{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;display:flex!important}
+@media(max-width:768px){
 
   /* Overlay behind drawer */
   #drawer-overlay {
@@ -502,8 +506,9 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   .mbadge { display: none; }
 
   /* Nav pills scrollable */
-  #nav-pills { overflow-x: auto; flex-wrap: nowrap; }
-  .nav-pill { white-space: nowrap; }
+  #nav-pills { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  #nav-pills::-webkit-scrollbar { display: none; }
+  .nav-pill { white-space: nowrap; font-size: 11px; padding: 4px 10px; }
 }
 
 </style>
@@ -525,7 +530,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
     <button class="filter-btn" data-filter="5.4">5.4 Chem Δ</button>
     <button class="filter-btn" data-filter="5.5">5.5 Energy</button>
   </div>
-  <button id="panel-toggle">⊞ Panel</button>
+  <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 
 <!-- Main layout -->
@@ -2579,7 +2584,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   <div id="pdf-panel">
     <div id="panel-hdr">
       <div id="panel-title">Select a question</div>
-      <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="display:none;background:#dc2626;color:#fff;border-color:#dc2626;font-size:18px;font-weight:700;min-width:36px;height:36px" title="Close" id="btn-close-drawer-x">×</button>
+      <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="background:#dc2626;color:#fff;border-color:#dc2626;font-size:18px;font-weight:700;min-width:36px;height:36px" title="Close" id="btn-close-drawer-x">×</button>
         <button class="pctrl" id="btn-q-mode">Q</button>
         <button class="pctrl" id="btn-a-mode">A</button>
         <button class="pctrl" id="btn-prev" title="Previous page">◀</button>
