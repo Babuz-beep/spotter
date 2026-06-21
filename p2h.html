@@ -77,52 +77,42 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
 #loading-bar{position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);display:none;animation:loadpulse 1.2s infinite;}
 @keyframes loadpulse{0%{opacity:1;transform:scaleX(0);transform-origin:left;}50%{opacity:1;transform:scaleX(.7);}100%{opacity:0;transform:scaleX(1);}}
 #no-results{padding:40px;text-align:center;color:var(--text3);font-size:12px;display:none;}
-
-/* ── MOBILE (≤768px) ─────────────────────────────────────────────────────── */
+/* ── MOBILE DRAWER (≤768px) ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  :root { --hdr: 120px; }
+  :root { --hdr: 104px; }
 
   #hdr {
     flex-wrap: wrap;
     height: auto;
-    padding: 8px 12px 6px;
-    gap: 5px;
+    padding: 8px 12px;
+    gap: 6px;
   }
-  #logo { font-size: 13px; order: 0; }
+  #logo { font-size: 13px; }
   #back-link { display: none; }
-  #stats { font-size: 10px; order: 3; width: 100%; margin: 0; }
+  #stats { font-size: 10px; order: 3; width: 100%; }
   #search-wrap { order: 4; width: 100%; }
   #search { width: 100%; }
-  #filter-wrap {
-    order: 5;
-    width: 100%;
-    overflow-x: auto;
-    flex-wrap: nowrap !important;
-    display: flex !important;
-    scrollbar-width: none;
-    padding-bottom: 2px;
-    gap: 5px;
-    -webkit-overflow-scrolling: touch;
-  }
+  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 2px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; }
   #filter-wrap::-webkit-scrollbar { display: none; }
-  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; font-size: 11px !important; padding: 5px 10px !important; }
-  #btn-top { order: 1; font-size: 10px; }
-  #panel-toggle { order: 2; display: none !important; }
+  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; }
+  #btn-top { order: 1; }
+  #panel-toggle { order: 2; }
 
-  #main { flex-direction: column; }
+  #main { flex-direction: column; position: relative; }
+
+  /* Index takes full width */
+  #index { width: 100%; height: calc(100vh - var(--hdr)); overflow-y: auto; }
+
+  /* Hide desktop drag handle */
   #drag-handle { display: none; }
 
-  /* Index full width, hide desktop nav pills */
-  #index { width: 100% !important; height: calc(100dvh - var(--hdr)); overflow-y: auto; }
-  #nav-pills { display: none !important; }
-
-  /* PDF panel full screen drawer */
+  /* PDF panel becomes bottom drawer */
   #pdf-panel {
     position: fixed !important;
-    top: 0 !important;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
+    top: 0 !important;
     width: 100% !important;
     height: 100% !important;
     max-height: -webkit-fill-available;
@@ -140,16 +130,30 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
   #pdf-panel.hidden { transform: translateY(100%); }
   #pdf-panel.drawer-open { transform: translateY(0); }
 
-  #panel-hdr { padding: 10px 12px 8px; flex-shrink: 0; }
+  /* Drawer handle bar at top */
+  #panel-hdr {
+    padding: 10px 12px 8px;
+    flex-shrink: 0;
+  }
+  #panel-hdr::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin: 0 auto 10px;
+  }
 
+  /* Close button visible on mobile */
   #btn-close-drawer {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    background: #dc2626 !important;
-    border: 2px solid #dc2626 !important;
+    background: #dc2626;
+    border: 2px solid #dc2626;
     border-radius: 8px;
-    color: #fff !important;
+    color: #fff;
     font-size: 20px;
     font-weight: 700;
     width: 40px;
@@ -159,8 +163,13 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  #btn-close-drawer:active { background: #b91c1c !important; }
+  #btn-close-drawer:active { background: #b91c1c; }
+}
+/* Close button red on all devices */
+#btn-close-drawer{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;display:flex!important}
+@media(max-width:768px){
 
+  /* Overlay behind drawer */
   #drawer-overlay {
     display: none;
     position: fixed;
@@ -170,7 +179,40 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
   }
   #drawer-overlay.active { display: block; }
 
+  /* Fullscreen still works */
+  body.fullscreen #pdf-panel {
+    height: 100vh !important;
+    border-radius: 0;
+  }
+
+  /* qrow marks badge smaller */
   .mbadge { display: none; }
+
+  /* Nav pills scrollable */
+
+  /* Mobile dropdown instead of filter buttons */
+  #mobile-section-select {
+    display: block;
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text1);
+    cursor: pointer;
+    order: 5;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8fa8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  #filter-wrap { display: none !important; }
+  #nav-pills { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
+  #nav-pills::-webkit-scrollbar { display: none; }
+  .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
 }
 
 </style>
@@ -188,13 +230,12 @@ body.fullscreen #pdf-panel{position:fixed;top:0;right:0;bottom:0;width:100vw !im
     <button class="filter-btn" data-filter="6.7">6.7 Magnetism</button>
     <button class="filter-btn" data-filter="6.8">6.8 Space</button>
   </div>
-  <button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page" style="font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;display:inline-block !important">↑ Top of page</button>
+  <button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Top of page" style="font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;display:inline-block !important">↑ Top of page</button>
   <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 <div id="main">
   <div id="index">
-<div id="nav-pills" style="margin-bottom:16px"><a class="nav-pill" href="#sec-6-5">→ 6.5 Forces</a><a class="nav-pill" href="#sec-6-6">→ 6.6 Waves</a><a class="nav-pill" href="#sec-6-7">→ 6.7 Magnetism</a><a class="nav-pill" href="#sec-6-8">→ 6.8 Space</a></div>
-<div class="spec-section" id="sec-6-5"><h2 class="spec-h2"><span class="spec-tag">6.5</span>Forces</h2>
+    <div class="spec-section" id="sec-6-5"><h2 class="spec-h2"><span class="spec-tag">6.5</span>Forces</h2>
 <div class="sub-section" id="sub-6-5-1"><h3 class="spec-h3"><span class="spec-tag">6.5.1</span>Forces and their interactions</h3>
 <div class="ref-group"><div class="ref-label"><span class="spec-tag sm">6.5.1.1</span>Scalar and vector quantities</div>
 <div class="qrow" data-paper="SQP·P2H" data-qnum="05.1" data-qp-url="https://www.aqa.org.uk/files/resources.science.AQA-84646P2H-SQP_PDF/97f1d201c9a5539c54c32417177f744cfb45dd82.pdf" data-ms-url="https://www.aqa.org.uk/files/resources.science.AQA-84646P2H-SMS_PDF/0055f8f1d01dad14f4d7ea73bc56fa7dece322a5.pdf" data-qp-page="13" data-ms-page="11" data-qp-y="397.9" data-ms-y="200.1" data-qp-page-h="842.0" data-ms-page-h="842.0"><div class="qcell qmeta"><span class="pbadge">SQP·P2H</span> <span class="mbadge">2m</span></div><div class="qcell qdesc">05.1 — Complete the free body diagram for a stationary skydiver in a wind tunnel [Figure 4 — print if needed]</div><div class="qcell qbtns"><button class="btn-q">Q</button><button class="btn-a">A</button></div></div>
@@ -694,14 +735,13 @@ new ResizeObserver(()=>{
 }).observe(viewport);
 
 
-// ── MOBILE ────────────────────────────────────────────────────────────────
+// ── MOBILE DRAWER ──────────────────────────────────────────────────────────
 const isMobile = () => window.innerWidth <= 768;
 
-// Overlay
-const overlay = document.createElement('div');
-overlay.id = 'drawer-overlay';
-overlay.onclick = closeDrawer;
-document.body.appendChild(overlay);
+const mobileOverlay = document.createElement('div');
+mobileOverlay.id = 'drawer-overlay';
+mobileOverlay.onclick = closeDrawer;
+document.body.appendChild(mobileOverlay);
 
 function openDrawer() {
   if (!isMobile()) return;
@@ -709,7 +749,7 @@ function openDrawer() {
   if (!panel) return;
   panel.classList.remove('hidden');
   panel.classList.add('drawer-open');
-  overlay.classList.add('active');
+  mobileOverlay.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
@@ -717,106 +757,82 @@ function closeDrawer() {
   const panel = document.getElementById('pdf-panel');
   if (!panel) return;
   panel.classList.remove('drawer-open');
-  overlay.classList.remove('active');
+  mobileOverlay.classList.remove('active');
   document.body.style.overflow = '';
   setTimeout(() => {
     if (!panel.classList.contains('drawer-open')) {
       panel.classList.add('hidden');
-      panelVisible = false;
+      if (typeof panelVisible !== 'undefined') panelVisible = false;
     }
   }, 300);
 }
 
-// Wire up close button
-const btnCloseX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
-if (btnCloseX) {
-  btnCloseX.addEventListener('click', closeDrawer);
-  btnCloseX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
+// Wire close button
+const btnCX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
+if (btnCX) {
+  btnCX.addEventListener('click', closeDrawer);
+  btnCX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
 }
 
 // Swipe down to close
 (function() {
-  let startY = 0, startTime = 0;
+  let sy = 0, st = 0;
   const panel = document.getElementById('pdf-panel');
   if (!panel) return;
-  panel.addEventListener('touchstart', e => { startY = e.touches[0].clientY; startTime = Date.now(); }, { passive: true });
+  panel.addEventListener('touchstart', e => { sy = e.touches[0].clientY; st = Date.now(); }, { passive: true });
   panel.addEventListener('touchend', e => {
-    if (e.changedTouches[0].clientY - startY > 80 && Date.now() - startTime < 400 && isMobile()) closeDrawer();
+    if (e.changedTouches[0].clientY - sy > 80 && Date.now() - st < 400 && isMobile()) closeDrawer();
   }, { passive: true });
 })();
 
-// Auto-open drawer when Q or A tapped on mobile
+// Open drawer when Q or A clicked on mobile
 document.addEventListener('click', function(e) {
   if (!isMobile()) return;
-  const btn = e.target.closest('.btn-q, .btn-a');
-  if (!btn) return;
+  if (!e.target.closest('.btn-q, .btn-a')) return;
   const ph = document.getElementById('placeholder');
-  if (ph) { ph.innerHTML = '<div class="big">\u23f3</div><div>Loading \u2014 please wait\u2026</div>'; ph.style.display = 'flex'; }
+  if (ph) { ph.innerHTML = '<div class="big">⏳</div><div>Loading — please wait…</div>'; ph.style.display = 'flex'; }
   const cv = document.getElementById('canvas'); if (cv) cv.style.display = 'none';
   const ar = document.getElementById('arrow'); if (ar) ar.style.display = 'none';
   openDrawer();
-});
+}, true);
 
-// Panel toggle
-const panelToggle = document.getElementById('panel-toggle');
-if (panelToggle) {
-  panelToggle.addEventListener('click', () => {
-    if (isMobile()) {
-      document.getElementById('pdf-panel').classList.contains('drawer-open') ? closeDrawer() : openDrawer();
-    } else {
-      panelVisible = !panelVisible;
-      const panel = document.getElementById('pdf-panel');
-      if (panel) panel.classList.toggle('hidden', !panelVisible);
-      panelToggle.textContent = panelVisible ? '\u229e Panel' : '\u229f Panel';
-    }
-  });
-}
-
-// Filter buttons on mobile — scroll to section with offset for header
-document.querySelectorAll('.filter-btn').forEach(btn => {
+// Filter buttons on mobile - scroll to section
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
   btn.addEventListener('click', function(e) {
     if (!isMobile()) return;
     e.stopPropagation();
-    const filter = this.getAttribute('data-filter');
-    const indexDiv = document.getElementById('index');
+    var filter = this.getAttribute('data-filter');
+    var indexDiv = document.getElementById('index');
     if (!indexDiv) return;
     if (filter === 'all') {
       indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const secId = 'sec-' + filter.replace(/\./g, '-');
-      const sec = document.getElementById(secId);
-      if (sec) {
-        // offset 60px so section heading is visible below sticky elements
-        indexDiv.scrollTo({ top: Math.max(0, sec.offsetTop - 60), behavior: 'smooth' });
-      }
+      var sec = document.getElementById('sec-' + filter.replace(/\./g, '-'));
+      if (sec) indexDiv.scrollTo({ top: Math.max(0, sec.offsetTop - 60), behavior: 'smooth' });
     }
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
     this.classList.add('active');
   });
 });
 
-// Nav pill scroll fix for mobile
-document.querySelectorAll('.nav-pill').forEach(pill => {
+// Nav pill scroll on mobile
+document.querySelectorAll('.nav-pill').forEach(function(pill) {
   pill.addEventListener('click', function(e) {
     e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    const indexDiv = document.getElementById('index');
+    var target = document.querySelector(this.getAttribute('href'));
+    var indexDiv = document.getElementById('index');
     if (target && indexDiv) indexDiv.scrollTo({ top: Math.max(0, target.offsetTop - 60), behavior: 'smooth' });
   });
 });
 
-// Mobile section dropdown (if present)
-const mobileSelect = document.getElementById('mobile-section-select');
-if (mobileSelect) {
-  mobileSelect.addEventListener('change', function() {
-    const val = this.value;
-    const indexDiv = document.getElementById('index');
-    if (!val || !indexDiv) { if (indexDiv) indexDiv.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-    const sec = document.getElementById('sec-' + val.replace(/\./g, '-'));
-    if (sec) indexDiv.scrollTo({ top: Math.max(0, sec.offsetTop - 60), behavior: 'smooth' });
-    this.value = '';
-  });
-}
+// Panel toggle button
+var pt = document.getElementById('panel-toggle');
+if (pt) pt.addEventListener('click', function() {
+  if (isMobile()) {
+    var panel = document.getElementById('pdf-panel');
+    if (panel && panel.classList.contains('drawer-open')) closeDrawer(); else openDrawer();
+  }
+});
 
 </script>
 </body>
