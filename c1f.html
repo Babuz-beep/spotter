@@ -414,7 +414,9 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   #stats { font-size: 10px; order: 3; width: 100%; }
   #search-wrap { order: 4; width: 100%; }
   #search { width: 100%; }
-  #filter-wrap { order: 5; width: 100%; overflow-x: auto; padding-bottom: 2px; }
+  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 2px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; }
+  #filter-wrap::-webkit-scrollbar { display: none; }
+  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; }
   #btn-top { order: 1; }
   #panel-toggle { order: 2; }
 
@@ -509,6 +511,27 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   .mbadge { display: none; }
 
   /* Nav pills scrollable */
+
+  /* Mobile dropdown instead of filter buttons */
+  #mobile-section-select {
+    display: block;
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text1);
+    cursor: pointer;
+    order: 5;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8fa8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  #filter-wrap { display: none !important; }
   #nav-pills { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
   #nav-pills::-webkit-scrollbar { display: none; }
   .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
@@ -2609,7 +2632,21 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module">
+// Mobile section dropdown
+const mobileSelect = document.getElementById('mobile-section-select');
+if (mobileSelect) {
+  mobileSelect.addEventListener('change', function() {
+    const val = this.value;
+    const indexDiv = document.getElementById('index');
+    if (!val) { indexDiv.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const prefix = val.replace(/\./g, '-');
+    const sec = document.querySelector('[id*="' + prefix + '"]');
+    if (sec) indexDiv.scrollTo({ top: sec.offsetTop - 10, behavior: 'smooth' });
+    this.value = ''; // reset so same option can be selected again
+  });
+}
+</script>
 <script type="module">
 // ── PDF.js setup ───────────────────────────────────────
 import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
@@ -3041,24 +3078,20 @@ document.querySelectorAll('.nav-pill').forEach(pill => {
 // Fix filter buttons on mobile — scroll to section instead of filtering
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function(e) {
-    if (!isMobile()) return; // desktop keeps normal filter behaviour
+    if (!isMobile()) return;
     e.stopPropagation();
     const filter = this.getAttribute('data-filter');
+    const indexDiv = document.getElementById('index');
     if (filter === 'all') {
-      document.getElementById('index').scrollTo({ top: 0, behavior: 'smooth' });
+      indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // Find the section by looking for spec-section containing this filter prefix
-      const sections = document.querySelectorAll('.spec-section');
-      for (const sec of sections) {
-        if (sec.id && sec.id.includes(filter.replace('.', '-'))) {
-          document.getElementById('index').scrollTo({ 
-            top: sec.offsetTop - 10, behavior: 'smooth' 
-          });
-          break;
-        }
+      const prefix = filter.replace(/\./g, '-');
+      const sec = document.querySelector('[id*="' + prefix + '"]');
+      if (sec) {
+        const secTop = sec.offsetTop;
+        indexDiv.scrollTo({ top: secTop - 10, behavior: 'smooth' });
       }
     }
-    // Update active state
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
   });
