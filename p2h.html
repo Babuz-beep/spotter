@@ -728,6 +728,36 @@ function closeDrawer() {
   }, 300);
 }
 
+// Wire up close button properly for mobile touch
+const btnCloseX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
+if (btnCloseX) {
+  btnCloseX.addEventListener('click', closeDrawer);
+  btnCloseX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
+}
+
+// Swipe down to close drawer on mobile
+(function() {
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  const panel = document.getElementById('pdf-panel');
+  if (!panel) return;
+  
+  panel.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+  
+  panel.addEventListener('touchend', function(e) {
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY;
+    const deltaTime = Date.now() - touchStartTime;
+    // Swipe down: moved >80px downward in <400ms
+    if (deltaY > 80 && deltaTime < 400 && isMobile()) {
+      closeDrawer();
+    }
+  }, { passive: true });
+})();
+
 // Auto-open drawer on mobile when Q or A tapped
 const _origOpenQuestion = openQuestion;
 openQuestion = function(row, mode) {

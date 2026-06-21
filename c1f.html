@@ -2579,7 +2579,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   <div id="pdf-panel">
     <div id="panel-hdr">
       <div id="panel-title">Select a question</div>
-      <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="display:none;background:#dc2626;color:#fff;border-color:#dc2626;font-size:18px;font-weight:700;min-width:36px;height:36px" title="Close">×</button>
+      <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="display:none;background:#dc2626;color:#fff;border-color:#dc2626;font-size:18px;font-weight:700;min-width:36px;height:36px" title="Close" id="btn-close-drawer-x">×</button>
         <button class="pctrl" id="btn-q-mode">Q</button>
         <button class="pctrl" id="btn-a-mode">A</button>
         <button class="pctrl" id="btn-prev" title="Previous page">◀</button>
@@ -2987,6 +2987,36 @@ function closeDrawer() {
     }
   }, 300);
 }
+
+// Wire up close button properly for mobile touch
+const btnCloseX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
+if (btnCloseX) {
+  btnCloseX.addEventListener('click', closeDrawer);
+  btnCloseX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
+}
+
+// Swipe down to close drawer on mobile
+(function() {
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  const panel = document.getElementById('pdf-panel');
+  if (!panel) return;
+  
+  panel.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+  
+  panel.addEventListener('touchend', function(e) {
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY;
+    const deltaTime = Date.now() - touchStartTime;
+    // Swipe down: moved >80px downward in <400ms
+    if (deltaY > 80 && deltaTime < 400 && isMobile()) {
+      closeDrawer();
+    }
+  }, { passive: true });
+})();
 
 // Auto-open drawer on mobile when Q or A tapped
 const _origOpenQuestion = openQuestion;
