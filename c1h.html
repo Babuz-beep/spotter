@@ -133,9 +133,10 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
     bottom: 0;
     left: 0;
     right: 0;
-    top: auto !important;
+    top: 0 !important;
     width: 100% !important;
-    height: 100vh;
+    height: 100% !important;
+    max-height: -webkit-fill-available;
     border-left: none !important;
     border-top: 2px solid var(--accent);
     border-radius: 0;
@@ -144,6 +145,8 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
     display: flex !important;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
   #pdf-panel.hidden { transform: translateY(100%); }
   #pdf-panel.drawer-open { transform: translateY(0); }
@@ -207,9 +210,9 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
   .mbadge { display: none; }
 
   /* Nav pills scrollable */
-  #nav-pills { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  #nav-pills { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
   #nav-pills::-webkit-scrollbar { display: none; }
-  .nav-pill { white-space: nowrap; font-size: 11px; padding: 4px 10px; }
+  .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
 }
 
 </style>
