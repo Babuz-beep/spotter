@@ -399,42 +399,52 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   font-size: 12px;
   display: none;
 }
-/* ── MOBILE DRAWER (≤768px) ─────────────────────────────────────────────── */
+
+/* ── MOBILE (≤768px) ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  :root { --hdr: 104px; }
+  :root { --hdr: 120px; }
 
   #hdr {
     flex-wrap: wrap;
     height: auto;
-    padding: 8px 12px;
-    gap: 6px;
+    padding: 8px 12px 6px;
+    gap: 5px;
   }
-  #logo { font-size: 13px; }
+  #logo { font-size: 13px; order: 0; }
   #back-link { display: none; }
-  #stats { font-size: 10px; order: 3; width: 100%; }
+  #stats { font-size: 10px; order: 3; width: 100%; margin: 0; }
   #search-wrap { order: 4; width: 100%; }
   #search { width: 100%; }
-  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 4px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; scrollbar-width: none; }
+  #filter-wrap {
+    order: 5;
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    display: flex !important;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+    gap: 5px;
+    -webkit-overflow-scrolling: touch;
+  }
   #filter-wrap::-webkit-scrollbar { display: none; }
   .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; font-size: 11px !important; padding: 5px 10px !important; }
-  #btn-top { order: 1; }
-  #panel-toggle { order: 2; }
+  #btn-top { order: 1; font-size: 10px; }
+  #panel-toggle { order: 2; display: none !important; }
 
-  #main { flex-direction: column; position: relative; }
-
-  /* Index takes full width */
-  #index { width: 100%; height: calc(100dvh - var(--hdr)); overflow-y: auto; padding-top: 4px; }
-
-  /* Hide desktop drag handle */
+  #main { flex-direction: column; }
   #drag-handle { display: none; }
 
-  /* PDF panel becomes bottom drawer */
+  /* Index full width, hide desktop nav pills */
+  #index { width: 100% !important; height: calc(100dvh - var(--hdr)); overflow-y: auto; }
+  #nav-pills { display: none !important; }
+
+  /* PDF panel full screen drawer */
   #pdf-panel {
     position: fixed !important;
-    bottom: 0;
+    top: 0 !important;
     left: 0;
     right: 0;
-    top: 0 !important;
+    bottom: 0;
     width: 100% !important;
     height: 100% !important;
     max-height: -webkit-fill-available;
@@ -452,30 +462,16 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   #pdf-panel.hidden { transform: translateY(100%); }
   #pdf-panel.drawer-open { transform: translateY(0); }
 
-  /* Drawer handle bar at top */
-  #panel-hdr {
-    padding: 10px 12px 8px;
-    flex-shrink: 0;
-  }
-  #panel-hdr::before {
-    content: '';
-    display: block;
-    width: 40px;
-    height: 4px;
-    background: var(--border2);
-    border-radius: 2px;
-    margin: 0 auto 10px;
-  }
+  #panel-hdr { padding: 10px 12px 8px; flex-shrink: 0; }
 
-  /* Close button visible on mobile */
   #btn-close-drawer {
     display: flex !important;
     align-items: center;
     justify-content: center;
-    background: #dc2626;
-    border: 2px solid #dc2626;
+    background: #dc2626 !important;
+    border: 2px solid #dc2626 !important;
     border-radius: 8px;
-    color: #fff;
+    color: #fff !important;
     font-size: 20px;
     font-weight: 700;
     width: 40px;
@@ -485,13 +481,8 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  #btn-close-drawer:active { background: #b91c1c; }
-}
-/* Close button red on all devices */
-#btn-close-drawer{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;display:flex!important}
-@media(max-width:768px){
+  #btn-close-drawer:active { background: #b91c1c !important; }
 
-  /* Overlay behind drawer */
   #drawer-overlay {
     display: none;
     position: fixed;
@@ -501,20 +492,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
   }
   #drawer-overlay.active { display: block; }
 
-  /* Fullscreen still works */
-  body.fullscreen #pdf-panel {
-    height: 100vh !important;
-    border-radius: 0;
-  }
-
-  /* qrow marks badge smaller */
   .mbadge { display: none; }
-
-  /* Nav pills scrollable */
-
-  
-  #nav-pills::-webkit-scrollbar { display: none; }
-  .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
 }
 
 </style>
@@ -524,7 +502,7 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
 <!-- Header -->
 <div id="hdr">
   <a id="logo" href="index.html" style="font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;text-decoration:none">SPOT<span style="color:var(--accent2)">TER</span></a>
-  <div id="stats">291 questions · 7 papers</div>
+  <div id="stats">291 questions · 7 papers · Chemistry 1F</div>
   <div id="search-wrap">
     <input id="search" type="text" placeholder="Search questions…" autocomplete="off">
   </div>
@@ -536,16 +514,15 @@ body.fullscreen #panel-toggle { background: color-mix(in srgb, var(--accent) 20%
     <button class="filter-btn" data-filter="5.4">5.4 Chem Δ</button>
     <button class="filter-btn" data-filter="5.5">5.5 Energy</button>
   </div>
-  <button id="panel-toggle" style="display:none">⊞ Panel</button>
+  <button id="btn-top" onclick="document.getElementById('index').scrollTo({top:0,behavior:'smooth'})" title="Top of page">↑ Top of page</button>
+<button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 
 <!-- Main layout -->
 <div id="main">
   <div id="index">
-    <div id="nav-pills">
-      <a class="nav-pill" href="#sec-5-1">→ 5.1 Atomic Structure & Periodic Table</a><a class="nav-pill" href="#sec-5-2">→ 5.2 Bonding, Structure & Properties</a><a class="nav-pill" href="#sec-5-3">→ 5.3 Quantitative Chemistry</a><a class="nav-pill" href="#sec-5-4">→ 5.4 Chemical Changes</a><a class="nav-pill" href="#sec-5-5">→ 5.5 Energy Changes</a>
-    </div>
-    <div class="spec-section" id="sec-5-1"><h2 class="spec-h2"><span class="spec-tag">5.1</span>Atomic Structure & Periodic Table</h2><div class="sub-section"><h3 class="spec-h3"><span class="spec-tag">5.1.1</span>A Simple Model of the Atom</h3><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.1.1.2</span>Mixtures & separation techniques</div><div class="qrow" 
+<div id="nav-pills" style="margin-bottom:16px"><a class="nav-pill" href="#sec-5-1">→ 5.1 Atomic</a><a class="nav-pill" href="#sec-5-2">→ 5.2 Bonding</a><a class="nav-pill" href="#sec-5-3">→ 5.3 Quant</a><a class="nav-pill" href="#sec-5-4">→ 5.4 Chem Δ</a><a class="nav-pill" href="#sec-5-5">→ 5.5 Energy</a></div>
+<div class="spec-section" id="sec-5-1"><h2 class="spec-h2"><span class="spec-tag">5.1</span>Atomic Structure & Periodic Table</h2><div class="sub-section"><h3 class="spec-h3"><span class="spec-tag">5.1.1</span>A Simple Model of the Atom</h3><div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.1.1.2</span>Mixtures & separation techniques</div><div class="qrow" 
             data-paper="Jun24·C1F"
             data-qnum="04.1"
             data-qp-url="https://www.aqa.org.uk/files/sample-papers-and-mark-schemes.2024.June.AQA-8464C1F-QP-JUN24_PDF/c9a764dd178e09f6859a99a1ea1d7e6219ca612a.pdf"
@@ -2659,267 +2636,7 @@ const btnAMode   = document.getElementById('btn-a-mode');
 const btnGoto    = document.getElementById('btn-goto');
 const btnFull    = document.getElementById('btn-full');
 const btnOpen    = document.getElementById('btn-open');
-const panelToggle = document.getElementById('panel-toggle');
-const pdfPanel   = document.getElementById('pdf-panel');
-const searchEl   = document.getElementById('search');
-
-// ── Show/hide loading bar ──────────────────────────────
-function setLoading(v) { loadingBar.style.display = v ? 'block' : 'none'; }
-
-// ── Render a single page ───────────────────────────────
-async function renderPage(doc, pageNum, qNum, isAnswer) {
-  if (rendering) return;
-  rendering = true;
-  arrow.style.display = 'none';
-  placeholder.style.display = 'none';
-  canvas.style.display = 'block';
-
-  const page = await doc.getPage(pageNum);
-  const displayWidth = viewport.clientWidth || 360;
-  const pdfWidth = page.getViewport({ scale: 1 }).width;
-  const scale = (displayWidth / pdfWidth) * SCALE;
-  const vp = page.getViewport({ scale });
-
-  canvas.width  = vp.width;
-  canvas.height = vp.height;
-  canvas.style.width  = displayWidth + 'px';
-  canvas.style.height = Math.round(vp.height / SCALE) + 'px';
-
-  await page.render({ canvasContext: ctx, viewport: vp }).promise;
-
-  // Detect question position and show arrow
-  if (qNum) {
-    await detectAndArrow(page, vp, qNum, displayWidth, isAnswer);
-  }
-
-  rendering = false;
-}
-
-// ── Detect question Y position and draw arrow ──────────
-async function detectAndArrow(page, vp, qNum, displayWidth, isAnswer) {
-  try {
-    const tc = await page.getTextContent();
-    const items = tc.items;
-    const vp1 = page.getViewport({ scale: 1 });
-    const scaleY = vp.height / vp1.height;
-    const displayH = Math.round(vp.height / SCALE);
-    const parts = qNum.trim().match(/^(\d+)(?:\.(\d+))?$/);
-    if (!parts) return;
-    const major = parts[1].padStart(2, '0');
-    const minor = parts[2] || '';
-    const majorInt = String(parseInt(major));
-    const exactTargets = minor ? [
-      major+'.'+minor, major+minor, majorInt+'.'+minor, majorInt+minor,
-    ] : [major, majorInt];
-    const sorted = [...items].sort((a, b) => b.transform[5] - a.transform[5]);
-    let foundY = null;
-    for (const item of sorted) {
-      const stripped = item.str.replace(/\s/g, '');
-      if (!/^[\d.]+$/.test(stripped) || !stripped || stripped.length > 6) continue;
-      for (const t of exactTargets) {
-        if (stripped === t) {
-          const yPdf = item.transform[5];
-          const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
-          if (yDisplay > 5 && yDisplay < displayH - 5) foundY = yDisplay;
-          break;
-        }
-      }
-      if (foundY !== null) break;
-      const idx = items.indexOf(item);
-      const win = items.slice(idx, idx+5).map(x => x.str).join('').replace(/\s/g,'');
-      for (const t of exactTargets) {
-        if (!win.startsWith(t)) continue;
-        const after = win.slice(t.length);
-        if (after.length > 0 && /^\d\./.test(after)) continue;
-        const yPdf = item.transform[5];
-        const yDisplay = Math.round((vp1.height - yPdf) * scaleY / SCALE);
-        if (yDisplay > 5 && yDisplay < displayH - 5) foundY = yDisplay;
-        break;
-      }
-      if (foundY !== null) break;
-    }
-    if (foundY !== null) {
-      showArrow(foundY, displayH, isAnswer);
-      setTimeout(() => { viewport.scrollTop = Math.max(0, foundY - 80); }, 80);
-    } else {
-      showArrow(40, displayH, isAnswer);
-      setTimeout(() => { viewport.scrollTop = 0; }, 80);
-    }
-  } catch(e) { console.warn('Arrow detection failed:', e); }
-}
-
-
-function showArrow(topY, pageH, isAnswer) {
-  const height = Math.max(30, Math.min(60, pageH * 0.04));
-  arrow.style.cssText = `
-    display: flex;
-    top: ${topY - 4}px;
-    height: ${height}px;
-    position: absolute;
-    left: 0;
-    width: 22px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: isAnswer ? '#16a34a' : '#e03150';
-    border-radius: 0 4px 4px 0;
-    z-index: 10;
-    pointer-events: none;
-  `;
-}
-
-// ── Load PDF ───────────────────────────────────────────
-async function loadPdf(url, pageNum, qNum, isAnswer) {
-  setLoading(true);
-  arrow.style.display = 'none';
-  try {
-    // Use proxy for AQA URLs; open Drive URLs directly
-    const fetchUrl = url.includes('drive.google.com')
-      ? url
-      : PROXY + encodeURIComponent(url);
-
-    if (fetchUrl === currentPdfUrl && currentPdfDoc) {
-      // Same PDF already loaded — just re-render the new page
-      currentPage = pageNum;
-      currentQNum = qNum;
-      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
-    } else {
-      currentPdfUrl = fetchUrl;
-      currentPdfDoc = null;
-      canvas.style.display = 'none';
-      placeholder.style.display = 'flex';
-      const task = pdfjsLib.getDocument(fetchUrl);
-      currentPdfDoc = await task.promise;
-      currentPage = pageNum;
-      currentQNum = qNum;
-      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
-    }
-  } catch(e) {
-    console.error('PDF load error:', e);
-    panelTitle.textContent = 'Error loading PDF';
-    placeholder.style.display = 'flex';
-    canvas.style.display = 'none';
-  }
-  setLoading(false);
-}
-
-// ── Open a question ────────────────────────────────────
-function openQuestion(row, mode) {
-  if (currentRow) currentRow.classList.remove('active');
-  currentRow = row;
-  row.classList.add('active');
-
-  const paper     = row.dataset.paper;
-  const qNum      = row.dataset.qnum;
-  const qpUrl     = row.dataset.qpUrl;
-  const msUrl     = row.dataset.msUrl;
-  const qpPage    = parseInt(row.dataset.qpPage);
-  const msPage    = parseInt(row.dataset.msMpage || row.dataset.msPage);
-
-  currentMode = mode;
-  btnQMode.classList.toggle('active', mode === 'q');
-  btnAMode.classList.toggle('active', mode === 'a');
-
-  const url    = mode === 'q' ? qpUrl : msUrl;
-  const page   = mode === 'q' ? qpPage : msPage;
-  const label  = mode === 'q' ? 'QP' : 'MS';
-  panelTitle.textContent = `${paper} · Q${qNum} · ${label} p${page}`;
-
-  // Show panel if hidden
-  if (!panelVisible) togglePanel();
-
-  // Drive PDFs can't be proxied — open in new tab
-  if (url.includes('drive.google.com')) {
-    window.open(url, '_blank');
-    return;
-  }
-
-  loadPdf(url, page, qNum, mode === 'a');
-  btnOpen.onclick = () => window.open(url + '#page=' + page, '_blank');
-}
-
-// ── Panel toggle ───────────────────────────────────────
-function togglePanel() {
-  panelVisible = !panelVisible;
-  pdfPanel.classList.toggle('hidden', !panelVisible);
-  panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
-}
-
-// ── Fullscreen ─────────────────────────────────────────
-function toggleFullscreen() {
-  fullscreen = !fullscreen;
-  document.body.classList.toggle('fullscreen', fullscreen);
-  btnFull.textContent = fullscreen ? '⊡ Exit' : '⛶ Full';
-  if (fullscreen && !panelVisible) togglePanel();
-  // Re-render at new size after transition
-  if (currentPdfDoc) {
-    setTimeout(()=>{ renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a'); }, 320);
-  }
-}
-
-// ── Jump to question arrow ─────────────────────────────
-function jumpToArrow() {
-  const arrowTop = parseInt(arrow.style.top) || 0;
-  if (arrowTop) viewport.scrollTop = Math.max(0, arrowTop - 60);
-  else viewport.scrollTop = 0;
-}
-
-// ── Mode switcher ──────────────────────────────────────
-function switchMode(mode) {
-  if (!currentRow) return;
-  openQuestion(currentRow, mode);
-}
-
-// ── Filter / search ────────────────────────────────────
-function applyFilter() {
-  const q = searchEl.value.toLowerCase().trim();
-  const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
-  let visible = 0;
-  document.querySelectorAll('.qrow').forEach(row => {
-    const desc    = row.querySelector('.qdesc').textContent.toLowerCase();
-    const paper   = (row.dataset.paper || '').toLowerCase();
-    const matchS  = !q || desc.includes(q) || paper.includes(q) || row.dataset.qnum?.includes(q);
-    const mainSpec = row.querySelector('.pbadge')?.textContent?.match(/(\d+\.\d+)/)?.[1] || '';
-    // mainSpec from data - stored in dataset
-    const ms = row.querySelector('[data-mainspec]')?.dataset?.mainspec || '';
-    const matchF  = activeFilter === 'all' || desc.includes(activeFilter.split('.')[1]) 
-                 || row.closest('.spec-section')?.id?.includes(activeFilter.replace(/\./g,'-'));
-    const show = matchS && matchF;
-    row.classList.toggle('hidden', !show);
-    if (show) visible++;
-  });
-  document.getElementById('no-results').style.display = visible ? 'none' : 'block';
-}
-
-// Attach mainSpec to each row for filtering
-document.querySelectorAll('.qrow').forEach(row => {
-  const sec = row.closest('.spec-section');
-  if (sec) {
-    const ms = sec.id.replace('sec-','').replace(/-/g,'.');
-    row.setAttribute('data-mainspec', ms);
-  }
-});
-
-// ── Event listeners ────────────────────────────────────
-document.querySelectorAll('.qrow').forEach(row => {
-  row.querySelector('.btn-q').addEventListener('click', e => {
-    e.stopPropagation();
-    openQuestion(row, 'q');
-  });
-  row.querySelector('.btn-a').addEventListener('click', e => {
-    e.stopPropagation();
-    openQuestion(row, 'a');
-  });
-  row.addEventListener('click', () => openQuestion(row, currentMode || 'q'));
-});
-
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilter();
-  });
-});
+);
 
 searchEl.addEventListener('input', applyFilter);
 panelToggle.addEventListener('click', togglePanel);
@@ -2986,8 +2703,11 @@ document.addEventListener('mouseup', () => {
   document.body.style.cursor = ''; document.body.style.userSelect = '';
 });
 
-// ── MOBILE DRAWER ─────────────────────────────────────────────────────────
+
+// ── MOBILE ────────────────────────────────────────────────────────────────
 const isMobile = () => window.innerWidth <= 768;
+
+// Overlay
 const overlay = document.createElement('div');
 overlay.id = 'drawer-overlay';
 overlay.onclick = closeDrawer;
@@ -2995,80 +2715,90 @@ document.body.appendChild(overlay);
 
 function openDrawer() {
   if (!isMobile()) return;
-  pdfPanel.classList.remove('hidden');
-  pdfPanel.classList.add('drawer-open');
+  const panel = document.getElementById('pdf-panel');
+  if (!panel) return;
+  panel.classList.remove('hidden');
+  panel.classList.add('drawer-open');
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
 }
 
 function closeDrawer() {
-  pdfPanel.classList.remove('drawer-open');
+  const panel = document.getElementById('pdf-panel');
+  if (!panel) return;
+  panel.classList.remove('drawer-open');
   overlay.classList.remove('active');
   document.body.style.overflow = '';
   setTimeout(() => {
-    if (!pdfPanel.classList.contains('drawer-open')) {
-      pdfPanel.classList.add('hidden');
+    if (!panel.classList.contains('drawer-open')) {
+      panel.classList.add('hidden');
       panelVisible = false;
     }
   }, 300);
 }
 
-// Wire up close button properly for mobile touch
+// Wire up close button
 const btnCloseX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
 if (btnCloseX) {
   btnCloseX.addEventListener('click', closeDrawer);
   btnCloseX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
 }
 
-// Swipe down to close drawer on mobile
+// Swipe down to close
 (function() {
-  let touchStartY = 0;
-  let touchStartTime = 0;
+  let startY = 0, startTime = 0;
   const panel = document.getElementById('pdf-panel');
   if (!panel) return;
-  
-  panel.addEventListener('touchstart', function(e) {
-    touchStartY = e.touches[0].clientY;
-    touchStartTime = Date.now();
-  }, { passive: true });
-  
-  panel.addEventListener('touchend', function(e) {
-    const touchEndY = e.changedTouches[0].clientY;
-    const deltaY = touchEndY - touchStartY;
-    const deltaTime = Date.now() - touchStartTime;
-    // Swipe down: moved >80px downward in <400ms
-    if (deltaY > 80 && deltaTime < 400 && isMobile()) {
-      closeDrawer();
-    }
+  panel.addEventListener('touchstart', e => { startY = e.touches[0].clientY; startTime = Date.now(); }, { passive: true });
+  panel.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - startY > 80 && Date.now() - startTime < 400 && isMobile()) closeDrawer();
   }, { passive: true });
 })();
 
-// Fix nav pill scrolling on mobile — scroll #index div not window
-document.querySelectorAll('.nav-pill').forEach(pill => {
-  pill.addEventListener('click', function(e) {
-    e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
-    const indexDiv = document.getElementById('index');
-    if (target && indexDiv) {
-      indexDiv.scrollTo({ top: target.offsetTop - 10, behavior: 'smooth' });
+// Auto-open drawer when Q or A tapped on mobile
+const _orig = openQuestion;
+openQuestion = function(row, mode) {
+  if (isMobile()) {
+    const ph = document.getElementById('placeholder');
+    if (ph) { ph.innerHTML = '<div class="big">⏳</div><div>Loading — please wait…</div>'; ph.style.display = 'flex'; }
+    const cv = document.getElementById('canvas'); if (cv) cv.style.display = 'none';
+    const ar = document.getElementById('arrow'); if (ar) ar.style.display = 'none';
+    openDrawer();
+  }
+  _orig(row, mode);
+};
+
+// Panel toggle
+const panelToggle = document.getElementById('panel-toggle');
+if (panelToggle) {
+  panelToggle.addEventListener('click', () => {
+    if (isMobile()) {
+      document.getElementById('pdf-panel').classList.contains('drawer-open') ? closeDrawer() : openDrawer();
+    } else {
+      panelVisible = !panelVisible;
+      const panel = document.getElementById('pdf-panel');
+      if (panel) panel.classList.toggle('hidden', !panelVisible);
+      panelToggle.textContent = panelVisible ? '\u229e Panel' : '\u229f Panel';
     }
   });
-});
+}
 
-// Fix filter buttons on mobile — scroll to section
+// Filter buttons on mobile — scroll to section with offset for header
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', function(e) {
     if (!isMobile()) return;
     e.stopPropagation();
     const filter = this.getAttribute('data-filter');
     const indexDiv = document.getElementById('index');
+    if (!indexDiv) return;
     if (filter === 'all') {
       indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      const prefix = 'sec-' + filter.replace(/\./g, '-');
-      const sec = document.getElementById(prefix);
+      const secId = 'sec-' + filter.replace(/\./g, '-');
+      const sec = document.getElementById(secId);
       if (sec) {
-        indexDiv.scrollTo({ top: sec.offsetTop - 8, behavior: 'smooth' });
+        // offset 60px so section heading is visible below sticky elements
+        indexDiv.scrollTo({ top: Math.max(0, sec.offsetTop - 60), behavior: 'smooth' });
       }
     }
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -3076,34 +2806,28 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
   });
 });
 
-// Auto-open drawer on mobile when Q or A tapped
-const _origOpenQuestion = openQuestion;
-openQuestion = function(row, mode) {
-  if (isMobile()) {
-    // Show drawer immediately with loading message
-    placeholder.innerHTML = '<div class="big">⏳</div><div>Loading — please wait…</div>';
-    placeholder.style.display = 'flex';
-    canvas.style.display = 'none';
-    arrow.style.display = 'none';
-    openDrawer();
-  }
-  _origOpenQuestion(row, mode);
-};
-
-// Override panel toggle for mobile
-panelToggle.addEventListener('click', () => {
-  if (isMobile()) {
-    if (pdfPanel.classList.contains('drawer-open')) {
-      closeDrawer();
-    } else {
-      openDrawer();
-    }
-  } else {
-    panelVisible = !panelVisible;
-    pdfPanel.classList.toggle('hidden', !panelVisible);
-    panelToggle.textContent = panelVisible ? '\u229e Panel' : '\u229f Panel';
-  }
+// Nav pill scroll fix for mobile
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    const indexDiv = document.getElementById('index');
+    if (target && indexDiv) indexDiv.scrollTo({ top: Math.max(0, target.offsetTop - 60), behavior: 'smooth' });
+  });
 });
+
+// Mobile section dropdown (if present)
+const mobileSelect = document.getElementById('mobile-section-select');
+if (mobileSelect) {
+  mobileSelect.addEventListener('change', function() {
+    const val = this.value;
+    const indexDiv = document.getElementById('index');
+    if (!val || !indexDiv) { if (indexDiv) indexDiv.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const sec = document.getElementById('sec-' + val.replace(/\./g, '-'));
+    if (sec) indexDiv.scrollTo({ top: Math.max(0, sec.offsetTop - 60), behavior: 'smooth' });
+    this.value = '';
+  });
+}
 
 </script>
 </body>
