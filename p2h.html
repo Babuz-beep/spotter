@@ -754,6 +754,20 @@ if (btnCloseX) {
   }, { passive: true });
 })();
 
+// Fix nav pill scrolling on mobile — scroll #index div not window
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', function(e) {
+    if (isMobile()) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      const indexDiv = document.getElementById('index');
+      if (target && indexDiv) {
+        indexDiv.scrollTo({ top: target.offsetTop - 10, behavior: 'smooth' });
+      }
+    }
+  });
+});
+
 // Auto-open drawer on mobile when Q or A tapped
 const _origOpenQuestion = openQuestion;
 openQuestion = function(row, mode) {
