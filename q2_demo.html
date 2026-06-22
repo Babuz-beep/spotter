@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPOTTER — Q2 Demo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #0D1F2D; color: #e8f0f8; height: 100vh; display: flex; flex-direction: column; }
+#toolbar { background: #1a3347; padding: 10px 16px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+#toolbar h2 { font-size: 14px; color: #e8f0f8; }
+.tbtn { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+.tbtn:hover { background: #1a4fc8; }
+#status { font-size: 12px; color: #6b8fa8; margin-left: auto; }
+#viewer { flex: 1; overflow-y: auto; background: #111; display: flex; flex-direction: column; align-items: center; padding: 16px; gap: 16px; }
+.page-wrap { position: relative; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+canvas { display: block; }
+#arrow { position: absolute; font-size: 28px; color: #ef4444; z-index: 10; pointer-events: none; transform: translateY(-50%); }
+#loading { color: #6b8fa8; font-size: 14px; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <h2>Q02 — Titanium production (C1H Specimen)</h2>
+  <button class="tbtn" onclick="prevPage()">◀ Prev</button>
+  <span id="page-info" style="font-size:12px;color:#8aa4bc">Page 5 of ?</span>
+  <button class="tbtn" onclick="nextPage()">▶ Next</button>
+  <span id="status">Loading…</span>
+</div>
+<div id="viewer">
+  <div id="loading">⏳ Loading PDF — please wait…</div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const PROXY = 'https://spotter-onedrive-proxy.topscienceguru.workers.dev';
+const FILE_ID = '1ZyakQInjwUo9npz1_wS2liErGrvqa-GV';
+const Q2_PAGE = 5;   // Q02 starts on page 5
+const Q2_Y = 120;    // Y coordinate of Q02 on that page
+const SCALE = 1.8;
+
+let pdfDoc = null;
+let currentPage = Q2_PAGE;
+let arrowPage = Q2_PAGE;
+let arrowY = Q2_Y;
+
+async function loadPdf() {
+  const url = `${PROXY}?action=file&file=${FILE_ID}`;
+  document.getElementById('status').textContent = 'Fetching…';
+  const task = pdfjsLib.getDocument(url);
+  pdfDoc = await task.promise;
+  document.getElementById('status').textContent = `${pdfDoc.numPages} pages`;
+  await renderPage(Q2_PAGE, true);
+}
+
+async function renderPage(pageNum, showArrow) {
+  currentPage = pageNum;
+  document.getElementById('page-info').textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
+  
+  const viewer = document.getElementById('viewer');
+  viewer.innerHTML = '';
+  
+  const page = await pdfDoc.getPage(pageNum);
+  const vp = page.getViewport({ scale: SCALE });
+  
+  const wrap = document.createElement('div');
+  wrap.className = 'page-wrap';
+  wrap.style.width = vp.width + 'px';
+  wrap.style.height = vp.height + 'px';
+  
+  const canvas = document.createElement('canvas');
+  canvas.width = vp.width;
+  canvas.height = vp.height;
+  
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+  wrap.appendChild(canvas);
+  
+  if (showArrow && pageNum === arrowPage) {
+    const arrow = document.createElement('div');
+    arrow.id = 'arrow';
+    arrow.textContent = '👉';
+    const scaleY = vp.height / page.getViewport({ scale: 1 }).height;
+    arrow.style.top = (arrowY * scaleY * SCALE) + 'px';
+    arrow.style.left = '-36px';
+    wrap.appendChild(arrow);
+  }
+  
+  viewer.appendChild(wrap);
+  document.getElementById('status').textContent = 'Ready';
+}
+
+function prevPage() {
+  if (currentPage > 1) renderPage(currentPage - 1, currentPage - 1 === arrowPage);
+}
+
+function nextPage() {
+  if (pdfDoc && currentPage < pdfDoc.numPages) renderPage(currentPage + 1, currentPage + 1 === arrowPage);
+}
+
+loadPdf();
+</script>
+</body>
+</html>
