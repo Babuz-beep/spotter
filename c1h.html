@@ -1051,40 +1051,23 @@ panelToggle.addEventListener('click', () => {
 
 
 // ── CHOP-AWARE PREV/NEXT ──────────────────────────────────────────────────
-let _isAnswer = false; // track whether showing Q or A
-
-// Patch openQuestion to track mode
-const _origOpenQ = openQuestion;
-openQuestion = function(row, mode, startPage) {
-  _isAnswer = (mode === 'a');
-  _origOpenQ(row, mode, startPage);
-};
-
 prevPage = function() {
   if (currentPage > 1) {
-    // Within chunk — instant
-    renderPage(currentPdfDoc, currentPage - 1, currentQNum, _isAnswer);
+    renderPage(currentPdfDoc, currentPage - 1, currentQNum, currentMode === 'a');
   } else if (currentRow) {
-    // At start of chunk — go to previous question
-    const rows = Array.from(document.querySelectorAll('.qrow:not([style*="display: none"])')  );
+    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
     const idx = rows.indexOf(currentRow);
-    if (idx > 0) {
-      openQuestion(rows[idx - 1], _isAnswer ? 'a' : 'q');
-    }
+    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
   }
 };
 
 nextPage = function() {
   if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
-    // Within chunk — instant
-    renderPage(currentPdfDoc, currentPage + 1, currentQNum, _isAnswer);
+    renderPage(currentPdfDoc, currentPage + 1, currentQNum, currentMode === 'a');
   } else if (currentRow) {
-    // At end of chunk — go to next question
-    const rows = Array.from(document.querySelectorAll('.qrow:not([style*="display: none"])'));
+    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
     const idx = rows.indexOf(currentRow);
-    if (idx < rows.length - 1) {
-      openQuestion(rows[idx + 1], _isAnswer ? 'a' : 'q');
-    }
+    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
   }
 };
 
