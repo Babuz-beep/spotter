@@ -877,19 +877,33 @@ btnQMode.addEventListener('click', () => switchMode('q'));
 btnAMode.addEventListener('click', () => switchMode('a'));
 
 document.getElementById('btn-prev').addEventListener('click', async () => {
-  if (!currentPdfDoc || currentPage <= 1) return;
-  currentPage--;
-  currentStoredY = null;
-  panelTitle.textContent = panelTitle.textContent.replace(/pd+$/, 'p' + currentPage);
-  await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
-});
+  if (currentPage > 1) {
+    // Within chunk — navigate instantly
+    currentPage--;
+    currentStoredY = null;
+    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
+    await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+  } else if (currentRow) {
+    // At start of chunk — go to previous question
+    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
+    const idx = rows.indexOf(currentRow);
+    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
+  }
+})
 document.getElementById('btn-next').addEventListener('click', async () => {
-  if (!currentPdfDoc || currentPage >= currentPdfDoc.numPages) return;
-  currentPage++;
-  currentStoredY = null;
-  panelTitle.textContent = panelTitle.textContent.replace(/pd+$/, 'p' + currentPage);
-  await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
-});
+  if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
+    // Within chunk — navigate instantly
+    currentPage++;
+    currentStoredY = null;
+    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
+    await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+  } else if (currentRow) {
+    // At end of chunk — go to next question
+    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
+    const idx = rows.indexOf(currentRow);
+    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
+  }
+})
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && fullscreen) toggleFullscreen();
@@ -1050,26 +1064,6 @@ panelToggle.addEventListener('click', () => {
 });
 
 
-// ── CHOP-AWARE PREV/NEXT ──────────────────────────────────────────────────
-prevPage = function() {
-  if (currentPage > 1) {
-    renderPage(currentPdfDoc, currentPage - 1, currentQNum, currentMode === 'a');
-  } else if (currentRow) {
-    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
-    const idx = rows.indexOf(currentRow);
-    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
-  }
-};
-
-nextPage = function() {
-  if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
-    renderPage(currentPdfDoc, currentPage + 1, currentQNum, currentMode === 'a');
-  } else if (currentRow) {
-    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
-    const idx = rows.indexOf(currentRow);
-    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
-  }
-};
 
 </script>
 </body>
