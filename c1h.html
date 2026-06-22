@@ -1051,41 +1051,42 @@ panelToggle.addEventListener('click', () => {
 
 
 // ── CHOP-AWARE PREV/NEXT ──────────────────────────────────────────────────
-// Within a chunk: navigate pages instantly (PDF already loaded)
-// At chunk boundary: fetch adjacent question's chunk from server
-(function() {
-  const _origPrev = prevPage;
-  const _origNext = nextPage;
+let _isAnswer = false; // track whether showing Q or A
 
-  prevPage = function() {
-    if (currentPage > 1) {
-      // Within chunk — instant
-      renderPage(currentPdfDoc, currentPage - 1, currentQNum, currentIsAnswer);
-    } else if (currentRow) {
-      // At start of chunk — go to previous question's last page
-      const rows = Array.from(document.querySelectorAll('.qrow'));
-      const idx = rows.indexOf(currentRow);
-      if (idx > 0) {
-        const prev = rows[idx - 1];
-        openQuestion(prev, currentIsAnswer ? 'a' : 'q');
-      }
-    }
-  };
+// Patch openQuestion to track mode
+const _origOpenQ = openQuestion;
+openQuestion = function(row, mode, startPage) {
+  _isAnswer = (mode === 'a');
+  _origOpenQ(row, mode, startPage);
+};
 
-  nextPage = function() {
-    if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
-      // Within chunk — instant
-      renderPage(currentPdfDoc, currentPage + 1, currentQNum, currentIsAnswer);
-    } else if (currentRow) {
-      // At end of chunk — go to next question's first page
-      const rows = Array.from(document.querySelectorAll('.qrow'));
-      const idx = rows.indexOf(currentRow);
-      if (idx < rows.length - 1) {
-        openQuestion(rows[idx + 1], currentIsAnswer ? 'a' : 'q');
-      }
+prevPage = function() {
+  if (currentPage > 1) {
+    // Within chunk — instant
+    renderPage(currentPdfDoc, currentPage - 1, currentQNum, _isAnswer);
+  } else if (currentRow) {
+    // At start of chunk — go to previous question
+    const rows = Array.from(document.querySelectorAll('.qrow:not([style*="display: none"])')  );
+    const idx = rows.indexOf(currentRow);
+    if (idx > 0) {
+      openQuestion(rows[idx - 1], _isAnswer ? 'a' : 'q');
     }
-  };
-})();
+  }
+};
+
+nextPage = function() {
+  if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
+    // Within chunk — instant
+    renderPage(currentPdfDoc, currentPage + 1, currentQNum, _isAnswer);
+  } else if (currentRow) {
+    // At end of chunk — go to next question
+    const rows = Array.from(document.querySelectorAll('.qrow:not([style*="display: none"])'));
+    const idx = rows.indexOf(currentRow);
+    if (idx < rows.length - 1) {
+      openQuestion(rows[idx + 1], _isAnswer ? 'a' : 'q');
+    }
+  }
+};
 
 </script>
 </body>
