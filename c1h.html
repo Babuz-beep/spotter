@@ -882,6 +882,7 @@ btnAMode.addEventListener('click', () => switchMode('a'));
 
 document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentRow || currentPaperPage <= 1) return;
+  rendering = false;
   const isA = currentMode === 'a';
   const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
   if (!fileId) return;
@@ -899,6 +900,7 @@ document.getElementById('btn-prev').addEventListener('click', async () => {
 
 getElementById('btn-next').addEventListener('click', async () => {
   if (!currentRow) return;
+  rendering = false;
   const isA = currentMode === 'a';
   const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
   if (!fileId) return;
