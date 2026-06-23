@@ -914,16 +914,6 @@ getElementById('btn-next').addEventListener('click', async () => {
   rendering = false;
   const isA = currentMode === 'a';
   currentPaperPage++;
-
-  if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
-    // Still within loaded chunk — instant, no fetch needed
-    currentPage++;
-    currentStoredY = null;
-    await renderPage(currentPdfDoc, currentPage, null, isA);
-    return;
-  }
-
-  // Need to fetch next page
   const baseUrl = isA ? currentRow.dataset.msUrl : currentRow.dataset.qpUrl;
   const fileMatch = baseUrl.match(/file=([^&]+)/);
   if (!fileMatch) return;
@@ -938,14 +928,6 @@ getElementById('btn-next').addEventListener('click', async () => {
     await renderPage(currentPdfDoc, 1, null, isA);
   } catch(e) { currentPaperPage--; rendering = false; setLoading(false); }
 })
-
-document.querySelectorAll('.nav-pill').forEach(pill => {
-  pill.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(pill.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
 
 const dragHandle = document.getElementById('drag-handle');
 let isDragging = false;
