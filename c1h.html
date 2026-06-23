@@ -879,7 +879,7 @@ btnGoto.addEventListener('click', jumpToArrow);
 btnQMode.addEventListener('click', () => switchMode('q'));
 btnAMode.addEventListener('click', () => switchMode('a'));
 
-document.getElementById('btn-prev').addEventListener('click', async () => {
+document.document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentRow || currentPaperPage <= 1) return;
   rendering = false;
   const isA = currentMode === 'a';
@@ -909,10 +909,9 @@ document.getElementById('btn-prev').addEventListener('click', async () => {
   } catch(e) { currentPaperPage++; rendering = false; setLoading(false); }
 });
 
-getElementById('btn-next').addEventListener('click', async () => {
+document.getElementById('btn-next').addEventListener('click', async () => {
   if (!currentRow) return;
   rendering = false;
-  console.log('BTN-NEXT FIRED, currentPaperPage='+currentPaperPage);
   const isA = currentMode === 'a';
   currentPaperPage++;
   const baseUrl = isA ? currentRow.dataset.msUrl : currentRow.dataset.qpUrl;
