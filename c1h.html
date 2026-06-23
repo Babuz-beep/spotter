@@ -884,11 +884,21 @@ document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentRow || currentPaperPage <= 1) return;
   rendering = false;
   const isA = currentMode === 'a';
+  currentPaperPage--;
+
+  if (currentPage > 1) {
+    // Still within loaded chunk — instant, no fetch needed
+    currentPage--;
+    currentStoredY = null;
+    await renderPage(currentPdfDoc, currentPage, null, isA);
+    return;
+  }
+
+  // Need to fetch previous page
   const baseUrl = isA ? currentRow.dataset.msUrl : currentRow.dataset.qpUrl;
   const fileMatch = baseUrl.match(/file=([^&]+)/);
   if (!fileMatch) return;
   const fileId = fileMatch[1];
-  currentPaperPage--;
   const url = 'https://qspotter.co.uk/chop.php?file=' + fileId + '&start=' + currentPaperPage + '&end=' + currentPaperPage;
   setLoading(true);
   arrow.style.display = 'none';
@@ -904,12 +914,21 @@ getElementById('btn-next').addEventListener('click', async () => {
   if (!currentRow) return;
   rendering = false;
   const isA = currentMode === 'a';
-  // Extract file ID from the chop URL already in the row
+  currentPaperPage++;
+
+  if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
+    // Still within loaded chunk — instant, no fetch needed
+    currentPage++;
+    currentStoredY = null;
+    await renderPage(currentPdfDoc, currentPage, null, isA);
+    return;
+  }
+
+  // Need to fetch next page
   const baseUrl = isA ? currentRow.dataset.msUrl : currentRow.dataset.qpUrl;
   const fileMatch = baseUrl.match(/file=([^&]+)/);
   if (!fileMatch) return;
   const fileId = fileMatch[1];
-  currentPaperPage++;
   const url = 'https://qspotter.co.uk/chop.php?file=' + fileId + '&start=' + currentPaperPage + '&end=' + currentPaperPage;
   setLoading(true);
   arrow.style.display = 'none';
@@ -920,12 +939,6 @@ getElementById('btn-next').addEventListener('click', async () => {
     await renderPage(currentPdfDoc, 1, null, isA);
   } catch(e) { currentPaperPage--; rendering = false; setLoading(false); }
 })
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && fullscreen) toggleFullscreen();
-  if (e.key === 'f' && !e.target.matches('input')) toggleFullscreen();
-  if (e.key === 'p' && !e.target.matches('input')) togglePanel();
-});
 
 document.querySelectorAll('.nav-pill').forEach(pill => {
   pill.addEventListener('click', e => {
