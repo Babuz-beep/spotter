@@ -892,8 +892,9 @@ document.getElementById('btn-prev').addEventListener('click', async () => {
   try {
     currentPdfDoc = await pdfjsLib.getDocument(url).promise;
     currentPage = 1; currentStoredY = null;
+    rendering = false;
     await renderPage(currentPdfDoc, 1, null, isA);
-  } catch(e) { currentPaperPage++; setLoading(false); }
+  } catch(e) { currentPaperPage++; rendering = false; setLoading(false); }
 });
 
 getElementById('btn-next').addEventListener('click', async () => {
@@ -908,8 +909,9 @@ getElementById('btn-next').addEventListener('click', async () => {
   try {
     currentPdfDoc = await pdfjsLib.getDocument(url).promise;
     currentPage = 1; currentStoredY = null;
+    rendering = false;
     await renderPage(currentPdfDoc, 1, null, isA);
-  } catch(e) { currentPaperPage--; setLoading(false); }
+  } catch(e) { currentPaperPage--; rendering = false; setLoading(false); }
 })
 
 document.addEventListener('keydown', e => {
