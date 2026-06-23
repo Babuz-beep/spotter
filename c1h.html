@@ -877,39 +877,39 @@ btnQMode.addEventListener('click', () => switchMode('q'));
 btnAMode.addEventListener('click', () => switchMode('a'));
 
 document.getElementById('btn-prev').addEventListener('click', async () => {
+  if (!currentRow) return;
+  const isA = currentMode === 'a';
+  const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
+  if (!fileId) return;
+
   if (currentPage > 1) {
-    // Within chunk — navigate instantly
+    // Within current chunk — instant
     currentPage--;
     currentStoredY = null;
     panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
-    await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
-  } else if (currentRow) {
-    // At start of chunk — go to previous question
-    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
-    const idx = rows.indexOf(currentRow);
-    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
+    await renderPage(currentPdfDoc, currentPage, null, isA);
+  } else {
+    // At start of chunk — fetch previous page from same paper
+    const chunkStart = parseInt(isA ? currentRow.dataset.msStart : currentRow.dataset.qpStart) || 1;
+    if (chunkStart <= 1) return; // already at first page of paper
+    const prevPageNum = chunkStart - 1;
+    const newUrl = '/chop.php?file=' + fileId + '&start=' + prevPageNum + '&end=' + prevPageNum;
+    try {
+      placeholder.innerHTML = '<div class="big">⏳</div><div>Loading…</div>';
+      placeholder.style.display = 'flex';
+      canvas.style.display = 'none';
+      const task = pdfjsLib.getDocument(newUrl);
+      currentPdfDoc = await task.promise;
+      currentPage = 1;
+      currentStoredY = null;
+      // Expand chunk start so further ◀ keeps working
+      if (isA) currentRow.dataset.msStart = prevPageNum;
+      else currentRow.dataset.qpStart = prevPageNum;
+      panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + prevPageNum);
+      await renderPage(currentPdfDoc, 1, null, isA);
+    } catch(e) { console.log('No more pages', e); }
   }
 })
-document.getElementById('btn-next').addEventListener('click', async () => {
-  if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
-    // Within chunk — navigate instantly
-    currentPage++;
-    currentStoredY = null;
-    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
-    await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
-  } else if (currentRow) {
-    // At end of chunk — go to next question
-    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
-    const idx = rows.indexOf(currentRow);
-    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
-  }
-})
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && fullscreen) toggleFullscreen();
-  if (e.key === 'f' && !e.target.matches('input')) toggleFullscreen();
-  if (e.key === 'p' && !e.target.matches('input')) togglePanel();
-});
 
 document.querySelectorAll('.nav-pill').forEach(pill => {
   pill.addEventListener('click', e => {
