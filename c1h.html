@@ -754,10 +754,10 @@ async function loadPdf(url, pageNum, qNum, isAnswer) {
   arrow.style.display = 'none';
   try {
     const fetchUrl = url;
-    if (fetchUrl === currentPdfUrl && currentPdfDoc) {
+    if (false && fetchUrl === currentPdfUrl && currentPdfDoc) {
+      // Cache disabled — always reload to reset position
       currentPage = pageNum;
       currentQNum = qNum;
-      // Reset paper page to original question position
       const _s = isAnswer ? parseInt(currentRow.dataset.msStart)||1 : parseInt(currentRow.dataset.qpStart)||1;
       currentPaperPage = _s + pageNum - 1;
       await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
