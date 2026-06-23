@@ -880,70 +880,34 @@ btnAMode.addEventListener('click', () => switchMode('a'));
 document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentPdfDoc || !currentRow) return;
   const isA = currentMode === 'a';
-
   if (currentPage > 1) {
     currentPage--;
     currentStoredY = null;
     await renderPage(currentPdfDoc, currentPage, null, isA);
-    currentPaperPage--;
-    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPaperPage);
+    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
   } else {
-    // At start of chunk — fetch previous pages
-    const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
-    if (!fileId || currentPaperPage <= 1) return;
-    const newStart = Math.max(1, currentPaperPage - 2);
-    const newEnd = currentPaperPage - 1;
-    const newUrl = '/chop.php?file=' + fileId + '&start=' + newStart + '&end=' + newEnd;
-    placeholder.innerHTML = '<div class="big">\u23f3</div><div>Loading\u2026</div>';
-    placeholder.style.display = 'flex'; canvas.style.display = 'none';
-    try {
-      currentPdfDoc = await pdfjsLib.getDocument(newUrl).promise;
-      currentPage = currentPdfDoc.numPages;
-      currentPaperPage = newEnd;
-      currentStoredY = null;
-      await renderPage(currentPdfDoc, currentPage, null, isA);
-      panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPaperPage);
-    } catch(e) { console.log('Prev error', e); }
+    // Go to previous visible question
+    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
+    const idx = rows.indexOf(currentRow);
+    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
   }
 });
 
 getElementById('btn-next').addEventListener('click', async () => {
   if (!currentPdfDoc || !currentRow) return;
   const isA = currentMode === 'a';
-
   if (currentPage < currentPdfDoc.numPages) {
     currentPage++;
     currentStoredY = null;
     await renderPage(currentPdfDoc, currentPage, null, isA);
-    currentPaperPage++;
-    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPaperPage);
+    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
   } else {
-    // At end of chunk — fetch next pages
-    const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
-    if (!fileId) return;
-    const newStart = currentPaperPage + 1;
-    const newEnd = currentPaperPage + 2;
-    const newUrl = '/chop.php?file=' + fileId + '&start=' + newStart + '&end=' + newEnd;
-    placeholder.innerHTML = '<div class="big">\u23f3</div><div>Loading\u2026</div>';
-    placeholder.style.display = 'flex'; canvas.style.display = 'none';
-    try {
-      currentPdfDoc = await pdfjsLib.getDocument(newUrl).promise;
-      currentPage = 1;
-      currentPaperPage = newStart;
-      currentStoredY = null;
-      await renderPage(currentPdfDoc, 1, null, isA);
-      panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPaperPage);
-    } catch(e) { console.log('Next error', e); }
+    // Go to next visible question
+    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
+    const idx = rows.indexOf(currentRow);
+    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
   }
 })
-
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    applyFilter();
-  });
-});
 
 searchEl.addEventListener('input', applyFilter);
 panelToggle.addEventListener('click', togglePanel);
