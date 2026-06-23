@@ -884,8 +884,10 @@ document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentRow || currentPaperPage <= 1) return;
   rendering = false;
   const isA = currentMode === 'a';
-  const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
-  if (!fileId) return;
+  const baseUrl = isA ? currentRow.dataset.msUrl : currentRow.dataset.qpUrl;
+  const fileMatch = baseUrl.match(/file=([^&]+)/);
+  if (!fileMatch) return;
+  const fileId = fileMatch[1];
   currentPaperPage--;
   const url = 'https://qspotter.co.uk/chop.php?file=' + fileId + '&start=' + currentPaperPage + '&end=' + currentPaperPage;
   setLoading(true);
@@ -902,8 +904,11 @@ getElementById('btn-next').addEventListener('click', async () => {
   if (!currentRow) return;
   rendering = false;
   const isA = currentMode === 'a';
-  const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
-  if (!fileId) return;
+  // Extract file ID from the chop URL already in the row
+  const baseUrl = isA ? currentRow.dataset.msUrl : currentRow.dataset.qpUrl;
+  const fileMatch = baseUrl.match(/file=([^&]+)/);
+  if (!fileMatch) return;
+  const fileId = fileMatch[1];
   currentPaperPage++;
   const url = 'https://qspotter.co.uk/chop.php?file=' + fileId + '&start=' + currentPaperPage + '&end=' + currentPaperPage;
   setLoading(true);
