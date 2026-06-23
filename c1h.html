@@ -879,7 +879,7 @@ btnGoto.addEventListener('click', jumpToArrow);
 btnQMode.addEventListener('click', () => switchMode('q'));
 btnAMode.addEventListener('click', () => switchMode('a'));
 
-document.document.getElementById('btn-prev').addEventListener('click', async () => {
+document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentRow || currentPaperPage <= 1) return;
   rendering = false;
   const isA = currentMode === 'a';
