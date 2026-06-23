@@ -915,11 +915,13 @@ getElementById('btn-next').addEventListener('click', async () => {
   rendering = false;
   const isA = currentMode === 'a';
   currentPaperPage++;
+  console.log('NEXT clicked: currentPage='+currentPage+' numPages='+(currentPdfDoc?currentPdfDoc.numPages:'null')+' paperPage='+currentPaperPage);
 
   if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
     // Still within loaded chunk — instant, no fetch needed
     currentPage++;
     currentStoredY = null;
+    console.log('Within chunk, rendering page '+currentPage);
     await renderPage(currentPdfDoc, currentPage, null, isA);
     return;
   }
