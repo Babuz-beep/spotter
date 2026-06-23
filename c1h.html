@@ -664,6 +664,7 @@ let currentPdfUrl = '';
 let currentPage = 1;
 let currentQNum = '';
 let currentMode = 'q';
+let currentPaperPage = 1; // actual page number in full paper
 let currentPaperPage = 1;
 let currentRow = null;
 let panelVisible = false;
@@ -790,6 +791,10 @@ function openQuestion(row, mode) {
   const msUrl  = row.dataset.msUrl;
   const qpPage = parseInt(row.dataset.qpPage);
   const msPage = parseInt(row.dataset.msPage);
+  // Track real paper page for navigation
+  const qpStart = parseInt(row.dataset.qpStart) || 1;
+  const msStart = parseInt(row.dataset.msStart) || 1;
+  currentPaperPage = (mode === 'a') ? (msStart + msPage - 1) : (qpStart + qpPage - 1);
 
   currentMode = mode;
   btnQMode.classList.toggle('active', mode === 'q');
@@ -878,86 +883,36 @@ btnQMode.addEventListener('click', () => switchMode('q'));
 btnAMode.addEventListener('click', () => switchMode('a'));
 
 document.getElementById('btn-prev').addEventListener('click', async () => {
-  if (!currentPdfDoc || !currentRow) return;
+  if (!currentRow) return;
   const isA = currentMode === 'a';
-  if (currentPage > 1) {
-    currentPage--;
-    currentStoredY = null;
-    await renderPage(currentPdfDoc, currentPage, null, isA);
-    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
-  } else {
-    // Go to previous visible question
-    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
-    const idx = rows.indexOf(currentRow);
-    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
-  }
+  const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
+  if (!fileId || currentPaperPage <= 1) return;
+  currentPaperPage--;
+  const url = '/chop.php?file=' + fileId + '&start=' + currentPaperPage + '&end=' + currentPaperPage;
+  placeholder.innerHTML = '<div class="big">\u23f3</div><div>Loading\u2026</div>';
+  placeholder.style.display = 'flex'; canvas.style.display = 'none'; arrow.style.display = 'none';
+  try {
+    currentPdfDoc = await pdfjsLib.getDocument(url).promise;
+    currentPage = 1; currentStoredY = null;
+    await renderPage(currentPdfDoc, 1, null, isA);
+  } catch(e) { currentPaperPage++; console.log('Prev error', e); }
 });
 
 getElementById('btn-next').addEventListener('click', async () => {
-  if (!currentPdfDoc || !currentRow) return;
-  const isA = currentMode === 'a';
-  if (currentPage < currentPdfDoc.numPages) {
-    currentPage++;
-    currentStoredY = null;
-    await renderPage(currentPdfDoc, currentPage, null, isA);
-    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
-  } else {
-    // Go to next visible question
-    const rows = Array.from(document.querySelectorAll('.qrow')).filter(r => r.offsetParent !== null);
-    const idx = rows.indexOf(currentRow);
-    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
-  }
-})
-
-searchEl.addEventListener('input', applyFilter);
-panelToggle.addEventListener('click', togglePanel);
-btnFull.addEventListener('click', toggleFullscreen);
-btnGoto.addEventListener('click', jumpToArrow);
-btnQMode.addEventListener('click', () => switchMode('q'));
-btnAMode.addEventListener('click', () => switchMode('a'));
-
-document.getElementById('btn-prev').addEventListener('click', async () => {
   if (!currentRow) return;
   const isA = currentMode === 'a';
   const fileId = isA ? currentRow.dataset.msFullId : currentRow.dataset.qpFullId;
   if (!fileId) return;
-
-  if (currentPage > 1) {
-    // Within current chunk — instant
-    currentPage--;
-    currentStoredY = null;
-    panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + currentPage);
-    await renderPage(currentPdfDoc, currentPage, null, isA);
-  } else {
-    // At start of chunk — fetch previous page from same paper
-    const chunkStart = parseInt(isA ? currentRow.dataset.msStart : currentRow.dataset.qpStart) || 1;
-    if (chunkStart <= 1) return; // already at first page of paper
-    const prevPageNum = chunkStart - 1;
-    const newUrl = '/chop.php?file=' + fileId + '&start=' + prevPageNum + '&end=' + prevPageNum;
-    try {
-      placeholder.innerHTML = '<div class="big">⏳</div><div>Loading…</div>';
-      placeholder.style.display = 'flex';
-      canvas.style.display = 'none';
-      const task = pdfjsLib.getDocument(newUrl);
-      currentPdfDoc = await task.promise;
-      currentPage = 1;
-      currentStoredY = null;
-      // Expand chunk start so further ◀ keeps working
-      if (isA) currentRow.dataset.msStart = prevPageNum;
-      else currentRow.dataset.qpStart = prevPageNum;
-      panelTitle.textContent = panelTitle.textContent.replace(/p\d+$/, 'p' + prevPageNum);
-      await renderPage(currentPdfDoc, 1, null, isA);
-    } catch(e) { console.log('No more pages', e); }
-  }
+  currentPaperPage++;
+  const url = '/chop.php?file=' + fileId + '&start=' + currentPaperPage + '&end=' + currentPaperPage;
+  placeholder.innerHTML = '<div class="big">\u23f3</div><div>Loading\u2026</div>';
+  placeholder.style.display = 'flex'; canvas.style.display = 'none'; arrow.style.display = 'none';
+  try {
+    currentPdfDoc = await pdfjsLib.getDocument(url).promise;
+    currentPage = 1; currentStoredY = null;
+    await renderPage(currentPdfDoc, 1, null, isA);
+  } catch(e) { currentPaperPage--; console.log('Next error', e); }
 })
-
-document.querySelectorAll('.nav-pill').forEach(pill => {
-  pill.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(pill.getAttribute('href'));
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
 
 const dragHandle = document.getElementById('drag-handle');
 let isDragging = false;
