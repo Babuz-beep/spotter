@@ -267,19 +267,12 @@ if (mobileSelect) {
 <a id="back-link" href="index.html">← All subjects</a>
 <div id="stats">213 questions · 7 papers · Chemistry 1H</div>
 <div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
-<div id="filter-wrap">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="5.1">5.1 Atomic</button>
-    <button class="filter-btn" data-filter="5.2">5.2 Bonding</button>
-    <button class="filter-btn" data-filter="5.3">5.3 Quant</button>
-    <button class="filter-btn" data-filter="5.4">5.4 Chem Δ</button>
-    <button class="filter-btn" data-filter="5.5">5.5 Energy</button>
-</div>
+
 <button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Scroll to top">↑ Top of page</button>
 <button id="panel-toggle" style="display:none">⊞ Panel</button>
 </div>
 <div id="main"><div id="index">
-
+<div id="nav-pills" style="margin-bottom:16px"><a class="nav-pill" href="#sec-5-1">→ 5.1 Atomic Structure & Periodic Table</a><a class="nav-pill" href="#sec-5-2">→ 5.2 Bonding, Structure & Properties</a><a class="nav-pill" href="#sec-5-3">→ 5.3 Quantitative Chemistry</a><a class="nav-pill" href="#sec-5-4">→ 5.4 Chemical Changes</a><a class="nav-pill" href="#sec-5-5">→ 5.5 Energy Changes</a></div>
 <div class="spec-section" id="sec-5-1"><h2 class="spec-h2"><span class="spec-tag">5.1</span>Atomic Structure & Periodic Table</h2>
 <div class="ref-group ref-empty"><div class="ref-label"><span class="spec-tag sm">5.1.1.1</span> Atoms, elements & compounds <span class="empty-note">(not assessed in these 7 papers)</span></div>
 </div>
@@ -664,7 +657,6 @@ let currentPdfUrl = '';
 let currentPage = 1;
 let currentQNum = '';
 let currentMode = 'q';
-let currentPaperPage = 1;
 let currentRow = null;
 let panelVisible = false;
 let fullscreen = false;
@@ -709,6 +701,7 @@ function showArrow(topY, pageH, isAnswer) {
 }
 
 async function renderPage(doc, pageNum, qNum, isAnswer) {
+  if (rendering) return;
   rendering = true;
   arrow.style.display = 'none';
   placeholder.style.display = 'none';
@@ -754,12 +747,9 @@ async function loadPdf(url, pageNum, qNum, isAnswer) {
   arrow.style.display = 'none';
   try {
     const fetchUrl = url;
-    if (false && fetchUrl === currentPdfUrl && currentPdfDoc) {
-      // Cache disabled — always reload to reset position
+    if (fetchUrl === currentPdfUrl && currentPdfDoc) {
       currentPage = pageNum;
       currentQNum = qNum;
-      const _s = isAnswer ? parseInt(currentRow.dataset.msStart)||1 : parseInt(currentRow.dataset.qpStart)||1;
-      currentPaperPage = _s + pageNum - 1;
       await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
     } else {
       currentPdfUrl = fetchUrl;
@@ -799,9 +789,6 @@ function openQuestion(row, mode) {
 
   const url   = mode === 'q' ? qpUrl : msUrl;
   const page  = mode === 'q' ? qpPage : msPage;
-  // Set real paper page for ◀▶ navigation
-  const _start = mode === 'q' ? (parseInt(row.dataset.qpStart)||1) : (parseInt(row.dataset.msStart)||1);
-  currentPaperPage = _start + page - 1;
   const label = mode === 'q' ? 'QP' : 'MS';
   const isAns = mode === 'a';
 
@@ -867,34 +854,163 @@ document.querySelectorAll('.qrow').forEach(row => {
   row.addEventListener('click', () => openQuestion(row, currentMode || 'q'));
 });
 
-document.document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    // Update active state
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
+    btn.classList.add('active');
+    applyFilter();
+  });
+});
 
-    const filter = this.getAttribute('data-filter');
+searchEl.addEventListener('input', applyFilter);
+panelToggle.addEventListener('click', togglePanel);
+btnFull.addEventListener('click', toggleFullscreen);
+btnGoto.addEventListener('click', jumpToArrow);
+btnQMode.addEventListener('click', () => switchMode('q'));
+btnAMode.addEventListener('click', () => switchMode('a'));
+
+document.getElementById('btn-prev').addEventListener('click', async () => {
+  if (!currentPdfDoc || currentPage <= 1) return;
+  currentPage--;
+  currentStoredY = null;
+  panelTitle.textContent = panelTitle.textContent.replace(/pd+$/, 'p' + currentPage);
+  await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+});
+document.getElementById('btn-next').addEventListener('click', async () => {
+  if (!currentPdfDoc || currentPage >= currentPdfDoc.numPages) return;
+  currentPage++;
+  currentStoredY = null;
+  panelTitle.textContent = panelTitle.textContent.replace(/pd+$/, 'p' + currentPage);
+  await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && fullscreen) toggleFullscreen();
+  if (e.key === 'f' && !e.target.matches('input')) toggleFullscreen();
+  if (e.key === 'p' && !e.target.matches('input')) togglePanel();
+});
+
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(pill.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+const dragHandle = document.getElementById('drag-handle');
+let isDragging = false;
+dragHandle.addEventListener('mousedown', e => {
+  isDragging = true; dragHandle.classList.add('active');
+  document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const mainEl = document.getElementById('main');
+  const newWidth = Math.max(280, Math.min(900, mainEl.getBoundingClientRect().right - e.clientX));
+  pdfPanel.style.width = newWidth + 'px';
+});
+document.addEventListener('mouseup', () => {
+  if (!isDragging) return;
+  isDragging = false; dragHandle.classList.remove('active');
+  document.body.style.cursor = ''; document.body.style.userSelect = '';
+  if (currentPdfDoc && !rendering) renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
+});
+
+new ResizeObserver(() => {
+  if (currentPdfDoc && !rendering) renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
+}).observe(viewport);
+
+// ── MOBILE DRAWER ─────────────────────────────────────────────────────────
+const isMobile = () => window.innerWidth <= 768;
+const overlay = document.createElement('div');
+overlay.id = 'drawer-overlay';
+overlay.onclick = closeDrawer;
+document.body.appendChild(overlay);
+
+function openDrawer() {
+  if (!isMobile()) return;
+  pdfPanel.classList.remove('hidden');
+  pdfPanel.classList.add('drawer-open');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  pdfPanel.classList.remove('drawer-open');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    if (!pdfPanel.classList.contains('drawer-open')) {
+      pdfPanel.classList.add('hidden');
+      panelVisible = false;
+    }
+  }, 300);
+}
+
+// Wire up close button properly for mobile touch
+const btnCloseX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
+if (btnCloseX) {
+  btnCloseX.addEventListener('click', closeDrawer);
+  btnCloseX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
+}
+
+// Swipe down to close drawer on mobile
+(function() {
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  const panel = document.getElementById('pdf-panel');
+  if (!panel) return;
+  
+  panel.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+  
+  panel.addEventListener('touchend', function(e) {
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY;
+    const deltaTime = Date.now() - touchStartTime;
+    // Swipe down: moved >80px downward in <400ms
+    if (deltaY > 80 && deltaTime < 400 && isMobile()) {
+      closeDrawer();
+    }
+  }, { passive: true });
+})();
+
+// Fix nav pill scrolling on mobile — scroll #index div not window
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
     const indexDiv = document.getElementById('index');
-
-    if (filter === 'all') {
-      // Show all questions
-      document.querySelectorAll('.qrow, .ref-group, .spec-section').forEach(el => {
-        el.style.display = '';
-      });
-      if (indexDiv) indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      // Show all but scroll to the selected section
-      document.querySelectorAll('.qrow, .ref-group, .spec-section').forEach(el => {
-        el.style.display = '';
-      });
-      const secId = 'sec-' + filter.replace(/\./g, '-');
-      const sec = document.getElementById(secId);
-      if (sec && indexDiv) {
-        indexDiv.scrollTo({ top: sec.offsetTop - 10, behavior: 'smooth' });
-      }
+    if (target && indexDiv) {
+      indexDiv.scrollTo({ top: target.offsetTop - 10, behavior: 'smooth' });
     }
   });
 });
+
+// Fix filter buttons on mobile — scroll to section instead of filtering
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    if (!isMobile()) return;
+    e.stopPropagation();
+    const filter = this.getAttribute('data-filter');
+    const indexDiv = document.getElementById('index');
+    if (filter === 'all') {
+      indexDiv.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const prefix = filter.replace(/\./g, '-');
+      const sec = document.querySelector('[id*="' + prefix + '"]');
+      if (sec) {
+        const secTop = sec.offsetTop;
+        indexDiv.scrollTo({ top: secTop - 10, behavior: 'smooth' });
+      }
+    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
 });
 
 // Auto-open drawer on mobile when Q or A tapped
@@ -930,7 +1046,39 @@ panelToggle.addEventListener('click', () => {
 // ── CHOP-AWARE PREV/NEXT ──────────────────────────────────────────────────
 // Within a chunk: navigate pages instantly (PDF already loaded)
 // At chunk boundary: fetch adjacent question's chunk from server
+(function() {
+  const _origPrev = prevPage;
+  const _origNext = nextPage;
 
+  prevPage = function() {
+    if (currentPage > 1) {
+      // Within chunk — instant
+      renderPage(currentPdfDoc, currentPage - 1, currentQNum, currentIsAnswer);
+    } else if (currentRow) {
+      // At start of chunk — go to previous question's last page
+      const rows = Array.from(document.querySelectorAll('.qrow'));
+      const idx = rows.indexOf(currentRow);
+      if (idx > 0) {
+        const prev = rows[idx - 1];
+        openQuestion(prev, currentIsAnswer ? 'a' : 'q');
+      }
+    }
+  };
+
+  nextPage = function() {
+    if (currentPdfDoc && currentPage < currentPdfDoc.numPages) {
+      // Within chunk — instant
+      renderPage(currentPdfDoc, currentPage + 1, currentQNum, currentIsAnswer);
+    } else if (currentRow) {
+      // At end of chunk — go to next question's first page
+      const rows = Array.from(document.querySelectorAll('.qrow'));
+      const idx = rows.indexOf(currentRow);
+      if (idx < rows.length - 1) {
+        openQuestion(rows[idx + 1], currentIsAnswer ? 'a' : 'q');
+      }
+    }
+  };
+})();
 
 </script>
 </body>
