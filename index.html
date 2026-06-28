@@ -12,7 +12,7 @@
   --bg:#f4f6fb;--bg2:#ffffff;--bg3:#edf0f7;
   --border:#d8dde8;--border2:#c4cad8;
   --accent:#2d6ef5;--accent2:#d97706;
-  --green:#16a34a;--red:#e03150;--purple:#7c3aed;
+  --green:#16a34a;--purple:#7c3aed;
   --text:#1e2540;--text2:#4a5272;--text3:#8a93b0;
   --mono:'JetBrains Mono',monospace;--sans:'Sora',sans-serif;
 }
@@ -20,164 +20,356 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var
 #hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;height:60px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:100}
 #logo{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:3px;color:var(--accent);text-transform:uppercase}
 #logo span{color:var(--accent2)}
-#tagline{font-size:12px;color:var(--text3);font-family:var(--mono)}
-.wrap{max-width:1200px;margin:0 auto;padding:40px 24px}
-.hero{text-align:center;padding:48px 0 40px}
-.hero h1{font-size:2rem;font-weight:700;color:var(--text);margin-bottom:12px}
-.hero p{font-size:14px;color:var(--text2);max-width:600px;margin:0 auto}
-/* Board sections */
-.board-section{margin-bottom:48px}
-.board-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--border)}
-.board-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;letter-spacing:1px}
+#tagline{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.wrap{max-width:1100px;margin:0 auto;padding:40px 24px}
+.hero{text-align:center;padding:40px 0 32px}
+.hero h1{font-size:1.8rem;font-weight:700;color:var(--text);margin-bottom:10px}
+.hero p{font-size:13px;color:var(--text2);max-width:580px;margin:0 auto;line-height:1.6}
+.stats{display:flex;gap:32px;justify-content:center;margin:24px 0 32px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-val{font-size:1.6rem;font-weight:700;color:var(--accent);font-family:var(--mono)}
+.stat-label{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.divider{height:1px;background:var(--border);margin:36px 0}
+
+/* Section headers */
+.section-hdr{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px}
+.section-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;letter-spacing:.5px}
+.badge-gcse{background:#16a34a22;color:#15803d;border:1px solid #16a34a44}
+.badge-alevel{background:#7c3aed22;color:#7c3aed;border:1px solid #7c3aed44}
 .badge-aqa{background:#1d4ed822;color:#1d4ed8;border:1px solid #1d4ed844}
 .badge-ocr{background:#7c3aed22;color:#7c3aed;border:1px solid #7c3aed44}
-.board-hdr h2{font-size:1.1rem;font-weight:600;color:var(--text)}
-/* Level sections */
-.level-section{margin-bottom:32px}
-.level-label{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text3);margin-bottom:12px;padding-left:2px}
-/* Subject rows */
-.subject-row{margin-bottom:16px}
-.subject-name{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;padding-left:2px;font-family:var(--mono)}
-/* Paper cards grid */
-.cards{display:flex;flex-wrap:wrap;gap:8px}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 18px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:4px;min-width:160px;transition:all .15s;position:relative}
-.card:hover{border-color:var(--accent);background:var(--bg3);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
-.card.coming-soon{opacity:0.45;pointer-events:none;cursor:default}
-.card-title{font-size:12px;font-weight:600;color:var(--text)}
-.card-meta{font-size:10px;color:var(--text3);font-family:var(--mono)}
-.card-badge{position:absolute;top:8px;right:8px;font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:10px;font-weight:600}
-.live-badge{background:#dcfce7;color:#15803d}
-.soon-badge{background:#f1f5f9;color:#94a3b8}
-.new-badge{background:#fef3c7;color:#d97706}
-/* Stats bar */
-.stats{display:flex;gap:24px;justify-content:center;margin:32px 0;flex-wrap:wrap}
-.stat{text-align:center}
-.stat-val{font-size:1.8rem;font-weight:700;color:var(--accent);font-family:var(--mono)}
-.stat-label{font-size:11px;color:var(--text3);margin-top:2px}
-.divider{height:1px;background:var(--border);margin:32px 0}
-footer{text-align:center;padding:32px;color:var(--text3);font-size:11px;font-family:var(--mono)}
+
+/* Board block */
+.board-block{margin-bottom:32px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.board-name{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:1px;padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+
+/* Subject block inside board */
+.subject-block{border-bottom:1px solid var(--border)}
+.subject-block:last-child{border-bottom:none}
+.subject-hdr{font-size:12px;font-weight:600;color:var(--text2);padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-family:var(--mono)}
+
+/* Level row */
+.level-row{display:flex;align-items:flex-start;border-bottom:1px solid var(--border)}
+.level-row:last-child{border-bottom:none}
+.level-tag{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);min-width:80px;padding:12px 12px;border-right:1px solid var(--border);flex-shrink:0;padding-top:14px}
+.level-papers{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;flex:1;align-items:flex-start}
+
+/* Paper card */
+.card{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:2px;transition:all .15s;position:relative;min-width:130px;max-width:280px}
+.card:hover{border-color:var(--accent);background:var(--bg2);box-shadow:0 2px 8px rgba(0,0,0,0.07)}
+.card.soon{opacity:0.38;pointer-events:none}
+.card-title{font-size:11px;font-weight:600;color:var(--text);padding-right:28px;line-height:1.4}
+.card-code{font-size:9px;color:var(--text3);font-family:var(--mono)}
+.card-pip{position:absolute;top:6px;right:7px;font-size:8px;font-family:var(--mono);padding:1px 5px;border-radius:6px;font-weight:700}
+.pip-live{background:#dcfce7;color:#15803d}
+.pip-new{background:#fef3c7;color:#b45309}
+.pip-soon{background:#f1f5f9;color:#94a3b8}
+
+footer{text-align:center;padding:40px 24px;color:var(--text3);font-size:11px;font-family:var(--mono)}
 </style>
 </head>
 <body>
+
 <header id="hdr">
   <div id="logo">SP<span>OT</span>TER</div>
-  <div id="tagline">Spec-mapped past paper question bank</div>
+  <div id="tagline">Spec-mapped past paper question bank · qspotter.co.uk</div>
 </header>
 
 <div class="wrap">
+
   <div class="hero">
     <h1>Find every past paper question by topic</h1>
-    <p>SPOTTER organises past paper questions by specification point — click any topic to see all past exam questions on that area, with one click to open the question or mark scheme at the exact page.</p>
+    <p>SPOTTER organises past paper questions by specification point. Click any topic to see all past exam questions on that area — with one click to open the question or mark scheme at the exact page.</p>
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="stat-val">1,000+</div><div class="stat-label">Questions indexed</div></div>
+    <div class="stat"><div class="stat-val">1,200+</div><div class="stat-label">Questions indexed</div></div>
     <div class="stat"><div class="stat-val">56</div><div class="stat-label">OCR Chem topics</div></div>
-    <div class="stat"><div class="stat-val">11</div><div class="stat-label">Papers (H432/01)</div></div>
-    <div class="stat"><div class="stat-val">100%</div><div class="stat-label">Accurate pointers</div></div>
+    <div class="stat"><div class="stat-val">25+</div><div class="stat-label">Papers covered</div></div>
+    <div class="stat"><div class="stat-val">2</div><div class="stat-label">Exam boards</div></div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- ── AQA ─────────────────────────────────────────── -->
-  <div class="board-section">
-    <div class="board-hdr">
-      <span class="board-badge badge-aqa">AQA</span>
-      <h2>AQA — Assessment and Qualifications Alliance</h2>
-    </div>
+  <!-- ══════════════════════════════════════════
+       GCSE COMBINED SCIENCE
+  ══════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <span class="section-badge badge-gcse">GCSE</span>
+    Combined Science
+  </div>
 
-    <div class="level-section">
-      <div class="level-label">GCSE Combined Science: Trilogy (8464)</div>
+  <!-- AQA Combined -->
+  <div class="board-block">
+    <div class="board-name"><span class="section-badge badge-aqa">AQA</span> Combined Science: Trilogy (8464)</div>
 
-      <div class="subject-row">
-        <div class="subject-name">Biology</div>
-        <div class="cards">
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 1 Foundation</div><div class="card-meta">B1F · 8464</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 1 Higher</div><div class="card-meta">B1H · 8464</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 2 Foundation</div><div class="card-meta">B2F · 8464</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 2 Higher</div><div class="card-meta">B2H · 8464</div></a>
-        </div>
-      </div>
-
-      <div class="subject-row" style="margin-top:12px">
-        <div class="subject-name">Chemistry</div>
-        <div class="cards">
-          <a href="c1f.html" class="card"><span class="card-badge live-badge">Live</span><div class="card-title">Chemistry Paper 1 Foundation</div><div class="card-meta">C1F · 8464 · 291q · 7 papers</div></a>
-          <a href="c1h.html" class="card"><span class="card-badge live-badge">Live</span><div class="card-title">Chemistry Paper 1 Higher</div><div class="card-meta">C1H · 8464 · 213q · 7 papers</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Chemistry Paper 2 Foundation</div><div class="card-meta">C2F · 8464</div></a>
-          <a href="c2h.html" class="card"><span class="card-badge live-badge">Live</span><div class="card-title">Chemistry Paper 2 Higher</div><div class="card-meta">C2H · 8464 · 290q · 6 papers</div></a>
-        </div>
-      </div>
-
-      <div class="subject-row" style="margin-top:12px">
-        <div class="subject-name">Physics</div>
-        <div class="cards">
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 1 Foundation</div><div class="card-meta">P1F · 8464</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 1 Higher</div><div class="card-meta">P1H · 8464</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 2 Foundation</div><div class="card-meta">P2F · 8464</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 2 Higher</div><div class="card-meta">P2H · 8464</div></a>
+    <div class="subject-block">
+      <div class="subject-hdr">Biology</div>
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Foundation</div><div class="card-code">8464/B/1/F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Higher</div><div class="card-code">8464/B/1/H</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Foundation</div><div class="card-code">8464/B/2/F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Higher</div><div class="card-code">8464/B/2/H</div></a>
         </div>
       </div>
     </div>
 
-    <div class="level-section">
-      <div class="level-label">A Level</div>
-
-      <div class="subject-row">
-        <div class="subject-name">Biology (7402)</div>
-        <div class="cards">
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 1</div><div class="card-meta">7402/1</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 2</div><div class="card-meta">7402/2</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology Paper 3</div><div class="card-meta">7402/3</div></a>
+    <div class="subject-block">
+      <div class="subject-hdr">Chemistry</div>
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="c1f.html" class="card"><span class="card-pip pip-live">Live</span><div class="card-title">Paper 1 Foundation</div><div class="card-code">8464/C/1/F · 291q · 7 papers</div></a>
+          <a href="c1h.html" class="card"><span class="card-pip pip-live">Live</span><div class="card-title">Paper 1 Higher</div><div class="card-code">8464/C/1/H · 213q · 7 papers</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Foundation</div><div class="card-code">8464/C/2/F</div></a>
+          <a href="c2h.html" class="card"><span class="card-pip pip-live">Live</span><div class="card-title">Paper 2 Higher</div><div class="card-code">8464/C/2/H · 290q · 6 papers</div></a>
         </div>
       </div>
+    </div>
 
-      <div class="subject-row" style="margin-top:12px">
-        <div class="subject-name">Chemistry (7405)</div>
-        <div class="cards">
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Chemistry Paper 1</div><div class="card-meta">7405/1</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Chemistry Paper 2</div><div class="card-meta">7405/2</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Chemistry Paper 3</div><div class="card-meta">7405/3</div></a>
-        </div>
-      </div>
-
-      <div class="subject-row" style="margin-top:12px">
-        <div class="subject-name">Physics (7408)</div>
-        <div class="cards">
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 1</div><div class="card-meta">7408/1</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 2</div><div class="card-meta">7408/2</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics Paper 3</div><div class="card-meta">7408/3</div></a>
+    <div class="subject-block">
+      <div class="subject-hdr">Physics</div>
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Foundation</div><div class="card-code">8464/P/1/F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Higher</div><div class="card-code">8464/P/1/H</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Foundation</div><div class="card-code">8464/P/2/F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Higher</div><div class="card-code">8464/P/2/H</div></a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── OCR ─────────────────────────────────────────── -->
-  <div class="board-section">
-    <div class="board-hdr">
-      <span class="board-badge badge-ocr">OCR</span>
-      <h2>OCR — Oxford, Cambridge and RSA</h2>
-    </div>
-
-    <div class="level-section">
-      <div class="level-label">A Level — Chemistry A (H432)</div>
-
-      <div class="subject-row">
-        <div class="subject-name">Chemistry A (H432)</div>
-        <div class="cards">
-          <a href="h43201.html" class="card"><span class="card-badge new-badge">New</span><div class="card-title">Paper 1 — Periodic Table, Elements &amp; Physical Chemistry</div><div class="card-meta">H432/01 · 367q · 11 papers</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Paper 2 — Synthesis &amp; Analytical Techniques</div><div class="card-meta">H432/02</div></a>
-          <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Paper 3 — Unified Chemistry</div><div class="card-meta">H432/03</div></a>
+  <!-- OCR Combined — coming soon -->
+  <div class="board-block">
+    <div class="board-name"><span class="section-badge badge-ocr">OCR</span> Combined Science (J250) — Coming soon</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Biology 1 Foundation</div><div class="card-code">J250/01</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Chemistry 1 Foundation</div><div class="card-code">J250/03</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Physics 1 Foundation</div><div class="card-code">J250/05</div></a>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="level-section">
-      <div class="level-label">GCSE — Coming soon</div>
-      <div class="cards">
-        <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Biology</div><div class="card-meta">OCR GCSE</div></a>
-        <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Chemistry</div><div class="card-meta">OCR GCSE</div></a>
-        <a href="#" class="card coming-soon"><span class="card-badge soon-badge">Soon</span><div class="card-title">Physics</div><div class="card-meta">OCR GCSE</div></a>
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       GCSE TRIPLE SCIENCE
+  ══════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <span class="section-badge badge-gcse">GCSE</span>
+    Triple Science (separate sciences)
+  </div>
+
+  <div class="board-block">
+    <div class="board-name"><span class="section-badge badge-aqa">AQA</span> Separate Sciences</div>
+    <div class="subject-block">
+      <div class="subject-hdr">Biology (8461)</div>
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Foundation</div><div class="card-code">8461/1F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Higher</div><div class="card-code">8461/1H</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Foundation</div><div class="card-code">8461/2F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Higher</div><div class="card-code">8461/2H</div></a>
+        </div>
+      </div>
+    </div>
+    <div class="subject-block">
+      <div class="subject-hdr">Chemistry (8462)</div>
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Foundation</div><div class="card-code">8462/1F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Higher</div><div class="card-code">8462/1H</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Foundation</div><div class="card-code">8462/2F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Higher</div><div class="card-code">8462/2H</div></a>
+        </div>
+      </div>
+    </div>
+    <div class="subject-block">
+      <div class="subject-hdr">Physics (8463)</div>
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Foundation</div><div class="card-code">8463/1F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 Higher</div><div class="card-code">8463/1H</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Foundation</div><div class="card-code">8463/2F</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 Higher</div><div class="card-code">8463/2H</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="board-block">
+    <div class="board-name"><span class="section-badge badge-ocr">OCR</span> Separate Sciences (J247/J248/J249) — Coming soon</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">Papers</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Biology</div><div class="card-code">J247</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Chemistry</div><div class="card-code">J248</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Physics</div><div class="card-code">J249</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       A LEVEL — AQA
+  ══════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <span class="section-badge badge-alevel">A Level</span>
+    <span class="section-badge badge-aqa">AQA</span>
+  </div>
+
+  <!-- AQA Biology -->
+  <div class="board-block">
+    <div class="board-name">Biology (7401 / 7402)</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">AS Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Biological Processes</div><div class="card-code">7401/1</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Biological Diversity</div><div class="card-code">7401/2</div></a>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-tag">A Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Biological Processes</div><div class="card-code">7402/1</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Biological Diversity</div><div class="card-code">7402/2</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 3 — Skills &amp; Practice</div><div class="card-code">7402/3</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AQA Chemistry -->
+  <div class="board-block">
+    <div class="board-name">Chemistry (7404 / 7405)</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">AS Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Physical &amp; Inorganic</div><div class="card-code">7404/1</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Physical &amp; Organic</div><div class="card-code">7404/2</div></a>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-tag">A Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Physical &amp; Inorganic</div><div class="card-code">7405/1</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Physical &amp; Organic</div><div class="card-code">7405/2</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 3 — Any topic</div><div class="card-code">7405/3</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AQA Physics -->
+  <div class="board-block">
+    <div class="board-name">Physics (7407 / 7408)</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">AS Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1</div><div class="card-code">7407/1</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2</div><div class="card-code">7407/2</div></a>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-tag">A Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1</div><div class="card-code">7408/1</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2</div><div class="card-code">7408/2</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 3A / 3B</div><div class="card-code">7408/3</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════
+       A LEVEL — OCR
+  ══════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <span class="section-badge badge-alevel">A Level</span>
+    <span class="section-badge badge-ocr">OCR</span>
+  </div>
+
+  <!-- OCR Biology -->
+  <div class="board-block">
+    <div class="board-name">Biology A (H020 / H420)</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">AS Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Breadth in Biology</div><div class="card-code">H020/01</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Depth in Biology</div><div class="card-code">H020/02</div></a>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-tag">A Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Biological Processes</div><div class="card-code">H420/01</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Biological Diversity</div><div class="card-code">H420/02</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 3 — Unified Biology</div><div class="card-code">H420/03</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OCR Chemistry -->
+  <div class="board-block">
+    <div class="board-name">Chemistry A (H032 / H432)</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">AS Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Breadth in Chemistry</div><div class="card-code">H032/01</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Depth in Chemistry</div><div class="card-code">H032/02</div></a>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-tag">A Level</div>
+        <div class="level-papers">
+          <a href="h43201.html" class="card"><span class="card-pip pip-new">New</span><div class="card-title">Paper 1 — Periodic Table, Elements &amp; Physical Chemistry</div><div class="card-code">H432/01 · 367q · 11 papers</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Synthesis &amp; Analytical Techniques</div><div class="card-code">H432/02</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 3 — Unified Chemistry</div><div class="card-code">H432/03</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OCR Physics -->
+  <div class="board-block">
+    <div class="board-name">Physics A (H157 / H557)</div>
+    <div class="subject-block">
+      <div class="level-row">
+        <div class="level-tag">AS Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Breadth in Physics</div><div class="card-code">H157/01</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Depth in Physics</div><div class="card-code">H157/02</div></a>
+        </div>
+      </div>
+      <div class="level-row">
+        <div class="level-tag">A Level</div>
+        <div class="level-papers">
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 1 — Modelling Physics</div><div class="card-code">H557/01</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 2 — Exploring Physics</div><div class="card-code">H557/02</div></a>
+          <a href="#" class="card soon"><span class="card-pip pip-soon">Soon</span><div class="card-title">Paper 3 — Unified Physics</div><div class="card-code">H557/03</div></a>
+        </div>
       </div>
     </div>
   </div>
