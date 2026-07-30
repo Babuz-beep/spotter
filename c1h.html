@@ -81,8 +81,12 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 #pdf-panel.hidden { width: 0; border: none; overflow: hidden; }
 #panel-hdr { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 40px; }
 #panel-title { flex: 1; font-size: 11px; color: var(--text2); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#panel-controls { display: flex; gap: 4px; flex-shrink: 0; }
+#panel-controls { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
 .pctrl { font-size: 10px; font-family: var(--mono); padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all .12s; }
+.pctrl.pctrl-red { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); font-weight: 700; }
+.pctrl.pctrl-red:hover { background: var(--red); color: #fff; }
+.pctrl.pctrl-green { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); font-weight: 700; }
+.pctrl.pctrl-green:hover { background: var(--green); color: #fff; }
 .pctrl:hover { border-color: var(--accent); color: var(--accent); }
 .pctrl.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 #pdf-viewport { flex: 1; overflow-y: auto; position: relative; background: #d0d4de; }
@@ -661,11 +665,12 @@ if (mobileSelect) {
       <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="background:#dc2626;color:#fff;border-color:#dc2626;font-size:18px;font-weight:700;min-width:36px;height:36px" title="Close">×</button>
         <button class="pctrl" id="btn-q-mode">Q</button>
         <button class="pctrl" id="btn-a-mode">A</button>
-        <button class="pctrl" id="btn-prev" title="Previous page">◀</button>
-        <button class="pctrl" id="btn-next" title="Next page">▶</button>
+        <button class="pctrl" id="btn-prev" title="Previous page (same paper)">◀</button>
+        <button class="pctrl" id="btn-next" title="Next page (same paper)">▶</button>
         <button class="pctrl" id="btn-goto">↓ Jump</button>
         <button class="pctrl" id="btn-full">⛶ Full</button>
-        <button class="pctrl" id="btn-open" title="Open full paper (Google Drive)">↗</button>
+        <button class="pctrl pctrl-red" id="btn-open-qp" title="Open full question paper (Google Drive)">Full Paper</button>
+        <button class="pctrl pctrl-green" id="btn-open-ms" title="Open full mark scheme (Google Drive)">Full MS</button>
       </div>
     </div>
     <div id="pdf-viewport">
@@ -699,6 +704,10 @@ let panelVisible = false;
 let fullscreen = false;
 let rendering = false;
 let currentStoredY = null;
+let currentAbsPage = 1;
+let currentFullId = '';
+let currentWinStart = 1;
+let currentWinEnd = 1;
 
 const viewport   = document.getElementById('pdf-viewport');
 const canvas     = document.getElementById('pdf-canvas');
@@ -711,7 +720,8 @@ const btnQMode   = document.getElementById('btn-q-mode');
 const btnAMode   = document.getElementById('btn-a-mode');
 const btnGoto    = document.getElementById('btn-goto');
 const btnFull    = document.getElementById('btn-full');
-const btnOpen    = document.getElementById('btn-open');
+const btnOpenQP  = document.getElementById('btn-open-qp');
+const btnOpenMS  = document.getElementById('btn-open-ms');
 const panelToggle = document.getElementById('panel-toggle');
 const pdfPanel   = document.getElementById('pdf-panel');
 const searchEl   = document.getElementById('search');
@@ -832,6 +842,14 @@ function openQuestion(row, mode) {
   // Get stored Y from data attributes
   currentStoredY = isAns ? parseFloat(row.dataset.msY) : parseFloat(row.dataset.qpY);
 
+  // Track absolute page (within the FULL paper) and the currently loaded
+  // chop.php window, so ◀ ▶ can page through the whole paper, not just
+  // jump between unrelated questions in the list.
+  currentFullId   = isAns ? row.dataset.msFullId : row.dataset.qpFullId;
+  currentWinStart = parseInt(isAns ? row.dataset.msStart : row.dataset.qpStart);
+  currentWinEnd   = parseInt(isAns ? row.dataset.msEnd   : row.dataset.qpEnd);
+  currentAbsPage  = currentWinStart + (page - 1);
+
   panelTitle.textContent = `${paper} · Q${qNum} · ${label} p${page}`;
 
   if (!panelVisible) {
@@ -843,11 +861,11 @@ function openQuestion(row, mode) {
   currentQNum = qNum;
   loadPdf(url, page, qNum, isAns);
 
-  // Full-paper link (top-right ↗ arrow): opens the complete original exam PDF
-  // on Google Drive — not the chopped mini-PDF used for fast inline viewing.
-  const fullId = mode === 'q' ? row.dataset.qpFullId : row.dataset.msFullId;
-  btnOpen.onclick = () => window.open('https://drive.google.com/file/d/' + fullId + '/view', '_blank');
-  btnOpen.title = mode === 'q' ? 'Open full question paper (Google Drive)' : 'Open full mark scheme (Google Drive)';
+  // Two always-available links (independent of Q/A mode): the full
+  // original question paper and the full original mark scheme, both on
+  // Google Drive — not the chopped mini-PDF used for fast inline viewing.
+  btnOpenQP.onclick = () => window.open('https://drive.google.com/file/d/' + row.dataset.qpFullId + '/view', '_blank');
+  btnOpenMS.onclick = () => window.open('https://drive.google.com/file/d/' + row.dataset.msFullId + '/view', '_blank');
 }
 
 function togglePanel() {
@@ -912,29 +930,43 @@ btnQMode.addEventListener('click', () => switchMode('q'));
 btnAMode.addEventListener('click', () => switchMode('a'));
 
 document.getElementById('btn-prev').addEventListener('click', async () => {
-  if (!currentPdfDoc) return;
+  if (!currentPdfDoc || !currentFullId) return;
   if (currentPage > 1) {
+    // Still within the currently loaded window — just step back a page.
     currentPage--;
+    currentAbsPage--;
     currentStoredY = null;
     rendering = false;
     await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
-  } else if (currentRow) {
-    const rows = Array.from(document.querySelectorAll('.qrow:not(.hidden)'));
-    const idx = rows.indexOf(currentRow);
-    if (idx > 0) openQuestion(rows[idx - 1], currentMode);
+  } else if (currentAbsPage > 1) {
+    // At the start of the loaded window — fetch the previous page(s) of
+    // the SAME paper via chop.php. Never jumps to a different question.
+    currentAbsPage--;
+    currentWinStart = Math.max(1, currentAbsPage);
+    currentWinEnd = currentWinStart + 1;
+    currentStoredY = null;
+    const newUrl = `https://qspotter.co.uk/chop.php?file=${currentFullId}&start=${currentWinStart}&end=${currentWinEnd}`;
+    await loadPdf(newUrl, 1, null, currentMode === 'a');
   }
 });
 document.getElementById('btn-next').addEventListener('click', async () => {
-  if (!currentPdfDoc) return;
+  if (!currentPdfDoc || !currentFullId) return;
   if (currentPage < currentPdfDoc.numPages) {
+    // Still within the currently loaded window — just step forward a page.
     currentPage++;
+    currentAbsPage++;
     currentStoredY = null;
     rendering = false;
     await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
-  } else if (currentRow) {
-    const rows = Array.from(document.querySelectorAll('.qrow:not(.hidden)'));
-    const idx = rows.indexOf(currentRow);
-    if (idx < rows.length - 1) openQuestion(rows[idx + 1], currentMode);
+  } else {
+    // At the end of the loaded window — fetch the next page(s) of the
+    // SAME paper via chop.php. Never jumps to a different question.
+    currentAbsPage++;
+    currentWinStart = currentAbsPage;
+    currentWinEnd = currentAbsPage + 1;
+    currentStoredY = null;
+    const newUrl = `https://qspotter.co.uk/chop.php?file=${currentFullId}&start=${currentWinStart}&end=${currentWinEnd}`;
+    await loadPdf(newUrl, 1, null, currentMode === 'a');
   }
 });
 
