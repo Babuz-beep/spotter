@@ -991,6 +991,10 @@ function openQuestion(row, mode) {
     panelHdrEl.style.removeProperty('min-height');
     void panelHdrEl.offsetHeight; // force reflow
   }
+  // Also clear any leftover native-scroll offset on body/html (see
+  // jumpToTopicHash) in case it's still lingering when a question opens.
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
 
   currentQNum = qNum;
   loadPdf(url, page, qNum, isAns);
@@ -1270,6 +1274,13 @@ panelToggle.addEventListener('click', () => {
 
 // Topic-level deep links: e.g. c1f.html#5.3.1.3 scrolls straight to that spec point
 function jumpToTopicHash() {
+  // Reset any leftover native browser scroll offset on <body>/<html> from
+  // the initial #hash navigation itself (a known browser quirk — the
+  // native fragment-scroll can leave body.scrollTop non-zero even with
+  // overflow:hidden set, which then hides content behind the fixed header).
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+
   const raw = decodeURIComponent(window.location.hash || '').replace(/^#/, '');
   if (!raw) return;
   const el = document.getElementById(raw);
