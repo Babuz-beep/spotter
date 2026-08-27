@@ -262,7 +262,8 @@ body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width
 .empty-note{font-size:0.7rem;color:var(--text3);font-style:italic;margin-left:6px}
 </style>
 </head><body>
-<script src="session_check.js">
+<script src="session_check.js"></script>
+<script>
 const mobileSelect = document.getElementById('mobile-section-select');
 if (mobileSelect) {
   mobileSelect.addEventListener('change', function() {
@@ -1255,11 +1256,6 @@ panelToggle.addEventListener('click', () => {
 });
 
 
-
-</script>
-
-
-
 // Topic-level deep links: e.g. c2h.html#5.6.1.1 scrolls straight to that spec
 // point. Uses data-topic (NOT id) specifically so the browser's own native
 // fragment-scroll-on-load never has anything to auto-match — that native
@@ -1288,6 +1284,7 @@ function jumpToTopicHash() {
 }
 window.addEventListener('DOMContentLoaded', jumpToTopicHash);
 window.addEventListener('hashchange', jumpToTopicHash);
+</script>
 
 
 </body></html>
