@@ -810,7 +810,6 @@ if (mobileSelect) {
   <div id="drawer-overlay" onclick="closeDrawer()"></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
-</div>
 <script type="module">
 import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
@@ -1283,7 +1282,7 @@ function jumpToTopicHash() {
     closeDrawer();
   }
   setTimeout(() => {
-    indexDiv.scrollTo({ top: Math.max(0, el.offsetTop - 14), behavior: 'instant' });
+    indexDiv.scrollTo({ top: Math.max(0, el.offsetTop - 80), behavior: 'instant' });
     el.classList.remove('topic-flash');
     // restart animation even if same hash is clicked twice in a row
     void el.offsetWidth;
