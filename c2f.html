@@ -1,0 +1,956 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPOTTER — Chemistry 2F</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:      #f4f6fb;
+  --bg2:     #ffffff;
+  --bg3:     #edf0f7;
+  --border:  #d8dde8;
+  --border2: #c4cad8;
+  --accent:  #2d6ef5;
+  --accent2: #d97706;
+  --green:   #16a34a;
+  --red:     #e03150;
+  --text:    #1e2540;
+  --text2:   #4a5272;
+  --text3:   #8a93b0;
+  --panel:   480px;
+  --hdr:     52px;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Sora', sans-serif;
+}
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 13px; }
+#hdr {
+  height: var(--hdr);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+}
+#logo { font-family: var(--mono); font-weight: 700; font-size: 15px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; }
+#logo span { color: var(--accent2); }
+#back-link { font-size: 11px; color: var(--text3); text-decoration: none; font-family: var(--mono); }
+#back-link:hover { color: var(--accent); }
+#stats { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+#search-wrap { flex: 1; max-width: 340px; position: relative; }
+#search { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px 6px 32px; color: var(--text); font-family: var(--sans); font-size: 12px; outline: none; transition: border-color .2s; }
+#search:focus { border-color: var(--accent); }
+#search-wrap::before { content: '⌕'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; }
+#filter-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn { font-family: var(--mono); font-size: 10px; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all .15s; }
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+#panel-toggle { margin-left: auto; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; color: var(--text2); font-size: 11px; font-family: var(--mono); cursor: pointer; transition: all .15s; white-space: nowrap; }
+#panel-toggle:hover { border-color: var(--accent); color: var(--accent); }
+#main { display: flex; height: calc(100vh - var(--hdr)); margin-top: var(--hdr); }
+#index { flex: 1; overflow-y: auto; padding: 20px 16px 40px; min-width: 0; }
+#index::-webkit-scrollbar { width: 5px; }
+#index::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+.spec-section { margin-bottom: 32px; }
+.spec-h2 { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--text2); padding: 10px 0 8px; border-bottom: 1px solid var(--border); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.spec-h3 { font-size: 11px; font-weight: 600; color: var(--text3); margin: 14px 0 8px; display: flex; align-items: center; gap: 6px; letter-spacing: .5px; }
+.ref-group { margin-bottom: 10px; }
+.ref-label { font-size: 10px; color: var(--accent2); font-family: var(--mono); margin-bottom: 4px; padding-left: 2px; display: flex; align-items: center; gap: 6px; opacity: .8; }
+.spec-tag { font-family: var(--mono); font-size: 9px; padding: 2px 5px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 3px; color: var(--accent); flex-shrink: 0; }
+.spec-tag.sm { font-size: 8px; padding: 1px 4px; }
+.qrow { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; border: 1px solid transparent; margin-bottom: 2px; cursor: pointer; transition: all .12s; }
+.qrow:hover { background: var(--bg3); border-color: var(--border); }
+.qrow.active { background: var(--bg3); border-color: var(--accent); }
+.qrow.hidden { display: none; }
+.qcell { display: flex; align-items: center; }
+.qmeta { gap: 5px; flex-shrink: 0; min-width: 130px; }
+.qdesc { flex: 1; color: var(--text); font-size: 12px; line-height: 1.4; }
+.qbtns { gap: 4px; flex-shrink: 0; }
+.mbadge { font-family: var(--mono); font-size: 9px; padding: 2px 5px; border-radius: 3px; background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); }
+.printbadge { font-size: 11px; cursor: default; opacity: 0.85; }
+.pbadge { font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 3px; background: color-mix(in srgb, var(--accent) 12%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); color: var(--accent); white-space: nowrap; }
+.btn-q, .btn-a { font-family: var(--mono); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border2); cursor: pointer; transition: all .12s; }
+.btn-q { background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent); }
+.btn-q:hover { background: var(--accent); color: #fff; }
+.btn-a { background: color-mix(in srgb, var(--green) 10%, transparent); border-color: color-mix(in srgb, var(--green) 25%, transparent); color: var(--green); }
+.btn-a:hover { background: var(--green); color: #fff; }
+#drag-handle { width: 6px; min-width: 6px; background: var(--border); cursor: col-resize; flex-shrink: 0; align-self: stretch; transition: background .15s; z-index: 10; }
+#drag-handle:hover, #drag-handle.active { background: var(--accent); }
+#pdf-panel { width: var(--panel); border-left: 1px solid var(--border); background: var(--bg2); display: flex; flex-direction: column; flex-shrink: 0; transition: width .3s; }
+#pdf-panel.hidden { width: 0; border: none; overflow: hidden; }
+#panel-hdr { padding: 8px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 40px; }
+#panel-title { flex: 1; font-size: 11px; color: var(--text2); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#panel-controls { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.pctrl { font-size: 10px; font-family: var(--mono); padding: 3px 7px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; transition: all .12s; }
+.pctrl.pctrl-red { color: var(--red); border-color: color-mix(in srgb, var(--red) 40%, transparent); font-weight: 700; }
+.pctrl.pctrl-red:hover { background: var(--red); color: #fff; }
+.pctrl.pctrl-green { color: var(--green); border-color: color-mix(in srgb, var(--green) 40%, transparent); font-weight: 700; }
+.pctrl.pctrl-green:hover { background: var(--green); color: #fff; }
+.pctrl:hover { border-color: var(--accent); color: var(--accent); }
+.pctrl.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+#pdf-viewport { flex: 1; overflow-y: auto; position: relative; background: #d0d4de; }
+#pdf-viewport::-webkit-scrollbar { width: 4px; }
+#pdf-viewport::-webkit-scrollbar-thumb { background: var(--border2); }
+#pdf-canvas { display: block; width: 100%; }
+#arrow-indicator { position: absolute; left: 0; width: 22px; display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 0 4px 4px 0; z-index: 10; pointer-events: none; }
+#arrow-indicator::after { content: '👉'; font-size: 14px; line-height: 1; }
+body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 100vw !important; z-index: 200; border: none; }
+#pdf-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text3); gap: 12px; font-size: 12px; text-align: center; padding: 20px; }
+#pdf-placeholder .big { font-size: 36px; }
+#loading-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); display: none; animation: loadpulse 1.2s infinite; }
+@keyframes loadpulse { 0% { opacity:1; transform:scaleX(0); transform-origin:left; } 50% { opacity:1; transform:scaleX(.7); } 100% { opacity:0; transform:scaleX(1); } }
+#nav-pills { display: flex; gap: 4px; padding: 0 0 12px; flex-wrap: wrap; }
+.nav-pill { font-family: var(--mono); font-size: 9px; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border2); background: transparent; color: var(--text3); cursor: pointer; transition: all .12s; text-decoration: none; }
+.nav-pill:hover { border-color: var(--accent2); color: var(--accent2); }
+#no-results { padding: 40px; text-align: center; color: var(--text3); font-size: 12px; display: none; }
+/* ── MOBILE DRAWER (≤768px) ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --hdr: 104px; }
+
+  #hdr {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  #logo { font-size: 13px; }
+  #back-link { display: none; }
+  #stats { font-size: 10px; order: 3; width: 100%; }
+  #search-wrap { order: 4; width: 100%; }
+  #search { width: 100%; }
+  #filter-wrap { order: 5; width: 100%; overflow-x: auto !important; padding-bottom: 2px; -webkit-overflow-scrolling: touch; flex-wrap: nowrap !important; display: flex !important; }
+  #filter-wrap::-webkit-scrollbar { display: none; }
+  .filter-btn { flex-shrink: 0 !important; white-space: nowrap !important; }
+  #btn-top { order: 1; }
+  #panel-toggle { order: 2; }
+
+  #main { flex-direction: column; position: relative; }
+
+  /* Index takes full width */
+  #index { width: 100%; height: calc(100vh - var(--hdr)); overflow-y: auto; }
+
+  /* Hide desktop drag handle */
+  #drag-handle { display: none; }
+
+  /* PDF panel becomes bottom drawer */
+  #pdf-panel {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: -webkit-fill-available;
+    border-left: none !important;
+    border-top: 2px solid var(--accent);
+    border-radius: 0;
+    z-index: 300;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+    display: flex !important;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  #pdf-panel.hidden { transform: translateY(100%); }
+  #pdf-panel.drawer-open { transform: translateY(0); }
+
+  /* Drawer handle bar at top */
+  #panel-hdr {
+    padding: 10px 12px 8px;
+    flex-shrink: 0;
+  }
+  #panel-hdr::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    margin: 0 auto 10px;
+  }
+
+  /* Close button visible on mobile */
+  #btn-close-drawer {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: #dc2626;
+    border: 2px solid #dc2626;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  #btn-close-drawer:active { background: #b91c1c; }
+}
+/* Close button red on all devices */
+#btn-close-drawer{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;display:flex!important}
+@media(max-width:768px){
+
+  /* Overlay behind drawer */
+  #drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 299;
+  }
+  #drawer-overlay.active { display: block; }
+
+  /* Fullscreen still works */
+  body.fullscreen #pdf-panel {
+    height: 100vh !important;
+    border-radius: 0;
+  }
+
+  /* qrow marks badge smaller */
+  .mbadge { display: none; }
+
+  /* Nav pills scrollable */
+
+  /* Mobile dropdown instead of filter buttons */
+  #mobile-section-select {
+    display: block;
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text1);
+    cursor: pointer;
+    order: 5;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b8fa8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+  #filter-wrap { display: none !important; }
+  #nav-pills { overflow-x: auto !important; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; scrollbar-width: none; max-width: 100vw; }
+  #nav-pills::-webkit-scrollbar { display: none; }
+  .nav-pill { white-space: nowrap !important; font-size: 11px; padding: 4px 10px; }
+}
+
+.ref-group { scroll-margin-top: 10px; }
+.ref-group.topic-flash { animation: topicFlash 2.2s ease-out; border-radius: 6px; }
+@keyframes topicFlash {
+  0%   { background: rgba(45,110,245,0.16); box-shadow: 0 0 0 2px rgba(45,110,245,0.35); }
+  70%  { background: rgba(45,110,245,0.16); box-shadow: 0 0 0 2px rgba(45,110,245,0.35); }
+  100% { background: transparent; box-shadow: 0 0 0 0 rgba(45,110,245,0); }
+}
+.ref-label { cursor: default; }
+.ref-label .topic-link { color: inherit; text-decoration: none; border-bottom: 1px dashed transparent; }
+.ref-label .topic-link:hover { border-bottom-color: var(--accent); }
+</style>
+<style>
+.pbadge{background:#16a34a22!important;color:#16a34a!important;border-color:#16a34a55!important;font-weight:600!important}
+#btn-top{font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-block !important;visibility:visible !important}
+#btn-top:hover{border-color:var(--accent2);color:var(--accent2)}
+.ref-empty{opacity:0.4}
+.empty-note{font-size:0.7rem;color:var(--text3);font-style:italic;margin-left:6px}
+</style>
+</head><body>
+<script src="session_check.js"></script>
+<script>
+const mobileSelect = document.getElementById('mobile-section-select');
+if (mobileSelect) {
+  mobileSelect.addEventListener('change', function() {
+    const val = this.value;
+    const indexDiv = document.getElementById('index');
+    if (!val) { indexDiv.scrollTo({ top: 0, behavior: 'instant' }); return; }
+    const prefix = val.replace(/\./g, '-');
+    const sec = document.querySelector('[id*="' + prefix + '"]');
+    if (sec) indexDiv.scrollTo({ top: sec.offsetTop - 10, behavior: 'instant' });
+    this.value = '';
+  });
+}
+</script>
+<div id="hdr">
+<a id="logo" href="index.html" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0"><img src="data:image/png;base64,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" alt="SPOTTER" style="height:40px;width:auto;display:block"></a>
+<a id="back-link" href="index.html">← All subjects</a>
+<div id="stats">77 questions · 2 of 9 papers (build in progress) · Chemistry 2F</div>
+<div id="search-wrap"><input id="search" type="text" placeholder="Search questions…" autocomplete="off"></div>
+<button id="btn-top" onclick="document.getElementById('index').scrollTop=0" title="Scroll to top">↑ Top of page</button>
+<button id="panel-toggle" style="display:none">⊞ Panel</button>
+</div>
+<div id="main"><div id="index">
+<div id="nav-pills"><a class="nav-pill" href="#sec-5-6">→ 5.6 THE RATE AND EXTENT OF CHEMICAL CHANGE</a>
+<a class="nav-pill" href="#sec-5-7">→ 5.7 ORGANIC CHEMISTRY</a>
+<a class="nav-pill" href="#sec-5-8">→ 5.8 CHEMICAL ANALYSIS</a>
+<a class="nav-pill" href="#sec-5-9">→ 5.9 CHEMISTRY OF THE ATMOSPHERE</a>
+<a class="nav-pill" href="#sec-5-10">→ 5.10 USING RESOURCES</a></div>
+<div class="spec-section" id="sec-5-6">
+<h2 class="spec-h2"><span class="spec-tag">5.6</span>THE RATE AND EXTENT OF CHEMICAL CHANGE</h2>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.1.2</span> Factors affecting rate</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="04.6" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=24&end=24" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=15&end=15" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="126.9" data-qp-start="24" data-qp-end="24" data-ms-start="15" data-ms-end="15" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">04.6 — Completing the sentence on temperature's effect on rate</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="07.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=25&end=25" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=19&end=19" data-qp-page="1" data-ms-page="1" data-qp-y="124.2" data-ms-y="145.5" data-qp-start="25" data-qp-end="25" data-ms-start="19" data-ms-end="19" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">6m</span> <span class="qdesc">07.1 — Describing a method to produce valid results (RP11 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.1.3</span> Collision theory</div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="07.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=26&end=26" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=20&end=20" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="126.9" data-qp-start="26" data-qp-end="26" data-ms-start="20" data-ms-end="20" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">3m</span> <span class="qdesc">07.2 — Explaining temperature's effect on rate</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.1.4</span> Catalysts</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="04.1" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=20&end=20" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=14&end=14" data-qp-page="1" data-ms-page="1" data-qp-y="110.1" data-ms-y="152.3" data-qp-start="20" data-qp-end="20" data-ms-start="14" data-ms-end="14" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">04.1 — Writing the word equation for H2O2 decomposition</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="04.2" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=21&end=21" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=14&end=14" data-qp-page="1" data-ms-page="1" data-qp-y="334.2" data-ms-y="257.5" data-qp-start="21" data-qp-end="21" data-ms-start="14" data-ms-end="14" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">04.2 — Identifying two control variables</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="04.3" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=22&end=22" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=14&end=14" data-qp-page="1" data-ms-page="1" data-qp-y="544.7" data-ms-y="362.7" data-qp-start="22" data-qp-end="22" data-ms-start="14" data-ms-end="14" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">3m</span> <span class="printbadge" title="Print if needed">🖨️</span><span class="qdesc">04.3 — Plotting the data and drawing a line of best fit</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="04.4" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=23&end=23" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=14&end=14" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="518.6" data-qp-start="23" data-qp-end="23" data-ms-start="14" data-ms-end="14" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">04.4 — Identifying the best catalyst, with a reason, from the graph</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="04.5" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=23&end=23" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=14&end=14" data-qp-page="1" data-ms-page="1" data-qp-y="425.3" data-ms-y="674.0" data-qp-start="23" data-qp-end="23" data-ms-start="14" data-ms-end="14" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">04.5 — Completing the sentence on result accuracy</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="07.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=27&end=27" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=20&end=20" data-qp-page="1" data-ms-page="1" data-qp-y="123.0" data-ms-y="333.4" data-qp-start="27" data-qp-end="27" data-ms-start="20" data-ms-end="20" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">07.3 — Defining "catalyst"</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="07.4" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=27&end=27" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=20&end=20" data-qp-page="1" data-ms-page="1" data-qp-y="329.3" data-ms-y="464.0" data-qp-start="27" data-qp-end="27" data-ms-start="20" data-ms-end="20" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">07.4 — Naming biological catalysts</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.2.1</span> Reversible reactions</div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="02.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=8&end=8" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="417.6" data-ms-y="464.0" data-qp-start="8" data-qp-end="8" data-ms-start="9" data-ms-end="9" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">02.3 — Identifying how the equation shows reversibility</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.2.2</span> Reversible reactions and energy changes</div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="02.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=8&end=8" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="176.0" data-ms-y="320.7" data-qp-start="8" data-qp-end="8" data-ms-start="9" data-ms-end="9" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.2 — Completing the sentence on the colour change</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="02.4" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=9&end=9" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="572.2" data-qp-start="9" data-qp-end="9" data-ms-start="9" data-ms-end="9" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">02.4 — Calculating the total atoms in the formula (atom count noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.6.2.3</span> Equilibrium</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.5" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=16&end=16" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="355.0" data-ms-y="598.5" data-qp-start="16" data-qp-end="16" data-ms-start="12" data-ms-end="12" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.5 — Completing the equilibrium definition</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+</div>
+<div class="spec-section" id="sec-5-7">
+<h2 class="spec-h2"><span class="spec-tag">5.7</span>ORGANIC CHEMISTRY</h2>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.7.1.1</span> Alkanes</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.2" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=2&end=2" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="384.2" data-ms-y="257.5" data-qp-start="2" data-qp-end="2" data-ms-start="7" data-ms-end="7" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.2 — Identifying what crude oil is formed from</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.3" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=3&end=3" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="350.1" data-qp-start="3" data-qp-end="3" data-ms-start="7" data-ms-end="7" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.3 — Identifying the type of substance crude oil is</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="06.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=21&end=21" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="124.2" data-ms-y="152.1" data-qp-start="21" data-qp-end="21" data-ms-start="17" data-ms-end="17" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.1 — Defining "hydrocarbon"</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="06.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=21&end=21" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="278.9" data-ms-y="244.8" data-qp-start="21" data-qp-end="21" data-ms-start="17" data-ms-end="17" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.2 — Determining the formula of the 10-carbon alkane</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.7.1.2</span> Fractional distillation</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.4" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=3&end=3" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="314.5" data-ms-y="442.7" data-qp-start="3" data-qp-end="3" data-ms-start="7" data-ms-end="7" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">01.4 — Completing the sentences on fractional distillation</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.7" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=5&end=5" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=8&end=8" data-qp-page="1" data-ms-page="1" data-qp-y="67.1" data-ms-y="139.6" data-qp-start="5" data-qp-end="5" data-ms-start="8" data-ms-end="8" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">3m</span> <span class="qdesc">01.7 — Calculating the percentage of LPG</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="06.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=22&end=22" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="337.5" data-qp-start="22" data-qp-end="22" data-ms-start="17" data-ms-end="17" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">4m</span> <span class="qdesc">06.3 — Explaining how crude oil separates into fractions</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.7.1.3</span> Properties of hydrocarbons</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.1" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=25&end=25" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=16&end=16" data-qp-page="1" data-ms-page="1" data-qp-y="109.1" data-ms-y="152.3" data-qp-start="25" data-qp-end="25" data-ms-start="16" data-ms-end="16" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">05.1 — Balancing the methane combustion equation</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.2" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=25&end=25" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=16&end=16" data-qp-page="1" data-ms-page="1" data-qp-y="283.2" data-ms-y="244.8" data-qp-start="25" data-qp-end="25" data-ms-start="16" data-ms-end="16" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">05.2 — Comparing petrol and diesel properties</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.7.1.4</span> Cracking</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.5" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=4&end=4" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="108.5" data-ms-y="547.9" data-qp-start="4" data-qp-end="4" data-ms-start="7" data-ms-end="7" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.5 — Completing the sentence on cracking products</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="06.4" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=23&end=23" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="632.4" data-qp-start="23" data-qp-end="23" data-ms-start="17" data-ms-end="17" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.4 — Balancing the cracking equation</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="06.5" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=24&end=24" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=18&end=18" data-qp-page="1" data-ms-page="1" data-qp-y="125.1" data-ms-y="126.9" data-qp-start="24" data-qp-end="24" data-ms-start="18" data-ms-end="18" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">06.5 — Describing the test and result for alkenes</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="06.6" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=24&end=24" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=18&end=18" data-qp-page="1" data-ms-page="1" data-qp-y="356.6" data-ms-y="308.1" data-qp-start="24" data-qp-end="24" data-ms-start="18" data-ms-end="18" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.6 — Identifying the type of substance poly(propene) is</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+</div>
+<div class="spec-section" id="sec-5-8">
+<h2 class="spec-h2"><span class="spec-tag">5.8</span>CHEMICAL ANALYSIS</h2>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.8.1.1</span> Purity</div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="02.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=7&end=7" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="124.2" data-ms-y="152.1" data-qp-start="7" data-qp-end="7" data-ms-start="9" data-ms-end="9" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.1 — Identifying which substance is pure, with a reason</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.8.1.2</span> Formulations</div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="03.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=10&end=10" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=11&end=11" data-qp-page="1" data-ms-page="1" data-qp-y="124.2" data-ms-y="152.1" data-qp-start="10" data-qp-end="10" data-ms-start="11" data-ms-end="11" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.1 — Naming a mixture designed as a useful product</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.8.1.3</span> Chromatography</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="06.1" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=28&end=28" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=18&end=18" data-qp-page="1" data-ms-page="1" data-qp-y="165.7" data-ms-y="152.3" data-qp-start="28" data-qp-end="28" data-ms-start="18" data-ms-end="18" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.1 — Identifying the stationary phase (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="06.2" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=28&end=28" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=18&end=18" data-qp-page="1" data-ms-page="1" data-qp-y="433.6" data-ms-y="257.5" data-qp-start="28" data-qp-end="28" data-ms-start="18" data-ms-end="18" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.2 — Explaining why substances separate in the mobile phase (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="06.3" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=28&end=28" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=18&end=18" data-qp-page="1" data-ms-page="1" data-qp-y="575.7" data-ms-y="402.9" data-qp-start="28" data-qp-end="28" data-ms-start="18" data-ms-end="18" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">06.3 — Identifying spots produced by a pure compound (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="06.4" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=29&end=29" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=18&end=18" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="508.1" data-qp-start="29" data-qp-end="29" data-ms-start="18" data-ms-end="18" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">06.4 — Calculating the Rf value (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="06.5" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=30&end=30" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=19&end=19" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="120.3" data-qp-start="30" data-qp-end="30" data-ms-start="19" data-ms-end="19" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">6m</span> <span class="qdesc">06.5 — Planning a chromatography experiment (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="03.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=11&end=11" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=11&end=11" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="244.8" data-qp-start="11" data-qp-end="11" data-ms-start="11" data-ms-end="11" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">03.2 — Identifying what should draw the start line, with a reason (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="03.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=11&end=11" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=11&end=11" data-qp-page="1" data-ms-page="1" data-qp-y="297.6" data-ms-y="375.4" data-qp-start="11" data-qp-end="11" data-ms-start="11" data-ms-end="11" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">4m</span> <span class="qdesc">03.3 — Determining the Rf value of the red colour (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="03.4" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=12&end=12" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=11&end=11" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="657.8" data-qp-start="12" data-qp-end="12" data-ms-start="11" data-ms-end="11" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">03.4 — Suggesting which colour matches the Rf value, with a reason (RP12 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.8.2.1</span> Test for hydrogen</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.6" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=4&end=4" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="334.8" data-ms-y="640.5" data-qp-start="4" data-qp-end="4" data-ms-start="7" data-ms-end="7" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.6 — Identifying the test used for hydrogen</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.8.2.4</span> Test for chlorine</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.6" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=16&end=16" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="560.4" data-ms-y="691.2" data-qp-start="16" data-qp-end="16" data-ms-start="12" data-ms-end="12" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.6 — Completing the sentence on the chlorine test result</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="02.5" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=9&end=9" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=10&end=10" data-qp-page="1" data-ms-page="1" data-qp-y="253.7" data-ms-y="126.9" data-qp-start="9" data-qp-end="9" data-ms-start="10" data-ms-end="10" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.5 — Describing the test and result for chlorine</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+</div>
+<div class="spec-section" id="sec-5-9">
+<h2 class="spec-h2"><span class="spec-tag">5.9</span>CHEMISTRY OF THE ATMOSPHERE</h2>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.1.1</span> The Earth's early atmosphere</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.2" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=7&end=7" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="321.8" data-ms-y="453.4" data-qp-start="7" data-qp-end="7" data-ms-start="9" data-ms-end="9" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">02.2 — Identifying the gas with highest % on Earth</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.3" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=7&end=7" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="453.4" data-ms-y="545.9" data-qp-start="7" data-qp-end="7" data-ms-start="9" data-ms-end="9" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">3m</span> <span class="qdesc">02.3 — Calculating how many times more CO2 is on Mars</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="01.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=2&end=2" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="125.9" data-ms-y="152.1" data-qp-start="2" data-qp-end="2" data-ms-start="7" data-ms-end="7" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">01.1 — Matching each gas to its atmospheric %</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.1.2</span> How oxygen increased</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.1" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=6&end=6" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=9&end=9" data-qp-page="1" data-ms-page="1" data-qp-y="107.9" data-ms-y="152.3" data-qp-start="6" data-qp-end="6" data-ms-start="9" data-ms-end="9" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.1 — Matching early-atmosphere change to its cause</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="01.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=2&end=2" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="447.9" data-ms-y="412.8" data-qp-start="2" data-qp-end="2" data-ms-start="7" data-ms-end="7" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">01.2 — Identifying two reasons CO2 has decreased</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.1.4</span> How carbon dioxide decreased</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.6" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=9&end=9" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=10&end=10" data-qp-page="1" data-ms-page="1" data-qp-y="352.3" data-ms-y="358.2" data-qp-start="9" data-qp-end="9" data-ms-start="10" data-ms-end="10" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">02.6 — Naming the process in trees that uses CO2</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.2.1</span> The greenhouse effect</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.8" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=11&end=11" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=10&end=10" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="603.1" data-qp-start="11" data-qp-end="11" data-ms-start="10" data-ms-end="10" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">02.8 — Determining % methane emissions from landfill</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.2.2</span> Human activities and climate change</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.4" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=8&end=8" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=10&end=10" data-qp-page="1" data-ms-page="1" data-qp-y="105.8" data-ms-y="126.9" data-qp-start="8" data-qp-end="8" data-ms-start="10" data-ms-end="10" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">02.4 — Identifying the CO2 trend from 1960-2020</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.7" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=10&end=10" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=10&end=10" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="451.9" data-qp-start="10" data-qp-end="10" data-ms-start="10" data-ms-end="10" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.7 — Giving two conclusions about forest area change</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="01.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=3&end=3" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="518.1" data-qp-start="3" data-qp-end="3" data-ms-start="7" data-ms-end="7" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">3m</span> <span class="qdesc">01.3 — Describing the CO2 trend from 1800-2020</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="01.4" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=4&end=4" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="125.1" data-ms-y="661.3" data-qp-start="4" data-qp-end="4" data-ms-start="7" data-ms-end="7" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.4 — Identifying another greenhouse gas</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="01.5" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=4&end=4" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=8&end=8" data-qp-page="1" data-ms-page="1" data-qp-y="405.1" data-ms-y="126.9" data-qp-start="4" data-qp-end="4" data-ms-start="8" data-ms-end="8" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.5 — Identifying the environmental problem from greenhouse gases</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="01.6" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=5&end=5" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=8&end=8" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="232.2" data-qp-start="5" data-qp-end="5" data-ms-start="8" data-ms-end="8" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">01.6 — Calculating the Mr of carbon dioxide (Mr calc noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.3.1</span> Atmospheric pollutants from fuels</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.5" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=9&end=9" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=10&end=10" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="219.5" data-qp-start="9" data-qp-end="9" data-ms-start="10" data-ms-end="10" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.5 — Calculating CO2 mass emitted per person</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.3" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=26&end=26" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=16&end=16" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="501.9" data-qp-start="26" data-qp-end="26" data-ms-start="16" data-ms-end="16" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">05.3 — Identifying the shared element across the pollutant gases</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.4" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=26&end=26" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=16&end=16" data-qp-page="1" data-ms-page="1" data-qp-y="435.5" data-ms-y="594.5" data-qp-start="26" data-qp-end="26" data-ms-start="16" data-ms-end="16" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">05.4 — Identifying where the nitrogen comes from</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.5" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=26&end=26" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=16&end=16" data-qp-page="1" data-ms-page="1" data-qp-y="616.5" data-ms-y="712.4" data-qp-start="26" data-qp-end="26" data-ms-start="16" data-ms-end="16" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">05.5 — Identifying the environmental effect of particulates</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.7" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=27&end=27" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="235.1" data-ms-y="232.2" data-qp-start="27" data-qp-end="27" data-ms-start="17" data-ms-end="17" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">05.7 — Explaining why water vapour, not liquid water, forms</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.9.3.2</span> Properties/effects of pollutants</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.6" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=27&end=27" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="126.9" data-qp-start="27" data-qp-end="27" data-ms-start="17" data-ms-end="17" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">05.6 — Giving a reason CO is hard to detect</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="05.8" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=27&end=27" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=17&end=17" data-qp-page="1" data-ms-page="1" data-qp-y="430.7" data-ms-y="426.0" data-qp-start="27" data-qp-end="27" data-ms-start="17" data-ms-end="17" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">3m</span> <span class="qdesc">05.8 — Explaining the environmental problem from sulfur impurities</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+</div>
+<div class="spec-section" id="sec-5-10">
+<h2 class="spec-h2"><span class="spec-tag">5.10</span>USING RESOURCES</h2>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.10.1.1</span> Using resources</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="01.1" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=2&end=2" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=7&end=7" data-qp-page="1" data-ms-page="1" data-qp-y="110.4" data-ms-y="152.3" data-qp-start="2" data-qp-end="2" data-ms-start="7" data-ms-end="7" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">01.1 — Defining a "finite" resource</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.10.1.2</span> Using resources — potable water</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.1" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=14&end=14" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="614.7" data-ms-y="152.3" data-qp-start="14" data-qp-end="14" data-ms-start="12" data-ms-end="12" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.1 — Giving a safety precaution (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.2" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=15&end=15" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="257.5" data-qp-start="15" data-qp-end="15" data-ms-start="12" data-ms-end="12" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">03.2 — Identifying two improvements for valid results (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.3" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=15&end=15" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="397.7" data-ms-y="400.7" data-qp-start="15" data-qp-end="15" data-ms-start="12" data-ms-end="12" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.3 — Suggesting why distilled water is concluded pure (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.4" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=16&end=16" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="133.1" data-ms-y="505.9" data-qp-start="16" data-qp-end="16" data-ms-start="12" data-ms-end="12" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.4 — Identifying why potable water is sterilised</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.7" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=17&end=17" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=13&end=13" data-qp-page="1" data-ms-page="1" data-qp-y="452.7" data-ms-y="126.9" data-qp-start="17" data-qp-end="17" data-ms-start="13" data-ms-end="13" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">4m</span> <span class="qdesc">03.7 — Comparing fluoride's effect on tooth decay across ages</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="03.8" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=18&end=18" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=13&end=13" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="544.2" data-qp-start="18" data-qp-end="18" data-ms-start="13" data-ms-end="13" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">03.8 — Suggesting a reason against fluoridation</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="04.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=13&end=13" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="124.2" data-ms-y="152.1" data-qp-start="13" data-qp-end="13" data-ms-start="12" data-ms-end="12" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">04.1 — Naming water that is safe to drink</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="04.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=13&end=13" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="366.7" data-ms-y="244.8" data-qp-start="13" data-qp-end="13" data-ms-start="12" data-ms-end="12" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">04.2 — Identifying two sterilisation methods</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="04.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=14&end=14" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="382.8" data-ms-y="350.1" data-qp-start="14" data-qp-end="14" data-ms-start="12" data-ms-end="12" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">04.3 — Identifying the most suitable measuring equipment (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="04.4" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=15&end=15" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=12&end=12" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="455.3" data-qp-start="15" data-qp-end="15" data-ms-start="12" data-ms-end="12" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">1m</span> <span class="qdesc">04.4 — Calculating the mass of dissolved solids (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="04.5" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=15&end=15" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=13&end=13" data-qp-page="1" data-ms-page="1" data-qp-y="451.3" data-ms-y="126.9" data-qp-start="15" data-qp-end="15" data-ms-start="13" data-ms-end="13" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">04.5 — Matching each variable to its example (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="04.6" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=17&end=17" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=13&end=13" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="425.1" data-qp-start="17" data-qp-end="17" data-ms-start="13" data-ms-end="13" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">3m</span> <span class="printbadge" title="Print if needed">🖨️</span><span class="qdesc">04.6 — Completing the bar chart for dissolved ion masses (RP13 noted)</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.10.2.1</span> Life cycle assessment</div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="05.3" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=20&end=20" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=16&end=16" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="126.9" data-qp-start="20" data-qp-end="20" data-ms-start="16" data-ms-end="16" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">4m</span> <span class="qdesc">05.3 — Evaluating the sustainability of wood vs steel disposal</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+<div class="ref-group"><div class="ref-label"><span class="spec-tag sm">5.10.2.2</span> Reducing the use of resources</div>
+<div class="qrow" data-paper="Jun23·C2F" data-qnum="02.9" data-qp-url="chop.php?file=1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_&start=12&end=12" data-ms-url="chop.php?file=15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4&start=11&end=11" data-qp-page="1" data-ms-page="1" data-qp-y="66.8" data-ms-y="126.9" data-qp-start="12" data-qp-end="12" data-ms-start="11" data-ms-end="11" data-qp-full-id="1_DlNk7mZsXK4OXhE9ZO1sP78C763uy1_" data-ms-full-id="15EHJN-Hzt76AkOabgp1Sl-iI4ksV52W4"><span class="pbadge">Jun23·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">02.9 — Naming the two waste-reduction methods shown</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="05.1" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=18&end=18" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=14&end=14" data-qp-page="1" data-ms-page="1" data-qp-y="131.9" data-ms-y="152.1" data-qp-start="18" data-qp-end="18" data-ms-start="14" data-ms-end="14" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">2m</span> <span class="qdesc">05.1 — Calculating the mass of aluminium recycled</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+<div class="qrow" data-paper="Jun24·C2F" data-qnum="05.2" data-qp-url="chop.php?file=13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX&start=19&end=19" data-ms-url="chop.php?file=1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0&start=15&end=15" data-qp-page="1" data-ms-page="1" data-qp-y="66.6" data-ms-y="126.9" data-qp-start="19" data-qp-end="19" data-ms-start="15" data-ms-end="15" data-qp-full-id="13JS2uQFgIr-kDjXR9pNWtex5tqJO4WWX" data-ms-full-id="1fulthNT4yDk1hydVIeTvxzNs0CHQUYQ0"><span class="pbadge">Jun24·C2F</span> <span class="mbadge">4m</span> <span class="qdesc">05.2 — Calculating the number of aluminium cans</span><button class="btn-q">Q</button><button class="btn-a">A</button></div>
+</div>
+</div>
+<div id="no-results">No questions match your search.</div>
+</div>
+  <div id="drag-handle"></div>
+  <div id="pdf-panel">
+    <div id="panel-hdr">
+      <div id="panel-title">Select a question</div>
+      <div id="panel-controls"><button id="btn-close-drawer" onclick="closeDrawer()" style="background:#dc2626;color:#fff;border-color:#dc2626;font-size:18px;font-weight:700;min-width:36px;height:36px" title="Close">×</button>
+        <button class="pctrl" id="btn-q-mode">Q</button>
+        <button class="pctrl" id="btn-a-mode">A</button>
+        <button class="pctrl" id="btn-prev" title="Previous page (same paper)">◀</button>
+        <button class="pctrl" id="btn-next" title="Next page (same paper)">▶</button>
+        <button class="pctrl" id="btn-goto">↓ Jump</button>
+        <button class="pctrl" id="btn-full">⛶ Full</button>
+        <button class="pctrl pctrl-red" id="btn-open-qp" title="Open full question paper (Google Drive)">Full Paper</button>
+        <button class="pctrl pctrl-green" id="btn-open-ms" title="Open full mark scheme (Google Drive)">Full MS</button>
+      </div>
+    </div>
+    <div id="pdf-viewport">
+      <div id="loading-bar"></div>
+      <canvas id="pdf-canvas"></canvas>
+      <div id="arrow-indicator"></div>
+      <div id="pdf-placeholder">
+        <div class="big">📄</div>
+        <div>Select a question to view the exam paper</div>
+      </div>
+    </div>
+  </div>
+  <div id="drawer-overlay" onclick="closeDrawer()"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs" type="module"></script>
+<script type="module">
+import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';
+
+const PROXY = 'https://spotter-proxy.topscienceguru.workers.dev/?url=';
+const SCALE = 2.0;
+
+let currentPdfDoc = null;
+let currentPdfUrl = '';
+let currentPage = 1;
+let currentQNum = '';
+let currentMode = 'q';
+let currentRow = null;
+let panelVisible = false;
+let fullscreen = false;
+let rendering = false;
+let currentStoredY = null;
+let currentAbsPage = 1;
+let currentFullId = '';
+let currentWinStart = 1;
+let currentWinEnd = 1;
+
+const viewport   = document.getElementById('pdf-viewport');
+const canvas     = document.getElementById('pdf-canvas');
+const ctx        = canvas.getContext('2d');
+const arrow      = document.getElementById('arrow-indicator');
+const placeholder = document.getElementById('pdf-placeholder');
+const loadingBar = document.getElementById('loading-bar');
+const panelTitle = document.getElementById('panel-title');
+const btnQMode   = document.getElementById('btn-q-mode');
+const btnAMode   = document.getElementById('btn-a-mode');
+const btnGoto    = document.getElementById('btn-goto');
+const btnFull    = document.getElementById('btn-full');
+const btnOpenQP  = document.getElementById('btn-open-qp');
+const btnOpenMS  = document.getElementById('btn-open-ms');
+const panelToggle = document.getElementById('panel-toggle');
+const pdfPanel   = document.getElementById('pdf-panel');
+const searchEl   = document.getElementById('search');
+
+function setLoading(v) { loadingBar.style.display = v ? 'block' : 'none'; }
+
+function showArrow(topY, pageH, isAnswer) {
+  const height = Math.max(30, Math.min(60, pageH * 0.04));
+  arrow.style.cssText = `
+    display: flex;
+    top: ${topY - 4}px;
+    height: ${height}px;
+    position: absolute;
+    left: 0;
+    width: 28px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: ${isAnswer ? '#16a34a' : '#e03150'};
+    border-radius: 0 4px 4px 0;
+    z-index: 10;
+    pointer-events: none;
+  `;
+}
+
+async function renderPage(doc, pageNum, qNum, isAnswer) {
+  if (rendering) return;
+  rendering = true;
+  arrow.style.display = 'none';
+  placeholder.style.display = 'none';
+  canvas.style.display = 'block';
+
+  const page = await doc.getPage(pageNum);
+  const displayWidth = viewport.clientWidth || 480;
+  const pdfWidth = page.getViewport({ scale: 1 }).width;
+  const scale = (displayWidth / pdfWidth) * SCALE;
+  const vp = page.getViewport({ scale });
+
+  canvas.width  = vp.width;
+  canvas.height = vp.height;
+  canvas.style.width  = displayWidth + 'px';
+  canvas.style.height = Math.round(vp.height / SCALE) + 'px';
+
+  await page.render({ canvasContext: ctx, viewport: vp }).promise;
+
+  if (qNum) {
+    const vp1 = page.getViewport({ scale: 1 });
+    const scaleY = vp.height / vp1.height;
+    const displayH = Math.round(vp.height / SCALE);
+
+    // Use stored Y directly (read from PDF at build time — 100% accurate)
+    if (currentStoredY !== null && !isNaN(currentStoredY)) {
+      const yDisplay = Math.round(currentStoredY * scaleY / SCALE);
+      if (yDisplay > 5 && yDisplay < displayH - 5) {
+        showArrow(yDisplay, displayH, isAnswer);
+        setTimeout(() => { viewport.scrollTop = Math.max(0, yDisplay - 80); }, 80);
+        rendering = false;
+        return;
+      }
+    }
+    // Fallback: top of page
+    showArrow(40, displayH, isAnswer);
+    setTimeout(() => { viewport.scrollTop = 0; }, 80);
+  }
+  rendering = false;
+}
+
+async function loadPdf(url, pageNum, qNum, isAnswer) {
+  setLoading(true);
+  arrow.style.display = 'none';
+  try {
+    const fetchUrl = url;
+    if (fetchUrl === currentPdfUrl && currentPdfDoc) {
+      currentPage = pageNum;
+      currentQNum = qNum;
+      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
+    } else {
+      currentPdfUrl = fetchUrl;
+      currentPdfDoc = null;
+      canvas.style.display = 'none';
+      placeholder.style.display = 'flex';
+      const task = pdfjsLib.getDocument(fetchUrl);
+      currentPdfDoc = await task.promise;
+      currentPage = pageNum;
+      currentQNum = qNum;
+      await renderPage(currentPdfDoc, pageNum, qNum, isAnswer);
+    }
+  } catch(e) {
+    console.error('PDF load error:', e);
+    panelTitle.textContent = 'Error loading PDF';
+    placeholder.style.display = 'flex';
+    canvas.style.display = 'none';
+  }
+  setLoading(false);
+}
+
+function openQuestion(row, mode) {
+  if (currentRow) currentRow.classList.remove('active');
+  currentRow = row;
+  row.classList.add('active');
+
+  const paper  = row.dataset.paper;
+  const qNum   = row.dataset.qnum;
+  const qpUrl  = row.dataset.qpUrl;
+  const msUrl  = row.dataset.msUrl;
+  const qpPage = parseInt(row.dataset.qpPage);
+  const msPage = parseInt(row.dataset.msPage);
+
+  currentMode = mode;
+  btnQMode.classList.toggle('active', mode === 'q');
+  btnAMode.classList.toggle('active', mode === 'a');
+
+  const url   = mode === 'q' ? qpUrl : msUrl;
+  const page  = mode === 'q' ? qpPage : msPage;
+  const label = mode === 'q' ? 'QP' : 'MS';
+  const isAns = mode === 'a';
+
+  // Get stored Y from data attributes
+  currentStoredY = isAns ? parseFloat(row.dataset.msY) : parseFloat(row.dataset.qpY);
+
+  // Track absolute page (within the FULL paper) and the currently loaded
+  // chop.php window, so ◀ ▶ can page through the whole paper, not just
+  // jump between unrelated questions in the list.
+  currentFullId   = isAns ? row.dataset.msFullId : row.dataset.qpFullId;
+  currentWinStart = parseInt(isAns ? row.dataset.msStart : row.dataset.qpStart);
+  currentWinEnd   = parseInt(isAns ? row.dataset.msEnd   : row.dataset.qpEnd);
+  currentAbsPage  = currentWinStart + (page - 1);
+
+  panelTitle.textContent = `${paper} · Q${qNum} · ${label} p${page}`;
+
+  if (!panelVisible) {
+    panelVisible = true;
+    pdfPanel.classList.remove('hidden');
+    panelToggle.textContent = '⊞ Panel';
+  }
+
+  // Safety net: force the panel header to a correct, visible state every
+  // time a question opens. Guards against any edge case where a prior
+  // scroll/animation left it in a collapsed or stale layout state.
+  const panelHdrEl = document.getElementById('panel-hdr');
+  if (panelHdrEl) {
+    panelHdrEl.style.removeProperty('display');
+    panelHdrEl.style.removeProperty('height');
+    panelHdrEl.style.removeProperty('min-height');
+    void panelHdrEl.offsetHeight; // force reflow
+  }
+  // Also clear any leftover native-scroll offset on body/html, in case
+  // anything ever leaves it lingering when a question opens.
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+
+  currentQNum = qNum;
+  loadPdf(url, page, qNum, isAns);
+
+  // Two always-available links (independent of Q/A mode): the full
+  // original question paper and the full original mark scheme, both on
+  // Google Drive — not the chopped mini-PDF used for fast inline viewing.
+  btnOpenQP.onclick = () => window.open('https://drive.google.com/file/d/' + row.dataset.qpFullId + '/view', '_blank');
+  btnOpenMS.onclick = () => window.open('https://drive.google.com/file/d/' + row.dataset.msFullId + '/view', '_blank');
+}
+
+function togglePanel() {
+  panelVisible = !panelVisible;
+  pdfPanel.classList.toggle('hidden', !panelVisible);
+  panelToggle.textContent = panelVisible ? '⊞ Panel' : '⊟ Panel';
+}
+
+function toggleFullscreen() {
+  fullscreen = !fullscreen;
+  document.body.classList.toggle('fullscreen', fullscreen);
+  btnFull.textContent = fullscreen ? '⊡ Exit' : '⛶ Full';
+  if (fullscreen && !panelVisible) { panelVisible = true; pdfPanel.classList.remove('hidden'); }
+  if (currentPdfDoc) setTimeout(() => renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a'), 320);
+}
+
+function switchMode(mode) {
+  if (!currentRow) return;
+  openQuestion(currentRow, mode);
+}
+
+function jumpToArrow() {
+  const arrowTop = parseInt(arrow.style.top) || 0;
+  viewport.scrollTop = Math.max(0, arrowTop - 60);
+}
+
+function applyFilter() {
+  const q = searchEl.value.toLowerCase().trim();
+  const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+  let visible = 0;
+  document.querySelectorAll('.qrow').forEach(row => {
+    const desc   = row.querySelector('.qdesc').textContent.toLowerCase();
+    const paper  = (row.dataset.paper || '').toLowerCase();
+    const matchS = !q || desc.includes(q) || paper.includes(q) || (row.dataset.qnum||'').includes(q);
+    const matchF = activeFilter === 'all' || row.closest('.spec-section')?.id?.includes(activeFilter.replace(/./g,'-'));
+    const show = matchS && matchF;
+    row.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  document.getElementById('no-results').style.display = visible ? 'none' : 'block';
+}
+
+document.querySelectorAll('.qrow').forEach(row => {
+  row.querySelector('.btn-q').addEventListener('click', e => { e.stopPropagation(); openQuestion(row, 'q'); });
+  row.querySelector('.btn-a').addEventListener('click', e => { e.stopPropagation(); openQuestion(row, 'a'); });
+  row.addEventListener('click', () => openQuestion(row, currentMode || 'q'));
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilter();
+  });
+});
+
+searchEl.addEventListener('input', applyFilter);
+panelToggle.addEventListener('click', togglePanel);
+btnFull.addEventListener('click', toggleFullscreen);
+btnGoto.addEventListener('click', jumpToArrow);
+btnQMode.addEventListener('click', () => switchMode('q'));
+btnAMode.addEventListener('click', () => switchMode('a'));
+
+document.getElementById('btn-prev').addEventListener('click', async () => {
+  if (!currentPdfDoc || !currentFullId) return;
+  if (currentPage > 1) {
+    // Still within the currently loaded window — just step back a page.
+    currentPage--;
+    currentAbsPage--;
+    currentStoredY = null;
+    rendering = false;
+    await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+  } else if (currentAbsPage > 1) {
+    // At the start of the loaded window — fetch the previous page(s) of
+    // the SAME paper via chop.php. Never jumps to a different question.
+    currentAbsPage--;
+    currentWinStart = Math.max(1, currentAbsPage);
+    currentWinEnd = currentWinStart + 1;
+    currentStoredY = null;
+    const newUrl = `https://qspotter.co.uk/chop.php?file=${currentFullId}&start=${currentWinStart}&end=${currentWinEnd}`;
+    await loadPdf(newUrl, 1, null, currentMode === 'a');
+  }
+});
+document.getElementById('btn-next').addEventListener('click', async () => {
+  if (!currentPdfDoc || !currentFullId) return;
+  if (currentPage < currentPdfDoc.numPages) {
+    // Still within the currently loaded window — just step forward a page.
+    currentPage++;
+    currentAbsPage++;
+    currentStoredY = null;
+    rendering = false;
+    await renderPage(currentPdfDoc, currentPage, null, currentMode === 'a');
+  } else {
+    // At the end of the loaded window — fetch the next page(s) of the
+    // SAME paper via chop.php. Never jumps to a different question.
+    currentAbsPage++;
+    currentWinStart = currentAbsPage;
+    currentWinEnd = currentAbsPage + 1;
+    currentStoredY = null;
+    const newUrl = `https://qspotter.co.uk/chop.php?file=${currentFullId}&start=${currentWinStart}&end=${currentWinEnd}`;
+    await loadPdf(newUrl, 1, null, currentMode === 'a');
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && fullscreen) toggleFullscreen();
+  if (e.key === 'f' && !e.target.matches('input')) toggleFullscreen();
+  if (e.key === 'p' && !e.target.matches('input')) togglePanel();
+});
+
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(pill.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
+  });
+});
+
+const dragHandle = document.getElementById('drag-handle');
+let isDragging = false;
+dragHandle.addEventListener('mousedown', e => {
+  isDragging = true; dragHandle.classList.add('active');
+  document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none';
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const mainEl = document.getElementById('main');
+  const newWidth = Math.max(280, Math.min(900, mainEl.getBoundingClientRect().right - e.clientX));
+  pdfPanel.style.width = newWidth + 'px';
+});
+document.addEventListener('mouseup', () => {
+  if (!isDragging) return;
+  isDragging = false; dragHandle.classList.remove('active');
+  document.body.style.cursor = ''; document.body.style.userSelect = '';
+  if (currentPdfDoc && !rendering) renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
+});
+
+new ResizeObserver(() => {
+  if (currentPdfDoc && !rendering) renderPage(currentPdfDoc, currentPage, currentQNum, currentMode === 'a');
+}).observe(viewport);
+
+// ── MOBILE DRAWER ─────────────────────────────────────────────────────────
+const isMobile = () => window.innerWidth <= 768;
+const overlay = document.createElement('div');
+overlay.id = 'drawer-overlay';
+overlay.onclick = closeDrawer;
+document.body.appendChild(overlay);
+
+function openDrawer() {
+  if (!isMobile()) return;
+  pdfPanel.classList.remove('hidden');
+  pdfPanel.classList.add('drawer-open');
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  pdfPanel.classList.remove('drawer-open');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  setTimeout(() => {
+    if (!pdfPanel.classList.contains('drawer-open')) {
+      pdfPanel.classList.add('hidden');
+      panelVisible = false;
+    }
+  }, 300);
+}
+
+// Wire up close button properly for mobile touch
+const btnCloseX = document.getElementById('btn-close-drawer-x') || document.getElementById('btn-close-drawer');
+if (btnCloseX) {
+  btnCloseX.addEventListener('click', closeDrawer);
+  btnCloseX.addEventListener('touchend', function(e) { e.preventDefault(); closeDrawer(); });
+}
+
+// Swipe down to close drawer on mobile
+(function() {
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  const panel = document.getElementById('pdf-panel');
+  if (!panel) return;
+  
+  panel.addEventListener('touchstart', function(e) {
+    touchStartY = e.touches[0].clientY;
+    touchStartTime = Date.now();
+  }, { passive: true });
+  
+  panel.addEventListener('touchend', function(e) {
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchEndY - touchStartY;
+    const deltaTime = Date.now() - touchStartTime;
+    // Swipe down: moved >80px downward in <400ms
+    if (deltaY > 80 && deltaTime < 400 && isMobile()) {
+      closeDrawer();
+    }
+  }, { passive: true });
+})();
+
+// Fix nav pill scrolling on mobile — scroll #index div not window
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    const indexDiv = document.getElementById('index');
+    if (target && indexDiv) {
+      indexDiv.scrollTo({ top: target.offsetTop - 10, behavior: 'instant' });
+    }
+  });
+});
+
+// Fix filter buttons on mobile — scroll to section instead of filtering
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    if (!isMobile()) return;
+    e.stopPropagation();
+    const filter = this.getAttribute('data-filter');
+    const indexDiv = document.getElementById('index');
+    if (filter === 'all') {
+      indexDiv.scrollTo({ top: 0, behavior: 'instant' });
+    } else {
+      const prefix = filter.replace(/\./g, '-');
+      const sec = document.querySelector('[id*="' + prefix + '"]');
+      if (sec) {
+        const secTop = sec.offsetTop;
+        indexDiv.scrollTo({ top: secTop - 10, behavior: 'instant' });
+      }
+    }
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Auto-open drawer on mobile when Q or A tapped
+const _origOpenQuestion = openQuestion;
+openQuestion = function(row, mode) {
+  if (isMobile()) {
+    // Show drawer immediately with loading message
+    placeholder.innerHTML = '<div class="big">⏳</div><div>Loading — please wait…</div>';
+    placeholder.style.display = 'flex';
+    canvas.style.display = 'none';
+    arrow.style.display = 'none';
+    openDrawer();
+  }
+  _origOpenQuestion(row, mode);
+};
+
+// Override panel toggle for mobile
+panelToggle.addEventListener('click', () => {
+  if (isMobile()) {
+    if (pdfPanel.classList.contains('drawer-open')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  } else {
+    panelVisible = !panelVisible;
+    pdfPanel.classList.toggle('hidden', !panelVisible);
+    panelToggle.textContent = panelVisible ? '\u229e Panel' : '\u229f Panel';
+  }
+});
+
+
+// Topic-level deep links: e.g. c2h.html#5.6.1.1 scrolls straight to that spec
+// point. Uses data-topic (NOT id) specifically so the browser's own native
+// fragment-scroll-on-load never has anything to auto-match — that native
+// behavior is what caused a hard-to-diagnose bug previously (a leftover
+// scroll offset it left behind, even with overflow:hidden set, hid the
+// panel controls behind the fixed header). With no id matching the hash,
+// the browser does nothing on its own; every pixel of this is our own code.
+function jumpToTopicHash() {
+  const raw = decodeURIComponent(window.location.hash || '').replace(/^#/, '');
+  if (!raw) return;
+  const el = document.querySelector('[data-topic="' + CSS.escape(raw) + '"]');
+  if (!el) return;
+  const indexDiv = document.getElementById('index');
+  if (!indexDiv) return;
+  const pdfPanelEl = document.getElementById('pdf-panel');
+  if (typeof closeDrawer === 'function' && pdfPanelEl && pdfPanelEl.classList.contains('drawer-open')) {
+    closeDrawer();
+  }
+  setTimeout(() => {
+    indexDiv.scrollTo({ top: Math.max(0, el.offsetTop - 80), behavior: 'instant' });
+    el.classList.remove('topic-flash');
+    void el.offsetWidth;
+    el.classList.add('topic-flash');
+    setTimeout(() => el.classList.remove('topic-flash'), 2300);
+  }, 60);
+}
+window.addEventListener('DOMContentLoaded', jumpToTopicHash);
+window.addEventListener('hashchange', jumpToTopicHash);
+</script>
+
+
+</body></html>
