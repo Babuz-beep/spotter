@@ -286,7 +286,8 @@ if (mobileSelect) {
         <button class="pctrl" id="btn-next" title="Next page">&#9654;</button>
         <button class="pctrl" id="btn-goto">&darr; Jump</button>
         <button class="pctrl" id="btn-full">&#9974; Full</button>
-        <button class="pctrl" id="btn-open">&#8599;</button>
+        <button class="pctrl pctrl-red" id="btn-open-qp" title="Open full question paper (Google Drive)">Full Paper</button>
+        <button class="pctrl pctrl-green" id="btn-open-ms" title="Open full mark scheme (Google Drive)">Full MS</button>
       </div>
     </div>
     <div id="pdf-viewport">
@@ -332,7 +333,8 @@ const btnQMode   = document.getElementById('btn-q-mode');
 const btnAMode   = document.getElementById('btn-a-mode');
 const btnGoto    = document.getElementById('btn-goto');
 const btnFull    = document.getElementById('btn-full');
-const btnOpen    = document.getElementById('btn-open');
+const btnOpenQP  = document.getElementById('btn-open-qp');
+const btnOpenMS  = document.getElementById('btn-open-ms');
 const panelToggle = document.getElementById('panel-toggle');
 const pdfPanel   = document.getElementById('pdf-panel');
 const searchEl   = document.getElementById('search');
@@ -485,7 +487,8 @@ function openQuestion(row, mode) {
   const fullId = isAns ? row.dataset.msFullId : row.dataset.qpFullId;
   const absolutePage = currentChunkStart + page - 1;
   const fullUrl = `https://drive.google.com/file/d/${fullId}/view`;
-  btnOpen.onclick = () => window.open(fullUrl, '_blank');
+  btnOpenQP.onclick = () => window.open('https://drive.google.com/file/d/' + row.dataset.qpFullId + '/view', '_blank');
+  btnOpenMS.onclick = () => window.open('https://drive.google.com/file/d/' + row.dataset.msFullId + '/view', '_blank');
 }
 
 function togglePanel() {
