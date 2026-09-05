@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPOTTER — Set Up Your School's Papers</title>
+<style>
+:root{--dark:#0D1F2D;--mid:#1A3347;--light:#F0F6FF;--border:#D4E4F0;--green:#00C896;--red:#EF4444;--amber:#F59E0B;--text:#1A2E3E;--muted:#6B8FA8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',Arial,sans-serif;background:var(--light);color:var(--text);}
+.wrap{max-width:720px;margin:0 auto;padding:40px 24px;}
+h1{font-size:1.6rem;color:var(--dark);margin-bottom:6px;}
+.sub{color:var(--muted);margin-bottom:32px;font-size:0.95rem;}
+.step{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,30,60,0.06);}
+.step h2{font-size:1rem;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.step-num{background:var(--mid);color:#fff;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600;}
+input[type=text]{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;font-family:inherit;}
+.hint{font-size:0.8rem;color:var(--muted);margin-top:8px;line-height:1.5;}
+.hint code{background:var(--light);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:0.78rem;}
+.btn{background:var(--green);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-family:inherit;font-weight:600;font-size:0.9rem;cursor:pointer;margin-top:14px;}
+.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.status{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:0.85rem;display:none;}
+.status.ok{background:#D1FAE5;color:#065F46;display:block;}
+.status.err{background:#FEE2E2;color:#991B1B;display:block;}
+.qual-list{display:flex;flex-direction:column;gap:10px;}
+.qual-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px;cursor:pointer;}
+.qual-item input{margin-top:3px;}
+.qual-item label{font-size:0.88rem;cursor:pointer;}
+#step2, #step3{display:none;opacity:0.5;pointer-events:none;}
+#step2.active, #step3.active{display:block;opacity:1;pointer-events:auto;}
+#progress{margin-top:16px;background:#0D1F2D;color:#D1FAE5;font-family:monospace;font-size:0.78rem;padding:14px;border-radius:8px;max-height:280px;overflow-y:auto;display:none;white-space:pre-wrap;}
+.progress-line.fail{color:#FCA5A5;}
+.progress-line.skip{color:#FCD34D;}
+.summary{margin-top:14px;font-size:0.9rem;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Set up your school's exam papers</h1>
+  <p class="sub">Three steps: share a folder with us, choose your exam boards, click to fetch. Takes a few minutes.</p>
+
+  <div class="step" id="step1">
+    <h2><span class="step-num">1</span> Share a folder with SPOTTER</h2>
+    <p class="hint">Create a <strong>Shared Drive</strong> in Google Drive (not a regular "My Drive" folder — this is a Google restriction on automated access, not something we can change). Share it with:<br><code>spotter-uploader@spotter-499815.iam.gserviceaccount.com</code> (Editor access), then paste the folder link below.</p>
+    <input type="text" id="folderLink" placeholder="https://drive.google.com/drive/folders/...">
+    <button class="btn" id="verifyBtn">Verify access</button>
+    <div class="status" id="verifyStatus"></div>
+  </div>
+
+  <div class="step" id="step2">
+    <h2><span class="step-num">2</span> Choose your exam boards</h2>
+    <div class="qual-list" id="qualList">Loading...</div>
+  </div>
+
+  <div class="step" id="step3">
+    <h2><span class="step-num">3</span> Fetch your papers</h2>
+    <button class="btn" id="downloadBtn">Download selected papers into my folder</button>
+    <div id="progress"></div>
+    <div class="summary" id="summary"></div>
+  </div>
+</div>
+
+<script>
+let verifiedFolderId = null;
+
+document.getElementById('verifyBtn').onclick = async () => {
+  const link = document.getElementById('folderLink').value.trim();
+  const statusEl = document.getElementById('verifyStatus');
+  statusEl.className = 'status'; statusEl.textContent = 'Checking...'; statusEl.style.display = 'block';
+
+  try {
+    const resp = await fetch('onboard_verify.php', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({folder_link: link})
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      statusEl.className = 'status ok';
+      statusEl.textContent = `✓ Access confirmed — "${data.folder_name}"`;
+      verifiedFolderId = data.folder_id;
+      document.getElementById('step2').classList.add('active');
+      loadQualifications();
+    } else {
+      statusEl.className = 'status err';
+      statusEl.textContent = '✗ ' + data.error;
+    }
+  } catch (e) {
+    statusEl.className = 'status err';
+    statusEl.textContent = '✗ Server error — try again.';
+  }
+};
+
+async function loadQualifications() {
+  // Static list matching catalog.php - kept in sync manually for now.
+  const quals = [
+    ['ocr_h432_01', 'OCR A-Level Chemistry A — H432/01 (Periodic table, elements & physical chemistry)'],
+    ['ocr_h432_02', 'OCR A-Level Chemistry A — H432/02 (Synthesis & analytical techniques)'],
+    ['ocr_h432_03', 'OCR A-Level Chemistry A — H432/03 (Unified chemistry)'],
+    ['aqa_gcse_combined_science', 'AQA GCSE Combined Science: Trilogy [folders only — papers not yet added]'],
+    ['aqa_gcse_triple_science', 'AQA GCSE Triple Science [folders only — papers not yet added]'],
+  ];
+  const list = document.getElementById('qualList');
+  list.innerHTML = quals.map(([key, label]) => `
+    <div class="qual-item">
+      <input type="checkbox" id="q_${key}" value="${key}">
+      <label for="q_${key}">${label}</label>
+    </div>
+  `).join('');
+  document.getElementById('step3').classList.add('active');
+}
+
+document.getElementById('downloadBtn').onclick = async () => {
+  const selected = Array.from(document.querySelectorAll('#qualList input:checked')).map(el => el.value);
+  if (!selected.length) { alert('Choose at least one exam board.'); return; }
+  if (!verifiedFolderId) { alert('Please verify folder access first.'); return; }
+
+  const progressEl = document.getElementById('progress');
+  const summaryEl = document.getElementById('summary');
+  progressEl.style.display = 'block';
+  progressEl.textContent = '';
+  summaryEl.textContent = '';
+  document.getElementById('downloadBtn').disabled = true;
+
+  const body = new URLSearchParams();
+  body.append('folder_id', verifiedFolderId);
+  selected.forEach(s => body.append('qualifications[]', s));
+
+  const resp = await fetch('onboard_download.php', { method: 'POST', body });
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const {done, value} = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, {stream: true});
+    const lines = buffer.split('\n');
+    buffer = lines.pop();
+    for (const line of lines) {
+      if (!line) continue;
+      const span = document.createElement('div');
+      span.className = 'progress-line' + (line.startsWith('FAIL') ? ' fail' : line.startsWith('SKIP') ? ' skip' : '');
+      span.textContent = line;
+      progressEl.appendChild(span);
+      progressEl.scrollTop = progressEl.scrollHeight;
+      if (line.startsWith('DONE')) {
+        summaryEl.textContent = line.replace('DONE ', 'Finished: ');
+      }
+    }
+  }
+  document.getElementById('downloadBtn').disabled = false;
+};
+</script>
+</body>
+</html>

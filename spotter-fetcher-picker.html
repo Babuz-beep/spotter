@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SPOTTER Fetcher — Choose your root folder</title>
+<style>
+  body{font-family:'Segoe UI',sans-serif;background:#F0F6FF;color:#1A2E3E;padding:60px 20px;text-align:center;}
+  .wrap{max-width:420px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #D4E4F0;padding:32px;}
+  h1{font-size:1.15rem;margin-bottom:10px;}
+  p{font-size:0.88rem;color:#6B8FA8;margin-bottom:20px;}
+  button{background:#00C896;color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:0.9rem;font-weight:600;cursor:pointer;}
+  #done{display:none;color:#065F46;font-weight:600;margin-top:16px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📁 Choose your root Drive folder</h1>
+  <p>This is the same folder your extension will build the SPOTTER paper structure inside. You only need to do this once — it's remembered for next time.</p>
+  <button id="btnPick">Choose folder</button>
+  <div id="done">✓ Folder selected — you can close this tab and go back to the extension.</div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+// Same CLIENT_ID / API_KEY pair already used by onboard_drive.html — this
+// page reuses that exact Picker flow, it's just hosted standalone so the
+// extension (which can't load remote scripts itself under Manifest V3) can
+// open it in a normal tab instead.
+const CLIENT_ID = '601070815539-2con18rpjttsk0hu9brf9povhh5mb3h2.apps.googleusercontent.com';
+const API_KEY   = 'AIzaSyBLhhDyaT80ojTut9cjrg7Ki_tTlvqt-RE';
+const SCOPE     = 'https://www.googleapis.com/auth/drive.file';
+
+// The extension's ID — fill this in once the extension is loaded and its
+// real ID is known (visible on chrome://extensions with Developer Mode on).
+const EXTENSION_ID = 'egiadjejgcnbpdljenilmpmdamhbmjbf';
+
+let accessToken = null;
+let gapiInited = false;
+
+function gapiLoaded() {
+  gapi.load('client:picker', () => { gapiInited = true; });
+}
+window.onload = gapiLoaded;
+
+document.getElementById('btnPick').addEventListener('click', () => {
+  const tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPE,
+    callback: (resp) => {
+      if (resp.error) { alert('Connection failed: ' + resp.error); return; }
+      accessToken = resp.access_token;
+      openPicker();
+    },
+  });
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+});
+
+function openPicker() {
+  const view = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+    .setSelectFolderEnabled(true)
+    .setIncludeFolders(true);
+
+  const picker = new google.picker.PickerBuilder()
+    .setOAuthToken(accessToken)
+    .setDeveloperKey(API_KEY)
+    .addView(view)
+    .setTitle('Choose your root folder for SPOTTER Fetcher')
+    .setCallback(pickerCallback)
+    .build();
+  picker.setVisible(true);
+}
+
+function pickerCallback(data) {
+  if (data.action === google.picker.Action.PICKED) {
+    const folder = data.docs[0];
+
+    if (EXTENSION_ID === 'REPLACE_WITH_EXTENSION_ID') {
+      document.getElementById('done').style.display = 'block';
+      document.getElementById('done').style.color = '#DC2626';
+      document.getElementById('done').textContent =
+        '⚠ Setup incomplete: EXTENSION_ID in this page still says "REPLACE_WITH_EXTENSION_ID". ' +
+        'Edit this file, put your real extension ID in, and re-upload before this can work.';
+      document.getElementById('btnPick').style.display = 'none';
+      return;
+    }
+
+    // Hand the result back to the extension. This only works because the
+    // extension's manifest lists this exact origin under
+    // "externally_connectable" — without that, this call is silently ignored.
+    if (chrome?.runtime?.sendMessage) {
+      chrome.runtime.sendMessage(EXTENSION_ID, {
+        action: 'ROOT_FOLDER_PICKED',
+        folderId: folder.id,
+        folderName: folder.name,
+      }, (response) => {
+        const doneEl = document.getElementById('done');
+        doneEl.style.display = 'block';
+        if (chrome.runtime.lastError) {
+          doneEl.style.color = '#DC2626';
+          doneEl.textContent = '⚠ Could not reach the extension: ' + chrome.runtime.lastError.message +
+            '. Check the extension is installed, enabled, and its ID matches EXTENSION_ID in this file.';
+        } else if (!response?.ok) {
+          doneEl.style.color = '#DC2626';
+          doneEl.textContent = '⚠ Extension received the message but did not confirm success. Try again.';
+        } else {
+          doneEl.style.color = '#065F46';
+          doneEl.textContent = `✓ "${folder.name}" saved as your root folder — you can close this tab and go back to the extension.`;
+          document.getElementById('btnPick').style.display = 'none';
+        }
+      });
+    } else {
+      alert('This browser does not support chrome.runtime.sendMessage from a webpage — are you using Chrome/Edge with the extension installed?');
+    }
+  }
+}
+</script>
+</body>
+</html>

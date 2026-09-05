@@ -94,7 +94,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(-
 #pdf-viewport::-webkit-scrollbar-thumb { background: var(--border2); }
 #pdf-canvas { display: block; width: 100%; }
 #arrow-indicator { position: absolute; left: 0; width: 22px; display: none; flex-direction: column; align-items: center; justify-content: center; border-radius: 0 4px 4px 0; z-index: 10; pointer-events: none; }
-#arrow-indicator::after { content: '👉'; font-size: 14px; line-height: 1; }
+#arrow-indicator::after { content: ''; display: block; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 9px solid #fff; }
 body.fullscreen #pdf-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 100vw !important; z-index: 200; border: none; }
 #pdf-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text3); gap: 12px; font-size: 12px; text-align: center; padding: 20px; }
 #pdf-placeholder .big { font-size: 36px; }

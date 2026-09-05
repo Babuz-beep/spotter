@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPOTTER — Connect Google Drive</title>
+<style>
+  :root{--sg-green:#00C896;--sg-dark:#0D1F2D;--sg-border:#D4E4F0;--sg-light:#F0F6FF;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',sans-serif;background:var(--sg-light);color:#1A2E3E;padding:40px 20px;}
+  .wrap{max-width:680px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid var(--sg-border);padding:32px;box-shadow:0 2px 12px rgba(0,30,60,0.08);}
+  h1{font-size:1.3rem;margin-bottom:6px;}
+  .sub{color:#6B8FA8;font-size:0.9rem;margin-bottom:20px;}
+  fieldset{border:1px solid var(--sg-border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+  legend{font-weight:600;font-size:0.9rem;padding:0 6px;color:var(--sg-dark);}
+  label{display:flex;align-items:center;gap:10px;padding:6px 4px;font-size:0.88rem;cursor:pointer;}
+  label:hover{background:var(--sg-light);border-radius:6px;}
+  input[type=checkbox]{width:16px;height:16px;accent-color:var(--sg-green);}
+  .row{display:flex;gap:24px;flex-wrap:wrap;}
+  .col{flex:1;min-width:140px;}
+  button{background:var(--sg-green);color:#fff;border:none;border-radius:8px;padding:14px;font-size:1rem;font-weight:600;cursor:pointer;margin-top:8px;width:100%;}
+  button.google{background:#0078D4;}
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+  #status{margin-top:16px;font-size:0.85rem;color:#6B8FA8;text-align:center;min-height:20px;white-space:pre-line;}
+  #progress{margin-top:14px;background:#E8F4F0;border-radius:6px;height:10px;overflow:hidden;display:none;}
+  #bar{height:100%;background:var(--sg-green);width:0%;transition:width 0.15s;}
+  #count{font-size:0.78rem;color:#6B8FA8;margin-top:6px;text-align:center;}
+  .note{background:#FEF3C7;border-radius:8px;padding:12px 14px;font-size:0.82rem;color:#92400E;margin-bottom:20px;}
+  .step{display:none;}
+  .step.active{display:block;}
+  #folderInfo{background:#E6F9F2;border-radius:8px;padding:12px 14px;font-size:0.85rem;color:#065F46;margin-bottom:16px;display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔗 SPOTTER — Connect Google Drive</h1>
+  <div class="sub">Choose a folder in your Google Drive — real papers get fetched and uploaded straight into it.</div>
+  <div class="note">Only asks for permission to manage files this tool creates — not your whole Drive.</div>
+
+  <div class="step active" id="step1">
+    <button class="google" id="connectBtn">🔗 Connect Google Drive</button>
+  </div>
+
+  <div class="step" id="step2">
+    <div id="folderInfo"></div>
+
+    <form id="dlform">
+      <div class="row">
+        <div class="col">
+          <fieldset>
+            <legend>Qualification</legend>
+            <label><input type="checkbox" id="qCombined" checked> Combined Science (8464)</label>
+            <label><input type="checkbox" id="qTriple" checked> Triple Science (8461/2/3)</label>
+          </fieldset>
+        </div>
+        <div class="col">
+          <fieldset>
+            <legend>Subjects</legend>
+            <label><input type="checkbox" id="sBio" checked> Biology</label>
+            <label><input type="checkbox" id="sChem" checked> Chemistry</label>
+            <label><input type="checkbox" id="sPhys" checked> Physics</label>
+          </fieldset>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <fieldset>
+            <legend>Tiers</legend>
+            <label><input type="checkbox" id="tH" checked> Higher</label>
+            <label><input type="checkbox" id="tF" checked> Foundation</label>
+          </fieldset>
+        </div>
+        <div class="col">
+          <fieldset>
+            <legend>Years</legend>
+            <label><input type="checkbox" class="yr" value="Jun18" checked> Jun18</label>
+            <label><input type="checkbox" class="yr" value="Jun19" checked> Jun19</label>
+            <label><input type="checkbox" class="yr" value="Nov20" checked> Nov20</label>
+            <label><input type="checkbox" class="yr" value="Nov21" checked> Nov21</label>
+            <label><input type="checkbox" class="yr" value="Jun22" checked> Jun22</label>
+            <label><input type="checkbox" class="yr" value="Jun23" checked> Jun23</label>
+            <label><input type="checkbox" class="yr" value="Jun24" checked> Jun24</label>
+          <label><input type="checkbox" class="yr" value="Jun25" checked> Jun25</label>
+          <label><input type="checkbox" class="yr" value="Specimen"> Specimen</label>
+          </fieldset>
+        </div>
+      </div>
+      <button type="submit" id="go">⬆ Upload selected papers into this Drive folder</button>
+    </form>
+  </div>
+
+  <div id="progress"><div id="bar"></div></div>
+  <div id="count"></div>
+  <div id="status"></div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script>
+const CLIENT_ID = '601070815539-2con18rpjttsk0hu9brf9povhh5mb3h2.apps.googleusercontent.com';
+const API_KEY   = 'AIzaSyBLhhDyaT80ojTut9cjrg7Ki_tTlvqt-RE';
+const SCOPE     = 'https://www.googleapis.com/auth/drive.file';
+
+let accessToken = null;
+let chosenFolderId = null;
+let chosenFolderName = null;
+let pickerInited = false, gapiInited = false;
+let tokenClient;
+
+function gapiLoaded() {
+  gapi.load('client:picker', () => { gapiInited = true; });
+}
+window.onload = gapiLoaded;
+
+document.getElementById('connectBtn').addEventListener('click', () => {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPE,
+    callback: (resp) => {
+      if (resp.error) {
+        document.getElementById('status').textContent = '✗ Connection failed: ' + resp.error;
+        return;
+      }
+      accessToken = resp.access_token;
+      openPicker();
+    },
+  });
+  tokenClient.requestAccessToken({ prompt: 'consent' });
+});
+
+function openPicker() {
+  const view = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+    .setSelectFolderEnabled(true)
+    .setIncludeFolders(true);
+
+  const picker = new google.picker.PickerBuilder()
+    .setOAuthToken(accessToken)
+    .setDeveloperKey(API_KEY)
+    .addView(view)
+    .setTitle('Choose or create a folder for SPOTTER papers')
+    .setCallback(pickerCallback)
+    .build();
+  picker.setVisible(true);
+}
+
+function pickerCallback(data) {
+  if (data.action === google.picker.Action.PICKED) {
+    const folder = data.docs[0];
+    chosenFolderId = folder.id;
+    chosenFolderName = folder.name;
+    document.getElementById('folderInfo').style.display = 'block';
+    document.getElementById('folderInfo').textContent = `📁 Selected: ${chosenFolderName}`;
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+  }
+}
+
+// ── Drive helpers — find-or-create subfolder, then upload a file ────────────
+async function getOrCreateFolder(name, parentId) {
+  const q = encodeURIComponent(`name='${name.replace(/'/g, "\\'")}' and '${parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+  const searchResp = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+  const searchData = await searchResp.json();
+  if (searchData.files && searchData.files.length > 0) return searchData.files[0].id;
+
+  const createResp = await fetch('https://www.googleapis.com/drive/v3/files', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder', parents: [parentId] })
+  });
+  const createData = await createResp.json();
+  return createData.id;
+}
+
+async function fileExistsInFolder(filename, parentId) {
+  const q = encodeURIComponent(`name='${filename.replace(/'/g, "\\'")}' and '${parentId}' in parents and trashed=false`);
+  const resp = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id)`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+  const data = await resp.json();
+  return data.files && data.files.length > 0;
+}
+
+async function uploadFileToDrive(blob, filename, parentId) {
+  const metadata = { name: filename, parents: [parentId] };
+  const form = new FormData();
+  form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+  form.append('file', blob);
+
+  const resp = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: form
+  });
+  if (!resp.ok) throw new Error('Upload failed: HTTP ' + resp.status);
+  return resp.json();
+}
+
+// ── Catalog builder (same logic as test_download_v3.html) ───────────────────
+const TIER_NAME = { H: 'Higher', F: 'Foundation' };
+
+function buildTaskList() {
+  const combined = document.getElementById('qCombined').checked;
+  const triple = document.getElementById('qTriple').checked;
+  const subjects = [];
+  if (document.getElementById('sBio').checked) subjects.push('Bio');
+  if (document.getElementById('sChem').checked) subjects.push('Chem');
+  if (document.getElementById('sPhys').checked) subjects.push('Phys');
+  const tiers = [];
+  if (document.getElementById('tH').checked) tiers.push('H');
+  if (document.getElementById('tF').checked) tiers.push('F');
+  const years = [...document.querySelectorAll('.yr:checked')].map(c => c.value);
+
+  const COMBINED_LETTER = { Bio: 'B', Chem: 'C', Phys: 'P' };
+  const COMBINED_NAME   = { Bio: 'Biology', Chem: 'Chemistry', Phys: 'Physics' };
+  const TRIPLE_CODE     = { Bio: '8461', Chem: '8462', Phys: '8463' };
+  const TRIPLE_NAME     = { Bio: 'Biology', Chem: 'Chemistry', Phys: 'Physics' };
+
+  const papers = [];
+
+  if (combined) {
+    for (const subj of subjects) for (const paper of [1, 2]) for (const tier of tiers) {
+      const code = `8464${COMBINED_LETTER[subj]}${paper}${tier}`;
+      const folder = `8464_${COMBINED_LETTER[subj]}_${paper}${tier} - ${COMBINED_NAME[subj]} Paper ${paper} ${TIER_NAME[tier]}`;
+      for (const year of years) papers.push({ qual: 'Combined', code, folder, year });
+    }
+  }
+  if (triple) {
+    for (const subj of subjects) for (const paper of [1, 2]) for (const tier of tiers) {
+      const code = `${TRIPLE_CODE[subj]}${paper}${tier}`;
+      const folder = `${TRIPLE_CODE[subj]}_${paper}${tier} - ${TRIPLE_NAME[subj]} Paper ${paper} ${TIER_NAME[tier]}`;
+      for (const year of years) papers.push({ qual: 'Triple', code, folder, year });
+    }
+  }
+  return papers;
+}
+
+document.getElementById('dlform').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const btn = document.getElementById('go');
+  const status = document.getElementById('status');
+  const progressWrap = document.getElementById('progress');
+  const bar = document.getElementById('bar');
+  const countEl = document.getElementById('count');
+
+  const papers = buildTaskList();
+  if (!papers.length) { status.textContent = 'Select at least one option in each category.'; return; }
+
+  btn.disabled = true;
+  progressWrap.style.display = 'block';
+
+  const tasks = [];
+  for (const p of papers) { tasks.push({ ...p, type: 'qp' }); tasks.push({ ...p, type: 'ms' }); }
+
+  const gcseFolderId = await getOrCreateFolder('GCSE Science', chosenFolderId);
+  const aqaFolderId = await getOrCreateFolder('AQA', gcseFolderId);
+  const qualFolderCache = {};
+  const paperFolderCache = {};
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  async function fetchOneFile(task) {
+    if (!qualFolderCache[task.qual]) qualFolderCache[task.qual] = await getOrCreateFolder(task.qual, aqaFolderId);
+    const qualId = qualFolderCache[task.qual];
+
+    const paperKey = task.qual + '|' + task.folder;
+    if (!paperFolderCache[paperKey]) paperFolderCache[paperKey] = await getOrCreateFolder(task.folder, qualId);
+    const paperId = paperFolderCache[paperKey];
+
+    const typeKey = paperKey + '|' + task.type;
+    if (!paperFolderCache[typeKey]) paperFolderCache[typeKey] = await getOrCreateFolder(task.type.toUpperCase(), paperId);
+    const typeFolderId = paperFolderCache[typeKey];
+
+    const filename = `${task.code}_${task.type.toUpperCase()}_${task.year}.pdf`;
+    const already = await fileExistsInFolder(filename, typeFolderId);
+    if (already) { skippedCount++; return; }
+
+    const resp = await fetch(`test_download_file_v2.php?code=${task.code}&type=${task.type}&year=${task.year}`);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const blob = await resp.blob();
+    await uploadFileToDrive(blob, filename, typeFolderId);
+  }
+
+  let done = 0, failed = [], skippedCount = 0;
+  const REQUEST_DELAY_MS = 400; // small gap between AQA fetches — avoids looking like a scraping burst
+
+  for (const task of tasks) {
+    countEl.textContent = `${done + 1} / ${tasks.length} files`;
+    status.textContent = `${task.qual} — ${task.code} ${task.year} (${task.type.toUpperCase()})`;
+    try {
+      await fetchOneFile(task);
+    } catch (err) {
+      failed.push(task); // keep the task object so we can retry it below
+    }
+    done++;
+    bar.style.width = Math.round((done / tasks.length) * 100) + '%';
+    await sleep(REQUEST_DELAY_MS);
+  }
+
+  // ── Retry pass — failures on a fresh run are often rate-limiting, not     ─
+  //    missing papers, so give each one a second, slower-paced try
+  if (failed.length) {
+    status.textContent = `First pass done. Retrying ${failed.length} failed file(s) with a longer delay...`;
+    await sleep(3000);
+    const stillFailed = [];
+    let retryDone = 0;
+    for (const task of failed) {
+      countEl.textContent = `Retry ${retryDone + 1} / ${failed.length}`;
+      status.textContent = `Retrying: ${task.qual} — ${task.code} ${task.year} (${task.type.toUpperCase()})`;
+      try {
+        await fetchOneFile(task);
+      } catch (err) {
+        stillFailed.push(`${task.code} ${task.year} ${task.type.toUpperCase()}`);
+      }
+      retryDone++;
+      await sleep(1200); // slower on retry — give AQA's server more breathing room
+    }
+    failed.length = 0;
+    failed.push(...stillFailed);
+  }
+
+  btn.disabled = false;
+  countEl.textContent = '';
+  const totalOk = tasks.length - failed.length;
+  const skipNote = skippedCount ? ` (${skippedCount} already existed, skipped)` : '';
+  if (failed.length) {
+    status.textContent = `✓ Done — ${totalOk}/${tasks.length} uploaded${skipNote} (after retry).\n${failed.length} still failed — these likely genuinely don't exist for that year/tier combination:\n${failed.slice(0, 15).join(', ')}${failed.length > 15 ? '...' : ''}`;
+  } else {
+    status.textContent = `✓ All ${tasks.length} files accounted for${skipNote} in "${chosenFolderName}" on your Google Drive.`;
+  }
+});
+</script>
+</body>
+</html>

@@ -6,154 +6,128 @@
 <title>SPOTTER — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Sora',sans-serif;background:#f4f6fb;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
-.card{background:#fff;border-radius:16px;border:1px solid #d8dde8;padding:40px;width:100%;max-width:420px;box-shadow:0 4px 24px rgba(45,110,245,.08);}
-.logo{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:28px;letter-spacing:4px;color:#2d6ef5;margin-bottom:6px;}
-.logo span{color:#d97706;}
-.tagline{font-size:13px;color:#8a93b0;margin-bottom:32px;line-height:1.5;}
-.step{display:none;}
-.step.active{display:block;}
-label{display:block;font-size:11px;font-weight:600;color:#8a93b0;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
-input{width:100%;padding:12px 16px;border:1px solid #d8dde8;border-radius:8px;font-family:'Sora',sans-serif;font-size:14px;color:#1e2540;outline:none;transition:border-color .2s;margin-bottom:16px;}
-input:focus{border-color:#2d6ef5;}
-.btn{width:100%;padding:13px;background:#2d6ef5;color:#fff;border:none;border-radius:8px;font-family:'Sora',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;}
-.btn:hover{background:#1a5fd4;}
-.btn:disabled{background:#8a93b0;cursor:not-allowed;}
-.error{background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:12px 16px;color:#dc2626;font-size:13px;margin-bottom:16px;display:none;}
-.success-card{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:24px;text-align:center;}
-.success-icon{font-size:40px;margin-bottom:12px;}
-.success-title{font-size:17px;font-weight:600;color:#15803d;margin-bottom:8px;}
-.success-msg{font-size:13px;color:#4a5272;line-height:1.6;}
-.success-email{font-family:'JetBrains Mono',monospace;font-size:13px;color:#2d6ef5;font-weight:600;margin:8px 0;}
-.resend-link{font-size:12px;color:#8a93b0;cursor:pointer;margin-top:16px;display:inline-block;text-decoration:underline;}
-.resend-link:hover{color:#2d6ef5;}
-.back-link{font-size:12px;color:#8a93b0;cursor:pointer;margin-top:8px;display:inline-block;}
-.back-link:hover{color:#2d6ef5;}
-.divider{text-align:center;color:#8a93b0;font-size:12px;margin:8px 0;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:#0D1F2D;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{background:#0f2535;border:1px solid #1e3a52;border-radius:16px;padding:40px 36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+.logo{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;letter-spacing:4px;color:#2d6ef5;margin-bottom:4px}
+.logo span{color:#d97706}
+.tagline{color:#6b8fa8;font-size:0.78rem;margin-bottom:32px}
+h2{color:#e8f0f8;font-size:1rem;font-weight:600;margin-bottom:6px}
+.sub{color:#6b8fa8;font-size:0.82rem;margin-bottom:28px;line-height:1.5}
+.field{margin-bottom:16px}
+.field label{display:block;color:#8aa4bc;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px}
+.field input{width:100%;background:#0a1a27;border:1px solid #1e3a52;border-radius:8px;padding:12px 14px;color:#e8f0f8;font-family:'Sora',sans-serif;font-size:0.95rem;outline:none;transition:border-color .2s}
+.field input:focus{border-color:#2d6ef5}
+.field input::placeholder{color:#3a5a74}
+.btn{width:100%;background:#2d6ef5;color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Sora',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;margin-top:8px;transition:background .2s}
+.btn:hover{background:#1a5ce0}
+.btn:disabled{background:#1a3347;color:#3a5a74;cursor:not-allowed}
+.error{background:#2a0f0f;border:1px solid #5a1a1a;color:#f87171;border-radius:8px;padding:11px 14px;font-size:0.83rem;margin-top:16px;display:none}
+.success{background:#0a2a1a;border:1px solid #1a5a2a;color:#4ade80;border-radius:8px;padding:11px 14px;font-size:0.83rem;margin-top:16px;display:none}
+.hint{color:#3a5a74;font-size:0.73rem;margin-top:20px;text-align:center;line-height:1.6}
+.pin-field{letter-spacing:4px;font-family:'JetBrains Mono',monospace;font-size:1.1rem;text-align:center}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">SPOT<span>TER</span></div>
-  <div class="tagline">Spec-mapped past paper questions<br>for AQA Science</div>
-
-  <!-- Step 1: Enter email -->
-  <div class="step active" id="step1">
-    <div class="error" id="err1"></div>
-    <label for="email">School or College Email</label>
-    <input type="email" id="email" placeholder="name@school.sch.uk" autocomplete="email">
-    <button class="btn" id="btn1" onclick="requestLink()">Send Me a Login Link</button>
+  <div class="tagline">AQA Science Question Bank</div>
+  <h2>Sign in to SPOTTER</h2>
+  <p class="sub">Enter your school email address and the access PIN provided by your teacher.</p>
+  <div class="field">
+    <label>School email</label>
+    <input type="email" id="email" placeholder="you@school.ac.uk" autocomplete="email" autocapitalize="none">
   </div>
-
-  <!-- Step 2: Check email -->
-  <div class="step" id="step2">
-    <div class="success-card">
-      <div class="success-icon">📬</div>
-      <div class="success-title">Check your email!</div>
-      <p class="success-msg">We've sent a login link to</p>
-      <div class="success-email" id="email-display"></div>
-      <p class="success-msg">Click the link in the email to access SPOTTER.<br>It expires in 15 minutes.</p>
-    </div>
-    <div style="text-align:center;margin-top:16px;">
-      <span class="resend-link" onclick="requestLink(true)">Resend link</span>
-      <div class="divider">·</div>
-      <span class="back-link" onclick="goBack()">Use a different email</span>
-    </div>
+  <div class="field">
+    <label>School access PIN</label>
+    <input type="text" id="pin" placeholder="••••••" maxlength="10" class="pin-field" autocomplete="off" inputmode="numeric">
   </div>
+  <button class="btn" id="login-btn" onclick="doLogin()">Access SPOTTER →</button>
+  <div class="error" id="error-msg"></div>
+  <div class="success" id="success-msg"></div>
+  <p class="hint">Don't know your PIN? Ask your teacher.<br>Use your school email — not Gmail or personal email.</p>
 </div>
 
 <script>
 const API = '/auth.php';
-let currentEmail = '';
-
-function showError(msg) {
-  const el = document.getElementById('err1');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function hideError() {
-  document.getElementById('err1').style.display = 'none';
-}
-
-async function requestLink(resend = false) {
-  hideError();
-  const email = resend ? currentEmail : document.getElementById('email').value.trim().toLowerCase();
-  if (!email) { showError('Please enter your email address.'); return; }
-
-  const btn = document.getElementById('btn1');
-  btn.disabled = true;
-  btn.textContent = 'Sending…';
-
-  try {
-    const res = await fetch(API, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({action: 'request_link', email})
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      showError(data.error || 'Something went wrong. Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Send Me a Login Link';
-      return;
-    }
-
-    currentEmail = email;
-    document.getElementById('email-display').textContent = email;
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('step2').classList.add('active');
-
-  } catch(e) {
-    showError('Network error. Please try again.');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Send Me a Login Link';
-}
-
-function goBack() {
-  document.getElementById('step2').classList.remove('active');
-  document.getElementById('step1').classList.add('active');
-  hideError();
-}
-
-// Handle magic link return (session token in URL)
-const params = new URLSearchParams(window.location.search);
-const session = params.get('session');
-const email   = params.get('email');
-const error   = params.get('error');
-
-if (session && email) {
-  // Store session and redirect
-  localStorage.setItem('spotter_token', session);
-  localStorage.setItem('spotter_email', email);
-  window.location.href = '/index.html';
-}
-
-if (error === 'expired') {
-  showError('Your login link has expired. Please request a new one.');
-}
-if (error === 'invalid') {
-  showError('Invalid login link. Please request a new one.');
-}
 
 // Check if already logged in
-const token = localStorage.getItem('spotter_token');
-if (token) {
+function getToken() {
+  const ls = localStorage.getItem('spotter_token');
+  if (ls) return ls;
+  const match = document.cookie.match(/spotter_token=([^;]+)/);
+  if (match) {
+    localStorage.setItem('spotter_token', match[1]);
+    return match[1];
+  }
+  return null;
+}
+
+const existingToken = getToken();
+if (existingToken) {
   fetch(API, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({action: 'verify_session', token})
+    body: JSON.stringify({action: 'verify_session', token: existingToken})
   }).then(r => r.json()).then(data => {
     if (data.valid) window.location.href = '/index.html';
   }).catch(() => {});
 }
 
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('success-msg').style.display = 'none';
+}
+
+function showSuccess(msg) {
+  const el = document.getElementById('success-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+async function doLogin() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const pin = document.getElementById('pin').value.trim();
+  const btn = document.getElementById('login-btn');
+
+  if (!email) { showError('Please enter your school email address.'); return; }
+  if (!pin) { showError('Please enter your access PIN.'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  try {
+    const resp = await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action: 'pin_login', email, pin})
+    });
+    const data = await resp.json();
+
+    if (data.valid && data.token) {
+      localStorage.setItem('spotter_token', data.token);
+      localStorage.setItem('spotter_email', email);
+      // Cookie set server-side already
+      showSuccess('Signing you in…');
+      setTimeout(() => { window.location.href = '/index.html'; }, 400);
+    } else {
+      showError(data.error || 'Incorrect PIN or email. Please check and try again.');
+      btn.disabled = false;
+      btn.textContent = 'Access SPOTTER →';
+    }
+  } catch (e) {
+    showError('Connection error. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Access SPOTTER →';
+  }
+}
+
 // Enter key support
-document.getElementById('email').addEventListener('keydown', e => {
-  if (e.key === 'Enter') requestLink();
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
 });
 </script>
 </body>
